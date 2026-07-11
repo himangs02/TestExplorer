@@ -34,7 +34,14 @@ export default async function SchoolStudentsPage({
 
   // 3. Fetch Data
   const allSubjects = await prisma.subjects.findMany({
-    orderBy: { title: 'asc' }
+    orderBy: { title: 'asc' },
+    include: {
+      courses: {
+        include: {
+          categories: true
+        }
+      }
+    }
   })
 
   let rawStudents = await prisma.profiles.findMany({

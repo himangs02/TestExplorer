@@ -2,59 +2,68 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Info } from 'lucide-react'
+import { Info, Loader2 } from 'lucide-react' 
 import { submitExamAction } from '../../[testType]/[examId]/actions'
-import { toast } from 'sonner'
 import { InstructionStage } from '@/components/exam/stages/InstructionStage'
 import { ConsentStage } from '@/components/exam/stages/ConsentStage'
 import { ResultReportModal } from '@/components/exam/modals/ResultReportModal'
 import { TestStage } from '@/components/exam/stages/TestStage'
 import { Question } from '@/components/exam/types'
-
+import { toast } from 'sonner' 
 
 interface MockInterfaceProps {
   exam: any
   questions: Question[]
+  examId: string
   courseId: string
   subjectId: string
-  examId: string
   user: any
 }
 
-export default function MockTestInterface({ 
-  exam, questions, courseId, subjectId, examId, user
+export default function MockTestInterface({
+  exam,
+  questions,
+  examId,
+  courseId,
+  subjectId,
+  user
 }: MockInterfaceProps) {
   const router = useRouter()
   const [stage, setStage] = useState<'instructions' | 'consent' | 'test' | 'report'>('instructions')
-  const [timeLeft, setTimeLeft] = useState((exam?.duration_minutes || 180) * 60)
+  
+  const [timeLeft, setTimeLeft] = useState((exam.duration_minutes || 180) * 60)
   const [currentQIndex, setCurrentQIndex] = useState(0)
+  
   const [answers, setAnswers] = useState<Record<string, string>>({}) 
   const [questionStatus, setQuestionStatus] = useState<Record<string, string>>({}) 
   const [reportData, setReportData] = useState<any>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
+  const [reviewUrl, setReviewUrl] = useState<string | undefined>(undefined)
+
+  // -- Empty State --
   if (!questions || questions.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100 font-sans">
-        <div className="bg-white p-8 rounded shadow-md text-center max-w-md">
-          <div className="w-16 h-16 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center mx-auto mb-4">
+        <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md text-center border border-gray-200">
+          <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-600">
             <Info className="w-8 h-8" />
           </div>
           <h2 className="text-xl font-bold text-gray-900 mb-2">No Questions Found</h2>
-          <button onClick={() => window.history.back()} className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 font-bold">Go Back</button>
+          <button onClick={() => router.back()} className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 font-bold">Go Back</button>
         </div>
       </div>
     )
   }
 
-  const currentQ = questions[currentQIndex]
-
+  // -- Timer --
   useEffect(() => {
     if (stage !== 'test') return
     const timer = setInterval(() => {
       setTimeLeft(prev => {
         if (prev <= 1) {
           clearInterval(timer)
-          handleSubmit()
+          handleSubmit() 
           return 0
         }
         return prev - 1
@@ -63,95 +72,99 @@ export default function MockTestInterface({
     return () => clearInterval(timer)
   }, [stage])
 
-  const updateStatus = (qId: string, status: string) => {
-    setQuestionStatus(prev => ({ ...prev, [qId]: status }))
-  }
-
+  // -- Handlers --
   const handleAnswer = (qId: string, optId: string) => {
     setAnswers(prev => ({ ...prev, [qId]: optId }))
   }
 
   const handleSaveNext = () => {
-    const isAnswered = !!answers[currentQ.id]
-    updateStatus(currentQ.id, isAnswered ? 'answered' : 'not_answered')
+    const isAnswered = !!answers[questions[currentQIndex].id]
+    setQuestionStatus(prev => ({ ...prev, [questions[currentQIndex].id]: isAnswered ? 'answered' : 'not_answered' }))
     if (currentQIndex < questions.length - 1) setCurrentQIndex(prev => prev + 1)
   }
 
   const handleReviewNext = () => {
-    const isAnswered = !!answers[currentQ.id]
-    updateStatus(currentQ.id, isAnswered ? 'ans_and_review' : 'review')
+    const isAnswered = !!answers[questions[currentQIndex].id]
+    setQuestionStatus(prev => ({ ...prev, [questions[currentQIndex].id]: isAnswered ? 'ans_and_review' : 'review' }))
     if (currentQIndex < questions.length - 1) setCurrentQIndex(prev => prev + 1)
   }
 
   const handleClear = () => {
     const newAnswers = { ...answers }
-    delete newAnswers[currentQ.id]
+    delete newAnswers[questions[currentQIndex].id]
     setAnswers(newAnswers)
-    updateStatus(currentQ.id, 'not_answered')
+    setQuestionStatus(prev => ({ ...prev, [questions[currentQIndex].id]: 'not_answered' }))
   }
 
+  // -- Submission Logic --
   const handleSubmit = async () => {
+    if (isSubmitting) return
+    setIsSubmitting(true)
+
+    const timeTaken = ((exam.duration_minutes || 180) * 60) - timeLeft
+    
     try {
-      let correct = 0
-      let incorrect = 0
-      const totalQuestions = questions.length
-      const answeredCount = Object.keys(answers).length
-      const unattempted = totalQuestions - answeredCount
-
-      questions.forEach(q => {
-        const userAnswerId = answers[q.id]
-        if (userAnswerId) {
-          const selectedOpt = q.options.find(o => o.id === userAnswerId)
-        }
-      })
-
-      const timeTaken = ((exam.duration_minutes || 180) * 60) - timeLeft
-      
       const result = await submitExamAction(examId, courseId, subjectId, answers, timeTaken, 'mock')
-      const marksPerCorrect = 5 // Based on image
-      const marksPerIncorrect = 1 // Negative marking
       
-      setReportData({
-        score: result?.score || 0, // Replace with actual logic
-        totalMarks: exam.total_marks || 200,
-        correctCount: result?.correct || 0,
-        incorrectCount: result?.incorrect || 0,
-        unattemptedCount: totalQuestions - ((result?.correct || 0) + (result?.incorrect || 0)),
-        timeTaken: timeTaken
-      })
+      if (!result.success) {
+        toast.error("Submission failed.")
+        setIsSubmitting(false)
+        return
+      }
 
+      const returnPath = encodeURIComponent('/dashboard')
+      const url = result.redirectUrl || '/dashboard'
+      setReviewUrl(url)
+
+      setReportData({
+        examTitle: exam.title || 'Test Result',
+        sections: [],
+        score: result.score ?? 0,            
+        totalMarks: questions.length,
+        correctCount: result.correct ?? 0,
+        incorrectCount: result.incorrect ?? 0,
+        unattemptedCount: questions.length - ((result.correct ?? 0) + (result.incorrect ?? 0)),
+        timeTaken: timeTaken,
+        predictedRank: null,
+        predictedPercentile: null
+      })
+  
       setStage('report')
     } catch (error: any) {
-      console.error(error)
-      toast.error(error.message || 'Failed to submit exam')
+      console.error("Submission failed", error)
+      toast.error(error.message || "Failed to submit exam.")
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
   return (
     <>
+      {isSubmitting && (
+        <div className="fixed inset-0 z-[200] bg-black/50 backdrop-blur-sm flex items-center justify-center text-white">
+          <div className="flex flex-col items-center gap-4">
+            <Loader2 className="w-10 h-10 animate-spin" />
+            <p className="font-bold text-lg">Submitting...</p>
+          </div>
+        </div>
+      )}
+
       {stage === 'instructions' && (
         <InstructionStage onNext={() => setStage('consent')} user={user} />
       )}
-
+      
       {stage === 'consent' && (
-        <ConsentStage 
-          exam={exam} 
-          user={user} 
-          onPrev={() => setStage('instructions')} 
-          onStart={() => setStage('test')} 
-        />
+        <ConsentStage onNext={() => setStage('test')} />
       )}
 
       {stage === 'test' && (
         <TestStage 
-          exam={exam}
           questions={questions}
-          user={user}
           currentQIndex={currentQIndex}
+          setCurrentQIndex={setCurrentQIndex}
+          timeLeft={timeLeft}
           answers={answers}
           questionStatus={questionStatus}
-          timeLeft={timeLeft}
-          onNavigate={setCurrentQIndex}
           onAnswer={handleAnswer}
           onSaveNext={handleSaveNext}
           onReviewNext={handleReviewNext}
@@ -162,13 +175,18 @@ export default function MockTestInterface({
 
       {stage === 'report' && reportData && (
         <ResultReportModal 
+          examTitle={reportData.examTitle}
+          sections={reportData.sections}
           score={reportData.score}
           totalMarks={reportData.totalMarks}
           correctCount={reportData.correctCount}
           incorrectCount={reportData.incorrectCount}
           unattemptedCount={reportData.unattemptedCount}
           timeTaken={reportData.timeTaken}
-          onClose={() => router.push('/dashboard')} // Or wherever you want to go
+          reviewUrl={reviewUrl} 
+          predictedRank={reportData.predictedRank}
+          predictedPercentile={reportData.predictedPercentile}
+          onClose={() => router.push('/dashboard')} 
         />
       )}
     </>

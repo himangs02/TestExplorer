@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import { getSchoolBySubdomain } from "@/lib/db/school";
+import { prisma } from "@/lib/prisma";
 
 // Import your Hero variations
 import HeroMain from "@/components/landing/hero-main";
@@ -14,27 +15,40 @@ import Faq from "@/components/landing/faq";
 
 // Import New Section
 import SchoolUpdates from "@/components/landing/school-updates";
+import CategoryGrid from "../categories/category-grid";
 
 export default async function LandingPage() {
   // 1. Detect Subdomain Logic
   const headersList = await headers();
   const hostname = headersList.get("host") || "";
-  let schoolData = null;
+  let schoolData: any = null;
 
   const parts = hostname.split(".");
   let subdomain = null;
 
   if (hostname.includes("localhost")) {
-    // Localhost logic: dps.localhost:3000 (parts[0] = dps)
     if (parts.length >= 2) subdomain = parts[0];
   } else {
-    // Production logic: dps.testexplorer.com (parts[0] = dps)
     if (parts.length >= 3) subdomain = parts[0];
   }
 
   // 3. Fetch School Data
   if (subdomain && subdomain !== "www" && subdomain !== "test-explorer") {
     schoolData = await getSchoolBySubdomain(subdomain);
+  }
+
+  const categories = await prisma.categories.findMany({
+    orderBy: { order_index: 'asc' }
+  })
+
+  let schoolTestimonials: any[] = [];
+
+  if (schoolData) {
+    const tData = await prisma.school_testimonials.findMany({
+      where: { organization_id: schoolData.id },
+      orderBy: { created_at: 'desc' }
+    });
+    if (tData) schoolTestimonials = tData;
   }
 
   return (
@@ -47,15 +61,20 @@ export default async function LandingPage() {
         <HeroMain />
       )}
 
-      {/* === SECTION 1.5: SCHOOL SPECIFIC UPDATES (Only on Subdomain) === */}
+      {/* === SECTION 1.5: SCHOOL SPECIFIC UPDATES (Only on School Page) === */}
       {schoolData && (
         <SchoolUpdates school={schoolData} />
       )}
 
       {/* === SECTION 2: SHARED CONTENT === */}
+      <CategoryGrid categories={categories}/>
       <Steps />
       <Features />
-      <Testimonials />
+      {schoolData ? (
+        schoolTestimonials.length > 0 && <Testimonials data={schoolTestimonials} />
+      ) : (
+        <Testimonials />
+      )}
       <Faq />
 
       {/* === SECTION 3: FOOTER === */}

@@ -7,6 +7,15 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
 import { NextAuthProvider } from "@/components/providers/NextAuthProvider";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Test Explorer",
+  description: "Your learning journey starts here.",
+  icons: {
+    icon: "/favicon.ico", 
+  },
+};
 
 export default async function RootLayout({
   children,
@@ -61,7 +70,8 @@ export default async function RootLayout({
           <SiteHeader 
             school={schoolData} 
             user={user} 
-            profile={profile} 
+            profile={profile}
+            schoolSlug={subdomain} 
           />
           <main>{children}</main>
           <Toaster />
