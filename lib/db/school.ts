@@ -7,6 +7,7 @@ export async function getSchoolBySubdomain(slug: string) {
     });
     return school;
   } catch (err) {
+    console.error("Database error in getSchoolBySubdomain:", err);
     return null;
   }
 }

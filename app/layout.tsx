@@ -18,7 +18,11 @@ export default async function RootLayout({
 
   let profile = null;
   if (user?.id) {
-    profile = await prisma.profiles.findUnique({ where: { id: user.id } });
+    try {
+      profile = await prisma.profiles.findUnique({ where: { id: user.id } });
+    } catch (err) {
+      console.error("Failed to fetch user profile in RootLayout:", err);
+    }
   }
 
   // 2. ROBUST SUBDOMAIN DETECTION
@@ -43,7 +47,11 @@ export default async function RootLayout({
   }
 
   if (subdomain && subdomain !== "www" && subdomain !== "test-explorer") {
-    schoolData = await getSchoolBySubdomain(subdomain);
+    try {
+      schoolData = await getSchoolBySubdomain(subdomain);
+    } catch (err) {
+      console.error("Failed to fetch school data in RootLayout:", err);
+    }
   }
 
   return (

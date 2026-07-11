@@ -12,9 +12,14 @@ export default async function Home() {
   let profile = null;
 
   if (user) {
-    const data = await prisma.profiles.findUnique({
-      where: { id: user.id }
-    })
+    let data = null;
+    try {
+      data = await prisma.profiles.findUnique({
+        where: { id: user.id }
+      })
+    } catch (err) {
+      console.error("Failed to fetch profile in Home page:", err);
+    }
     
     // If profile exists, use it. 
     // Fallback only if data is null (shouldn't happen now)
