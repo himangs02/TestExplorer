@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Info } from 'lucide-react'
 import { submitExamAction } from '../../[testType]/[examId]/actions'
+import { toast } from 'sonner'
 import { InstructionStage } from '@/components/exam/stages/InstructionStage'
 import { ConsentStage } from '@/components/exam/stages/ConsentStage'
 import { ResultReportModal } from '@/components/exam/modals/ResultReportModal'
@@ -90,35 +91,40 @@ export default function MockTestInterface({
   }
 
   const handleSubmit = async () => {
-    let correct = 0
-    let incorrect = 0
-    const totalQuestions = questions.length
-    const answeredCount = Object.keys(answers).length
-    const unattempted = totalQuestions - answeredCount
+    try {
+      let correct = 0
+      let incorrect = 0
+      const totalQuestions = questions.length
+      const answeredCount = Object.keys(answers).length
+      const unattempted = totalQuestions - answeredCount
 
-    questions.forEach(q => {
-      const userAnswerId = answers[q.id]
-      if (userAnswerId) {
-        const selectedOpt = q.options.find(o => o.id === userAnswerId)
-      }
-    })
+      questions.forEach(q => {
+        const userAnswerId = answers[q.id]
+        if (userAnswerId) {
+          const selectedOpt = q.options.find(o => o.id === userAnswerId)
+        }
+      })
 
-    const timeTaken = ((exam.duration_minutes || 180) * 60) - timeLeft
-    
-    const result = await submitExamAction(examId, courseId, subjectId, answers, timeTaken, 'mock')
-    const marksPerCorrect = 5 // Based on image
-    const marksPerIncorrect = 1 // Negative marking
-    
-    setReportData({
-      score: result?.score || 0, // Replace with actual logic
-      totalMarks: exam.total_marks || 200,
-      correctCount: result?.correct || 0,
-      incorrectCount: result?.incorrect || 0,
-      unattemptedCount: totalQuestions - (result?.correct + result?.incorrect) || unattempted,
-      timeTaken: timeTaken
-    })
+      const timeTaken = ((exam.duration_minutes || 180) * 60) - timeLeft
+      
+      const result = await submitExamAction(examId, courseId, subjectId, answers, timeTaken, 'mock')
+      const marksPerCorrect = 5 // Based on image
+      const marksPerIncorrect = 1 // Negative marking
+      
+      setReportData({
+        score: result?.score || 0, // Replace with actual logic
+        totalMarks: exam.total_marks || 200,
+        correctCount: result?.correct || 0,
+        incorrectCount: result?.incorrect || 0,
+        unattemptedCount: totalQuestions - ((result?.correct || 0) + (result?.incorrect || 0)),
+        timeTaken: timeTaken
+      })
 
-    setStage('report')
+      setStage('report')
+    } catch (error: any) {
+      console.error(error)
+      toast.error(error.message || 'Failed to submit exam')
+    }
   }
 
   return (

@@ -18,7 +18,12 @@ import {
   GraduationCap,
   Newspaper,
   Trophy,
-  TagIcon
+  TagIcon,
+  PenTool,
+  Database,
+  Globe,
+  Mail,
+  ListVideo
 } from 'lucide-react'
 import UserNav from '@/components/Navbar/UserNav' 
 
@@ -143,15 +148,39 @@ export default async function DashboardLayout({
       roles: ['super_admin']
     },
     {
-      label: 'Exams',
+      label: 'Mock Blueprints',
+      href: '/dashboard/admin/blueprints',
+      icon: PenTool,
+      roles: ['super_admin']
+    },
+    {
+      label: 'Mock Tests',
+      href: '/dashboard/admin/mocktest',
+      icon: BookOpen,
+      roles: ['super_admin']
+    },
+    {
+      label: 'Manage Content',
+      href: '/dashboard/admin/manage-content',
+      icon: ListVideo,
+      roles: ['super_admin']
+    },
+    {
+      label: 'Courses',
       href: '/dashboard/admin/courses',
       icon: BookOpen,
       roles: ['super_admin']
     },
     {
-      label: 'Courses',
+      label: 'Exams',
       href: '/dashboard/admin/exams',
       icon: FileText,
+      roles: ['super_admin']
+    },
+    {
+      label: 'Question Pool',
+      href: '/dashboard/admin/question-uploads',
+      icon: Database,
       roles: ['super_admin']
     },
     {
@@ -182,6 +211,24 @@ export default async function DashboardLayout({
       label: 'Leaderboard', // <--- NEW
       href: '/dashboard/admin/leaderboard',
       icon: Trophy,
+      roles: ['super_admin']
+    },
+    {
+      label: 'Rank Config',
+      href: '/dashboard/admin/rank-prediction',
+      icon: Trophy,
+      roles: ['super_admin']
+    },
+    {
+      label: 'Exam Landing Pages',
+      href: '/dashboard/admin/exam-landing-pages',
+      icon: Globe,
+      roles: ['super_admin']
+    },
+    {
+      label: 'Messages',
+      href: '/dashboard/admin/messages',
+      icon: Mail,
       roles: ['super_admin']
     },
   ]

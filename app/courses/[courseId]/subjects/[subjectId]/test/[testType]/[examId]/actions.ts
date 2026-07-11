@@ -63,17 +63,18 @@ export async function submitExamAction(
 
   // 4. Save Attempt
   try {
+    const percentageCalc = totalQuestions > 0 ? Math.round((score / totalQuestions) * 100) : 0;
+    
     const attempt = await prisma.exam_attempts.create({
       data: {
         user_id: user.id,
         score: score,
         total_marks: totalQuestions,
-        percentage: totalQuestions > 0 ? (score / totalQuestions) * 100 : 0,
+        percentage: percentageCalc,
         time_taken_seconds: timeTaken,
         answers: JSON.stringify(answers),
-        exam_id: null, 
-        mock_test_id: testType === 'mock' ? examId : null,
-        practice_test_id: testType === 'practice' ? examId : null 
+        mock_test_id: testType === 'mock' ? examId : undefined,
+        practice_test_id: testType === 'practice' ? examId : undefined 
       }
     })
 
