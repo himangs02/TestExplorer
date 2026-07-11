@@ -4,9 +4,15 @@ const nextConfig: NextConfig = {
   output: 'standalone',
   /* config options here */
   images: {
-    domains: ['ykbehghnwjciwwlxipcw.supabase.co'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'illustrations.popsy.co',
+      },
+    ],
   },
 
+  serverExternalPackages: ['@prisma/client', 'bcryptjs'],
   experimental: {
     serverActions: {
       bodySizeLimit: '10mb',

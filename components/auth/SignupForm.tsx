@@ -40,6 +40,9 @@ export default function SignupForm({ school }: SignupFormProps) {
       setError(result.error)
       toast.error(result.error)
       setLoading(false)
+    } else if (result?.success) {
+      toast.success('Account created successfully! Please log in.')
+      window.location.href = '/login'
     }
   }
 

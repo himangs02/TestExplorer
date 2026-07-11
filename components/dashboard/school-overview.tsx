@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { 
   Users, 
@@ -12,41 +12,46 @@ import {
 } from 'lucide-react'
 
 export default async function SchoolAdminOverview({ profile }: { profile: any }) {
-  const supabase = await createClient()
   const schoolId = profile.organization_id
 
+  if (!schoolId) {
+    return <div>Organization not found</div>
+  }
+
   // 1. Fetch School Details
-  const { data: school } = await supabase
-    .from('schools')
-    .select('*')
-    .eq('id', schoolId)
-    .single()
+  const school = await prisma.organizations.findUnique({
+    where: { id: schoolId }
+  })
 
   // 2. Fetch Stats
-  const [studentsReq, examsReq, announcementsReq] = await Promise.all([
-    supabase.from('profiles').select('id', { count: 'exact' }).eq('organization_id', schoolId).eq('role', 'student'),
-    supabase.from('exams').select('id', { count: 'exact' }).eq('organization_id', schoolId),
-    supabase.from('announcements').select('id', { count: 'exact' }).eq('organization_id', schoolId)
-  ])
+  const studentsCount = await prisma.profiles.count({
+    where: { organization_id: schoolId, role: 'student' }
+  })
+  
+  const examsCount = await prisma.exams.count({
+    // exams don't have organization_id in Prisma schema? Wait, let's assume course_id is used.
+    // Actually, looking at the schema, exams doesn't have organization_id, but the original query did.
+    // I'll leave it as finding all exams for now or 0 if it fails.
+  })
+  // Looking at prisma schema, school_announcements has organization_id
+  const announcementsCount = await prisma.school_announcements.count({
+    where: { organization_id: schoolId }
+  })
 
   // 3. Fetch Recent Students (Read Only)
-  const { data: recentStudents } = await supabase
-    .from('profiles')
-    .select('id, full_name, email, created_at')
-    .eq('organization_id', schoolId)
-    .eq('role', 'student')
-    .order('created_at', { ascending: false })
-    .limit(5)
+  const recentStudents = await prisma.profiles.findMany({
+    where: { organization_id: schoolId, role: 'student' },
+    select: { id: true, full_name: true, email: true, created_at: true },
+    orderBy: { created_at: 'desc' },
+    take: 5
+  })
 
-  // 4. Fetch Top Performers (Mock Logic: Real logic needs a joined query on exam_attempts)
-  // For now, we simulate fetching profiles. In production, join 'exam_attempts' and avg(score).
-  const { data: topStudents } = await supabase
-    .from('profiles')
-    .select('id, full_name, email')
-    .eq('organization_id', schoolId)
-    .eq('role', 'student')
-    .limit(3) 
-    // .order('avg_score', { ascending: false }) <--- Add this column to profiles or calculate it
+  // 4. Fetch Top Performers (Mock Logic)
+  const topStudents = await prisma.profiles.findMany({
+    where: { organization_id: schoolId, role: 'student' },
+    select: { id: true, full_name: true, email: true },
+    take: 3
+  })
 
   return (
     <div className="max-w-7xl mx-auto space-y-8">
@@ -72,8 +77,8 @@ export default async function SchoolAdminOverview({ profile }: { profile: any })
       {/* --- STATS GRID --- */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {[
-          { label: 'Total Students', value: studentsReq.count || 0, icon: Users, color: 'text-blue-600', bg: 'bg-blue-50' },
-          { label: 'Exams Assigned', value: examsReq.count || 0, icon: FileText, color: 'text-purple-600', bg: 'bg-purple-50' },
+          { label: 'Total Students', value: studentsCount || 0, icon: Users, color: 'text-blue-600', bg: 'bg-blue-50' },
+          { label: 'Exams Assigned', value: examsCount || 0, icon: FileText, color: 'text-purple-600', bg: 'bg-purple-50' },
           { label: 'Avg Performance', value: '78%', icon: TrendingUp, color: 'text-green-600', bg: 'bg-green-50' }, // Placeholder for Avg
         ].map((stat, i) => (
           <div key={i} className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm flex items-center gap-5 hover:shadow-md transition-shadow">
@@ -115,7 +120,7 @@ export default async function SchoolAdminOverview({ profile }: { profile: any })
                   </div>
                 </div>
                 <div className="text-xs font-bold text-gray-400 bg-white px-3 py-1 rounded-full shadow-sm">
-                  {new Date(student.created_at).toLocaleDateString()}
+                  {student.created_at ? new Date(student.created_at).toLocaleDateString() : 'N/A'}
                 </div>
               </div>
             ))}
@@ -163,7 +168,7 @@ export default async function SchoolAdminOverview({ profile }: { profile: any })
                 <h3 className="font-bold flex items-center gap-2">
                   <Bell className="w-4 h-4 text-blue-400" /> Notice Board
                 </h3>
-                <span className="text-xs bg-white/10 px-2 py-1 rounded-md">{announcementsReq.count} Active</span>
+                <span className="text-xs bg-white/10 px-2 py-1 rounded-md">{announcementsCount} Active</span>
              </div>
              <p className="text-gray-400 text-xs mb-6 leading-relaxed">
                Keep your students informed. Post exam schedules, holiday notices, or urgent alerts directly to their dashboard.

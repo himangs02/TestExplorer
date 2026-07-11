@@ -1,18 +1,15 @@
-import { createClient } from '@/lib/supabase/server'
+import { prisma } from '@/lib/prisma'
 import { updateStreamAction } from '../../actions' // Adjust import path if needed (../../actions)
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Save } from 'lucide-react'
 
 export default async function EditStreamPage({ params }: { params: Promise<{ id: string }> }) {
-  const supabase = await createClient()
   const { id } = await params
   
-  const { data: stream } = await supabase
-    .from('categories')
-    .select('*')
-    .eq('id', id)
-    .single()
+  const stream = await prisma.categories.findUnique({
+    where: { id }
+  })
 
   if (!stream) return notFound()
 

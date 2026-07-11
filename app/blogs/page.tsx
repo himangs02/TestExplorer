@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { Calendar, Clock, ArrowRight, Tag } from "lucide-react";
 import BlogFilters, { BlogTags } from "@/components/blogs/blog-filters";
@@ -27,7 +27,6 @@ export default async function BlogsPage({
 }: {
   searchParams: Promise<{ page?: string; search?: string; tag?: string }>;
 }) {
-  const supabase = await createClient();
   const params = await searchParams;
   
   const page = Number(params.page) || 1;
@@ -36,27 +35,34 @@ export default async function BlogsPage({
   const itemsPerPage = 6;
 
   // 1. Fetch Featured Blogs
-  const { data: featuredBlogs } = await supabase
-    .from("blogs")
-    .select("*")
-    .eq("is_featured", true)
-    .limit(2)
-    .order("created_at", { ascending: false });
+  const featuredBlogs = await prisma.blogs.findMany({
+    where: { is_featured: true },
+    orderBy: { created_at: 'desc' },
+    take: 2
+  });
 
   // 2. Build Query for All Articles
-  let query = supabase
-    .from("blogs")
-    .select("*", { count: "exact" })
-    .eq("is_featured", false)
-    .order("created_at", { ascending: false });
-
-  if (search) query = query.ilike("title", `%${search}%`);
-  if (tag) query = query.contains("tags", [tag]);
+  const whereClause: any = { is_featured: false };
+  if (search) {
+    whereClause.title = { contains: search };
+  }
+  if (tag) {
+    // Basic JSON array contains check could be complex in Prisma MySQL without raw query, but we can use string contains on the JSON string representation
+    whereClause.tags = { contains: `"${tag}"` }; 
+  }
 
   const from = (page - 1) * itemsPerPage;
-  const to = from + itemsPerPage - 1;
   
-  const { data: blogs, count } = await query.range(from, to);
+  const [blogs, count] = await Promise.all([
+    prisma.blogs.findMany({
+      where: whereClause,
+      orderBy: { created_at: 'desc' },
+      skip: from,
+      take: itemsPerPage
+    }),
+    prisma.blogs.count({ where: whereClause })
+  ]);
+  
   const totalPages = count ? Math.ceil(count / itemsPerPage) : 0;
 
   return (

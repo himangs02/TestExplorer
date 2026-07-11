@@ -1,4 +1,6 @@
-import { createClient } from '@/lib/supabase/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { prisma } from '@/lib/prisma'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { TrendingUp, Clock, Target, Calendar, ArrowRight, PlayCircle, Trophy } from 'lucide-react'
@@ -7,17 +9,21 @@ import { TrendingUp, Clock, Target, Calendar, ArrowRight, PlayCircle, Trophy } f
 import SchoolAdminOverview from '@/components/dashboard/school-overview'
 
 export default async function DashboardPage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const session = await getServerSession(authOptions)
+  const user = session?.user
   
   if (!user) return redirect('/login')
 
   // 1. Fetch Profile & Role
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*, organization_id') // Ensure organization_id is fetched
-    .eq('id', user.id)
-    .single()
+  const profile = await prisma.profiles.findUnique({
+    where: { id: user.id },
+    select: {
+      id: true,
+      full_name: true,
+      role: true,
+      organization_id: true,
+    }
+  })
 
   // 2. Redirect Super Admin
   if (profile?.role === 'super_admin') {
@@ -33,23 +39,22 @@ export default async function DashboardPage() {
   // 4. STUDENT VIEW (Existing Code Below)
   // =========================================================
   
-  const { data: attempts } = await supabase
-    .from('exam_attempts')
-    .select(`
-      *,
-      exams (title),
-      practice_tests (title)
-    `)
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false })
+  const attempts = await prisma.exam_attempts.findMany({
+    where: { user_id: user.id },
+    include: {
+      exams: { select: { title: true } },
+      practice_tests: { select: { title: true } },
+    },
+    orderBy: { started_at: 'desc' }
+  })
 
   const totalTests = attempts?.length || 0
   
   const avgScore = totalTests > 0 
-    ? Math.round(attempts!.reduce((acc, curr) => acc + (curr.percentage || 0), 0) / totalTests)
+    ? Math.round(attempts!.reduce((acc, curr) => acc + Number(curr.percentage || 0), 0) / totalTests)
     : 0
 
-  const totalSeconds = attempts?.reduce((acc, curr) => acc + (curr.time_taken_seconds || 0), 0) || 0
+  const totalSeconds = attempts?.reduce((acc, curr) => acc + Number(curr.time_taken_seconds || 0), 0) || 0
   const hoursSpent = (totalSeconds / 3600).toFixed(1)
 
   const recentActivity = attempts?.slice(0, 3) || []
@@ -111,7 +116,7 @@ export default async function DashboardPage() {
             {recentActivity.map((attempt) => {
               const title = attempt.exams?.title || attempt.practice_tests?.title || 'Unknown Test'
               const isMock = !!attempt.exam_id
-              const date = new Date(attempt.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+              const date = attempt.started_at ? new Date(attempt.started_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Unknown Date'
 
               return (
                 <div key={attempt.id} className="flex items-center justify-between p-4 rounded-2xl bg-gray-50 border border-gray-100 hover:border-gray-200 transition-all">

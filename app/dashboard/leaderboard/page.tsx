@@ -1,18 +1,18 @@
-import { createClient } from '@/lib/supabase/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { prisma } from '@/lib/prisma'
 import { redirect } from 'next/navigation'
 import LeaderboardClient from '@/components/dashboard/leaderboard-client'
 
 export default async function SchoolLeaderboardPage() {
-  const supabase = await createClient()
-  
-  const { data: { user } } = await supabase.auth.getUser()
+  const session = await getServerSession(authOptions)
+  const user = session?.user
   if (!user) return redirect('/login')
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('organization_id')
-    .eq('id', user.id)
-    .single()
+  const profile = await prisma.profiles.findUnique({
+    where: { id: user.id },
+    select: { organization_id: true }
+  })
 
   const schoolId = profile?.organization_id
 
@@ -21,10 +21,10 @@ export default async function SchoolLeaderboardPage() {
   }
 
   // Fetch Courses
-  const { data: courses } = await supabase
-    .from('courses')
-    .select('id, title')
-    .order('title')
+  const courses = await prisma.courses.findMany({
+    select: { id: true, title: true },
+    orderBy: { title: 'asc' }
+  })
 
   return (
     <div className="max-w-7xl mx-auto space-y-8">

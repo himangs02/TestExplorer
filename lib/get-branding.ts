@@ -1,8 +1,7 @@
-import { createClient } from '@/lib/supabase/server'
+import { prisma } from '@/lib/prisma'
 import { headers } from 'next/headers'
 
 export async function getBranding() {
-  const supabase = await createClient()
   const headersList = await headers()
   const host = headersList.get('host') || ''
 
@@ -14,7 +13,7 @@ export async function getBranding() {
     name: 'Test Explorer',
     logoLetter: 'T',
     isSchool: false,
-    logo: null
+    logo: null as string | null
   }
 
   // 3. Check if Subdomain
@@ -24,11 +23,9 @@ export async function getBranding() {
     const subdomain = host.split('.')[0]
     
     // Fetch School Details
-    const { data: school } = await supabase
-      .from('organizations')
-      .select('*')
-      .eq('slug', subdomain)
-      .single()
+    const school = await prisma.organizations.findUnique({
+      where: { slug: subdomain }
+    })
 
     if (school) {
       branding = {

@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { prisma } from '@/lib/prisma'
 import { updateExamAction } from '../../actions'
 import { ArrowLeft, Save, Upload } from 'lucide-react'
 import Link from 'next/link'
@@ -12,7 +12,6 @@ export default async function EditExamPage({
   params: Promise<{ id: string }>
   searchParams: Promise<{ type: string }> 
 }) {
-  const supabase = await createClient()
   const { id } = await params
   const { type } = await searchParams
   
@@ -20,34 +19,38 @@ export default async function EditExamPage({
   const currentType = validTypes.includes(type) ? type : 'prep'
 
   // 1. Fetch Exam Data
-  let table = 'prep_modules'
   let questionFK = 'module_id' // Default foreign key column name
+  let item: any = null;
 
   if (currentType === 'mock') {
-    table = 'exams'
+    item = await prisma.exams.findUnique({ where: { id } })
     questionFK = 'exam_id'
   } else if (currentType === 'practice') {
-    table = 'practice_tests'
+    item = await prisma.practice_tests.findUnique({ where: { id } })
     questionFK = 'practice_test_id'
+  } else {
+    item = await prisma.prep_modules.findUnique({ where: { id } })
   }
-
-  const { data: item } = await supabase
-    .from(table)
-    .select('*')
-    .eq('id', id)
-    .single()
 
   if (!item) return notFound()
 
   // 2. Fetch Existing Questions for this Exam
-  const { data: questions } = await supabase
-    .from('questions')
-    .select('id, text, order_index')
-    .eq(questionFK, id)
-    .order('order_index', { ascending: true })
+  const questionsRaw = await prisma.questions.findMany({
+    where: { [questionFK]: id },
+    select: { id: true, text: true, order_index: true },
+    orderBy: { order_index: 'asc' }
+  })
+
+  const questions = questionsRaw.map((q: { id: string, text: string, order_index: number | null }) => ({
+    ...q,
+    order_index: q.order_index ?? 0
+  }))
 
   // 3. Fetch Subjects for Dropdown
-  const { data: subjects } = await supabase.from('subjects').select('id, title').order('title')
+  const subjects = await prisma.subjects.findMany({
+    select: { id: true, title: true },
+    orderBy: { title: 'asc' }
+  })
 
   return (
     <div className="max-w-7xl mx-auto py-8">
@@ -81,7 +84,7 @@ export default async function EditExamPage({
                   <label className="block text-sm font-bold text-gray-900 mb-2">Subject</label>
                   <select name="subject_id" defaultValue={item.subject_id} required className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-black bg-white">
                     <option value="">Select Subject</option>
-                    {subjects?.map(s => (
+                    {subjects?.map((s: { id: string, title: string }) => (
                       <option key={s.id} value={s.id}>{s.title}</option>
                     ))}
                   </select>

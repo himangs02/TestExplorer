@@ -1,23 +1,26 @@
 import BlogForm from '@/components/blogs/blog-form'
-import { createClient } from '@/lib/supabase/server'
+import { prisma } from '@/lib/prisma'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 
 export default async function CreateBlogPage() {
-  const supabase = await createClient()
   
   // 1. Fetch available tags
-  const { data: tags } = await supabase.from('tags').select('name').order('name')
+  const tags = await prisma.tags.findMany({
+    select: { name: true },
+    orderBy: { name: 'asc' }
+  })
   
   // 2. Fetch Current Logged-in Admin
-  const { data: { user } } = await supabase.auth.getUser()
+  const session = await getServerSession(authOptions)
   let currentUserProfile = null
 
-  if (user) {
-    const { data } = await supabase
-      .from('profiles')
-      .select('id, full_name')
-      .eq('id', user.id)
-      .single()
-    currentUserProfile = data
+  if (session?.user?.id) {
+    const profile = await prisma.profiles.findUnique({
+      where: { id: session.user.id },
+      select: { id: true, full_name: true }
+    })
+    currentUserProfile = profile
   }
 
   return (

@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { ArrowLeft, ArrowUpRight, BookOpen, Clock, Sparkles } from 'lucide-react'
 import { notFound } from 'next/navigation'
@@ -17,24 +17,20 @@ export default async function CourseSubjectsPage({
 }: { 
   params: Promise<{ courseId: string }> 
 }) {
-  const supabase = await createClient()
   const { courseId } = await params
 
   // 1. Fetch Course Details
-  const { data: course } = await supabase
-    .from('courses')
-    .select('*')
-    .eq('id', courseId)
-    .single()
+  const course = await prisma.courses.findUnique({
+    where: { id: courseId }
+  })
 
   if (!course) return notFound()
 
   // 2. Fetch Subjects for this Course
-  const { data: subjects } = await supabase
-    .from('subjects')
-    .select('*')
-    .eq('course_id', courseId)
-    .order('title')
+  const subjects = await prisma.subjects.findMany({
+    where: { course_id: courseId },
+    orderBy: { title: 'asc' }
+  })
 
   return (
     <div className="min-h-screen bg-white">

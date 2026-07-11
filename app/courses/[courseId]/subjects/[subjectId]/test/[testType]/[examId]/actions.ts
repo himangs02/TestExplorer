@@ -1,7 +1,8 @@
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
-// REMOVE: import { redirect } from 'next/navigation' 
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { prisma } from '@/lib/prisma'
 
 export async function submitExamAction(
   examId: string, 
@@ -11,27 +12,27 @@ export async function submitExamAction(
   timeTaken: number,
   testType: string
 ) {
-  const supabase = await createClient()
-  
   // 1. Check User Session
-  const { data: { user } } = await supabase.auth.getUser()
+  const session = await getServerSession(authOptions)
+  const user = session?.user
   if (!user) throw new Error('Unauthorized')
 
   // 2. Fetch Questions
-  let query = supabase
-    .from('questions')
-    .select('id, options:question_options(id, is_correct)')
-
+  let questions: any = []
+  
   if (testType === 'practice') {
-    query = query.eq('practice_test_id', examId)
+    questions = await prisma.questions.findMany({
+      where: { practice_test_id: examId },
+      select: { id: true, question_options: { select: { id: true, is_correct: true } } }
+    })
   } else {
-    query = query.eq('exam_id', examId)
+    questions = await prisma.questions.findMany({
+      where: { exam_id: examId },
+      select: { id: true, question_options: { select: { id: true, is_correct: true } } }
+    })
   }
 
-  const { data: questions, error: fetchError } = await query
-
-  if (fetchError || !questions) {
-    console.error('Error fetching questions:', fetchError)
+  if (!questions) {
     throw new Error('Failed to load exam data for grading.')
   }
 
@@ -41,8 +42,7 @@ export async function submitExamAction(
   const totalQuestions = questions.length
 
   questions.forEach(q => {
-    // @ts-ignore
-    const correctOption = q.options.find((o: any) => o.is_correct)
+    const correctOption = q.question_options.find(o => o.is_correct)
     const userSelectedOptionId = answers[q.id]
     
     // Check if user attempted the question
@@ -59,34 +59,30 @@ export async function submitExamAction(
   const score = correctCount 
 
   // 4. Save Attempt
-  const attemptPayload = {
-    user_id: user.id,
-    score: score,
-    total_marks: totalQuestions,
-    percentage: totalQuestions > 0 ? (score / totalQuestions) * 100 : 0,
-    time_taken_seconds: timeTaken,
-    answers: answers,
-    exam_id: testType === 'mock' ? examId : null, 
-    practice_test_id: testType === 'practice' ? examId : null 
-  }
-  
-  const { data: attempt, error: saveError } = await supabase
-    .from('exam_attempts')
-    .insert(attemptPayload)
-    .select()
-    .single()
+  try {
+    const attempt = await prisma.exam_attempts.create({
+      data: {
+        user_id: user.id,
+        score: score,
+        total_marks: totalQuestions,
+        percentage: totalQuestions > 0 ? (score / totalQuestions) * 100 : 0,
+        time_taken_seconds: timeTaken,
+        answers: answers,
+        exam_id: testType === 'mock' ? examId : null, 
+        practice_test_id: testType === 'practice' ? examId : null 
+      }
+    })
 
-  if (saveError) {
-    console.error('Submission Error:', saveError)
+    // 5. RETURN Data with Stats
+    return { 
+      success: true, 
+      redirectUrl: `/courses/${courseId}/subjects/${subjectId}/test/${testType}/${examId}/result/${attempt.id}`,
+      score: score,
+      correct: correctCount,
+      incorrect: incorrectCount
+    }
+  } catch (error: any) {
+    console.error('Submission Error:', error)
     throw new Error('Failed to save attempt')
-  }
-
-  // 5. RETURN Data with Stats
-  return { 
-    success: true, 
-    redirectUrl: `/courses/${courseId}/subjects/${subjectId}/test/${testType}/${examId}/result/${attempt.id}`,
-    score: score,
-    correct: correctCount,
-    incorrect: incorrectCount
   }
 }

@@ -1,6 +1,6 @@
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
+import { prisma } from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { parse } from 'csv-parse/sync'
@@ -20,7 +20,6 @@ interface CSVQuestionRow {
 // --- HELPER: Parse CSV and Insert ---
 async function parseAndInsertQuestions(file: File, parentId: string, type: 'prep' | 'mock' | 'practice') {
   const fileContent = await file.text()
-  const supabase = await createClient()
 
   // 2. Cast the result of parse to your Interface array
   const records = parse(fileContent, {
@@ -28,7 +27,7 @@ async function parseAndInsertQuestions(file: File, parentId: string, type: 'prep
     skip_empty_lines: true,
     trim: true,
     relax_quotes: true 
-  }) as CSVQuestionRow[] // <--- FIX: Explicitly cast here
+  }) as CSVQuestionRow[]
 
   // Iterate over parsed records
   for (const [index, row] of records.entries()) {
@@ -45,47 +44,39 @@ async function parseAndInsertQuestions(file: File, parentId: string, type: 'prep
     else if (type === 'mock') qData.exam_id = parentId
     else if (type === 'practice') qData.practice_test_id = parentId
 
-    // Insert Question
-    const { data: question, error: qError } = await supabase
-      .from('questions')
-      .insert(qData)
-      .select()
-      .single()
+    try {
+      // Insert Question
+      const question = await prisma.questions.create({
+        data: qData
+      })
 
-    if (qError) {
-      console.error(`Row ${index + 1} Error:`, qError.message)
-      continue 
-    }
+      // Prepare Options Data
+      const correctVal = row.correct_option ? row.correct_option.trim() : ''
+      
+      const options = [
+        { text: row.option_a, label: 'A' },
+        { text: row.option_b, label: 'B' },
+        { text: row.option_c, label: 'C' },
+        { text: row.option_d, label: 'D' },
+      ]
 
-    // Prepare Options Data
-    const correctVal = row.correct_option ? row.correct_option.trim() : ''
-    
-    const options = [
-      { text: row.option_a, label: 'A' },
-      { text: row.option_b, label: 'B' },
-      { text: row.option_c, label: 'C' },
-      { text: row.option_d, label: 'D' },
-    ]
+      const optionsData = options.map(opt => ({
+        question_id: question.id,
+        text: opt.text,
+        // Check if correct_option matches 'A'/'B' or the text itself
+        is_correct: correctVal.toUpperCase() === opt.label || correctVal === opt.text
+      }))
 
-    const optionsData = options.map(opt => ({
-      question_id: question.id,
-      text: opt.text,
-      // Check if correct_option matches 'A'/'B' or the text itself
-      is_correct: correctVal.toUpperCase() === opt.label || correctVal === opt.text
-    }))
-
-    const { error: optError } = await supabase.from('question_options').insert(optionsData)
-    
-    if (optError) {
-      console.error(`Options Error for Row ${index + 1}:`, optError.message)
+      await prisma.question_options.createMany({
+        data: optionsData
+      })
+    } catch (error: any) {
+      console.error(`Error for Row ${index + 1}:`, error.message)
     }
   }
 }
 
-// ... (Rest of your export functions: createExamAction, deleteExamAction, etc. remain the same)
 export async function createExamAction(formData: FormData) {
-  const supabase = await createClient()
-  
   const type = formData.get('type') as 'prep' | 'mock' | 'practice'
   const title = formData.get('title') as string
   const description = formData.get('description') as string
@@ -96,21 +87,28 @@ export async function createExamAction(formData: FormData) {
 
   let newRecordId = null
 
-  // 1. Insert into correct table
-  if (type === 'prep') {
-    const { data, error } = await supabase.from('prep_modules').insert({ title, description, subject_id, is_published }).select('id').single()
-    if (error) throw new Error(error.message)
-    newRecordId = data.id
-  } 
-  else if (type === 'mock') {
-    const { data, error } = await supabase.from('exams').insert({ title, description, subject_id, duration_minutes: duration, is_published, category: 'mock' }).select('id').single()
-    if (error) throw new Error(error.message)
-    newRecordId = data.id
-  } 
-  else if (type === 'practice') {
-    const { data, error } = await supabase.from('practice_tests').insert({ title, description, subject_id, duration_minutes: duration, is_published }).select('id').single()
-    if (error) throw new Error(error.message)
-    newRecordId = data.id
+  try {
+    // 1. Insert into correct table
+    if (type === 'prep') {
+      const data = await prisma.prep_modules.create({
+        data: { title, description, subject_id, is_published }
+      })
+      newRecordId = data.id
+    } 
+    else if (type === 'mock') {
+      const data = await prisma.exams.create({
+        data: { title, description, subject_id, duration_minutes: duration, is_published, category: 'mock' }
+      })
+      newRecordId = data.id
+    } 
+    else if (type === 'practice') {
+      const data = await prisma.practice_tests.create({
+        data: { title, description, subject_id, duration_minutes: duration, is_published }
+      })
+      newRecordId = data.id
+    }
+  } catch (error: any) {
+    throw new Error(error.message)
   }
 
   // 2. Process CSV if uploaded
@@ -123,24 +121,25 @@ export async function createExamAction(formData: FormData) {
 }
 
 export async function deleteExamAction(formData: FormData) {
-  const supabase = await createClient()
   const id = formData.get('id') as string
   const type = formData.get('type') as string
 
-  let table = ''
-  if (type === 'prep') table = 'prep_modules'
-  else if (type === 'mock') table = 'exams'
-  else if (type === 'practice') table = 'practice_tests'
-
-  const { error } = await supabase.from(table).delete().eq('id', id)
-  if (error) throw new Error(error.message)
+  try {
+    if (type === 'prep') {
+      await prisma.prep_modules.delete({ where: { id } })
+    } else if (type === 'mock') {
+      await prisma.exams.delete({ where: { id } })
+    } else if (type === 'practice') {
+      await prisma.practice_tests.delete({ where: { id } })
+    }
+  } catch (error: any) {
+    throw new Error(error.message)
+  }
 
   revalidatePath('/dashboard/admin/exams')
 }
 
 export async function updateExamAction(formData: FormData) {
-  const supabase = await createClient()
-  
   const id = formData.get('id') as string
   const type = formData.get('type') as 'prep' | 'mock' | 'practice'
   const title = formData.get('title') as string
@@ -150,22 +149,22 @@ export async function updateExamAction(formData: FormData) {
   const is_published = formData.get('is_published') === 'on'
   const csvFile = formData.get('csv_file') as File
 
-  let table = ''
-  if (type === 'prep') table = 'prep_modules'
-  else if (type === 'mock') table = 'exams'
-  else if (type === 'practice') table = 'practice_tests'
-
   const updatePayload: any = { title, description, subject_id, is_published }
   if (type !== 'prep') {
     updatePayload.duration_minutes = duration
   }
 
-  const { error } = await supabase
-    .from(table)
-    .update(updatePayload)
-    .eq('id', id)
-
-  if (error) throw new Error(error.message)
+  try {
+    if (type === 'prep') {
+      await prisma.prep_modules.update({ where: { id }, data: updatePayload })
+    } else if (type === 'mock') {
+      await prisma.exams.update({ where: { id }, data: updatePayload })
+    } else if (type === 'practice') {
+      await prisma.practice_tests.update({ where: { id }, data: updatePayload })
+    }
+  } catch (error: any) {
+    throw new Error(error.message)
+  }
 
   if (csvFile && csvFile.size > 0) {
     await parseAndInsertQuestions(csvFile, id, type)
@@ -176,22 +175,19 @@ export async function updateExamAction(formData: FormData) {
 }
 
 export async function deleteQuestionAction(formData: FormData) {
-  const supabase = await createClient()
   const questionId = formData.get('question_id') as string
   const examId = formData.get('exam_id') as string
   
-  const { error } = await supabase
-    .from('questions')
-    .delete()
-    .eq('id', questionId)
-
-  if (error) throw new Error(error.message)
+  try {
+    await prisma.questions.delete({ where: { id: questionId } })
+  } catch (error: any) {
+    throw new Error(error.message)
+  }
 
   revalidatePath(`/dashboard/admin/exams/${examId}/edit`)
 }
 
 export async function deleteAllQuestionsAction(formData: FormData) {
-  const supabase = await createClient()
   const examId = formData.get('exam_id') as string
   const type = formData.get('exam_type') as string
 
@@ -199,12 +195,13 @@ export async function deleteAllQuestionsAction(formData: FormData) {
   if (type === 'mock') questionFK = 'exam_id'
   else if (type === 'practice') questionFK = 'practice_test_id'
 
-  const { error } = await supabase
-    .from('questions')
-    .delete()
-    .eq(questionFK, examId)
-
-  if (error) throw new Error(error.message)
+  try {
+    await prisma.questions.deleteMany({
+      where: { [questionFK]: examId }
+    })
+  } catch (error: any) {
+    throw new Error(error.message)
+  }
 
   revalidatePath(`/dashboard/admin/exams/${examId}/edit`)
 }

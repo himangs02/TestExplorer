@@ -1,4 +1,6 @@
-import { createClient } from '@/lib/supabase/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { prisma } from '@/lib/prisma'
 import { redirect } from 'next/navigation'
 import { Phone, Calendar, User, GraduationCap } from 'lucide-react'
 import SchoolStudentsFilter from './school-students-filter'
@@ -8,17 +10,16 @@ export default async function SchoolStudentsPage({
 }: {
   searchParams: Promise<{ search?: string; sort?: string }>
 }) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const session = await getServerSession(authOptions)
+  const user = session?.user
 
   if (!user) return redirect('/login')
 
   // 1. Get Current User's Role & Org ID
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role, organization_id')
-    .eq('id', user.id)
-    .single()
+  const profile = await prisma.profiles.findUnique({
+    where: { id: user.id },
+    select: { role: true, organization_id: true }
+  })
 
   // ROUTING LOGIC:
   // If Super Admin, send them to the Super Admin View
@@ -36,17 +37,18 @@ export default async function SchoolStudentsPage({
   const query = params.search || ''
   const sort = params.sort || 'newest'
 
-  let dbQuery = supabase
-    .from('profiles')
-    .select('*')
-    .eq('organization_id', profile.organization_id) // SCOPE TO THEIR SCHOOL
-    .eq('role', 'student')
-
-  if (query) {
-    dbQuery = dbQuery.ilike('full_name', `%${query}%`)
+  let whereClause: any = {
+    organization_id: profile.organization_id, // SCOPE TO THEIR SCHOOL
+    role: 'student'
   }
 
-  const { data: studentsData } = await dbQuery
+  if (query) {
+    whereClause.full_name = { contains: query }
+  }
+
+  let studentsData = await prisma.profiles.findMany({
+    where: whereClause
+  })
   let students = studentsData || []
 
   // 3. Handle Sorting

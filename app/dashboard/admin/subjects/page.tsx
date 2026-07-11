@@ -1,16 +1,14 @@
-import { createClient } from '@/lib/supabase/server'
+import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { Plus, Pencil, Trash2, Library, BookOpen } from 'lucide-react'
 import { deleteSubjectAction } from './actions'
 
 export default async function SubjectsAdminPage() {
-  const supabase = await createClient()
-  
   // Fetch subjects and join with courses table to get course title
-  const { data: subjects } = await supabase
-    .from('subjects')
-    .select('*, courses(title)')
-    .order('created_at', { ascending: false })
+  const subjects = await prisma.subjects.findMany({
+    include: { courses: { select: { title: true } } },
+    orderBy: { created_at: 'desc' }
+  })
 
   return (
     <div className="max-w-5xl mx-auto">

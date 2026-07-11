@@ -1,27 +1,24 @@
-import { createClient } from '@/lib/supabase/server'
+import { prisma } from '@/lib/prisma'
 import { updateSubjectAction } from '../../actions'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Save } from 'lucide-react'
 
 export default async function EditSubjectPage({ params }: { params: Promise<{ id: string }> }) {
-  const supabase = await createClient()
   const { id } = await params
   
   // 1. Fetch Subject
-  const { data: subject } = await supabase
-    .from('subjects')
-    .select('*')
-    .eq('id', id)
-    .single()
+  const subject = await prisma.subjects.findUnique({
+    where: { id }
+  })
 
   if (!subject) return notFound()
 
   // 2. Fetch Courses for dropdown
-  const { data: courses } = await supabase
-    .from('courses')
-    .select('id, title')
-    .order('title')
+  const courses = await prisma.courses.findMany({
+    select: { id: true, title: true },
+    orderBy: { title: 'asc' }
+  })
 
   return (
     <div className="max-w-2xl mx-auto py-8">

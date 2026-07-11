@@ -1,20 +1,10 @@
-import { createClient } from "@/lib/supabase/server"; // Adjust path to your server client
+import { prisma } from "@/lib/prisma";
 
 export async function getSchoolBySubdomain(slug: string) {
-  const supabase = await createClient();
-
   try {
-    const { data: school, error } = await supabase
-      .from('organizations') // Replace with your actual table name (e.g., 'tenants', 'organizations')
-      .select('*')
-      .eq('slug', slug)
-      .single();
-
-
-    if (error) {
-      return null;
-    }
-
+    const school = await prisma.organizations.findUnique({
+      where: { slug }
+    });
     return school;
   } catch (err) {
     return null;

@@ -1,4 +1,6 @@
-import { createClient } from '@/lib/supabase/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { prisma } from '@/lib/prisma'
 import { notFound, redirect } from 'next/navigation'
 import AccessDenied from '@/components/ui/access-denied'
 // Ensure these paths match your project structure
@@ -11,29 +13,24 @@ export default async function TestPage({
 }: { 
   params: Promise<{ courseId: string; subjectId: string; testType: string; examId: string }> 
 }) {
-  const supabase = await createClient()
   const { courseId, subjectId, testType, examId } = await params
 
   // 1. AUTHENTICATE USER
-  const { data: { user } } = await supabase.auth.getUser()
+  const session = await getServerSession(authOptions)
+  const user = session?.user
   if (!user) return redirect('/login')
 
   // 2. FETCH USER PROFILE (For Role Check & Mock Interface)
-  // Using user.id directly as it's standard for Supabase relations
-  const { data: userData } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user.id)
-    .single()
+  const userData = await prisma.profiles.findUnique({
+    where: { id: user.id }
+  })
 
   // 3. CHECK ACCESS (Freemium Logic)
   // A. Check Enrollment
-  const { data: enrollment } = await supabase
-    .from('student_enrollments')
-    .select('id')
-    .eq('user_id', user.id)
-    .eq('subject_id', subjectId)
-    .single()
+  const enrollment = await prisma.student_enrollments.findFirst({
+    where: { user_id: user.id, subject_id: subjectId },
+    select: { id: true }
+  })
 
   // B. Check Admin Role
   const isAdmin = userData?.role === 'super_admin' || userData?.role === 'school_admin'
@@ -45,26 +42,23 @@ export default async function TestPage({
 
      if (testType === 'practice') {
         // Fetch top 2 practice tests (Free Tier)
-        const { data: allowedTests } = await supabase
-           .from('practice_tests')
-           .select('id')
-           .eq('subject_id', subjectId)
-           .eq('is_published', true)
-           .order('created_at', { ascending: false }) // Must match Subject Page sort order
-           .limit(2)
+        const allowedTests = await prisma.practice_tests.findMany({
+          where: { subject_id: subjectId, is_published: true },
+          orderBy: { created_at: 'desc' }, // Must match Subject Page sort order
+          select: { id: true },
+          take: 2
+        })
         
         isAllowed = allowedTests?.some(t => t.id === examId) || false
      } 
      else if (testType === 'mock') {
         // Fetch top 2 mock tests (Free Tier)
-        const { data: allowedTests } = await supabase
-           .from('exams')
-           .select('id')
-           .eq('subject_id', subjectId)
-           .eq('category', 'mock')
-           .eq('is_published', true)
-           .order('created_at', { ascending: false }) // Must match Subject Page sort order
-           .limit(2)
+        const allowedTests = await prisma.exams.findMany({
+          where: { subject_id: subjectId, category: 'mock', is_published: true },
+          orderBy: { created_at: 'desc' }, // Must match Subject Page sort order
+          select: { id: true },
+          take: 2
+        })
            
         isAllowed = allowedTests?.some(t => t.id === examId) || false
      }
@@ -75,31 +69,45 @@ export default async function TestPage({
   }
 
   // 4. FETCH EXAM DATA
-  let examData = null
-  let questionsData = null
+  let examData: any = null
+  let questionsData: any = null
   
   if (testType === 'practice') {
-     const { data } = await supabase.from('practice_tests').select('*').eq('id', examId).single()
-     examData = data
-     if(data) {
-        const { data: q } = await supabase
-          .from('questions')
-          .select('id, text, options:question_options(id, text), direction')
-          .eq('practice_test_id', examId)
-          .order('order_index')
-        questionsData = q
+     examData = await prisma.practice_tests.findUnique({ where: { id: examId } })
+     if(examData) {
+        const q = await prisma.questions.findMany({
+          where: { practice_test_id: examId },
+          orderBy: { order_index: 'asc' },
+          select: {
+            id: true,
+            text: true,
+            direction: true,
+            question_options: { select: { id: true, text: true } }
+          }
+        })
+        questionsData = q.map(question => ({
+          ...question,
+          options: question.question_options
+        }))
      }
   } else {
      // MOCK
-     const { data } = await supabase.from('exams').select('*').eq('id', examId).single()
-     examData = data
-     if(data) {
-        const { data: q } = await supabase
-          .from('questions')
-          .select('id, text, options:question_options(id, text), direction')
-          .eq('exam_id', examId)
-          .order('order_index')
-        questionsData = q
+     examData = await prisma.exams.findUnique({ where: { id: examId } })
+     if(examData) {
+        const q = await prisma.questions.findMany({
+          where: { exam_id: examId },
+          orderBy: { order_index: 'asc' },
+          select: {
+            id: true,
+            text: true,
+            direction: true,
+            question_options: { select: { id: true, text: true } }
+          }
+        })
+        questionsData = q.map(question => ({
+          ...question,
+          options: question.question_options
+        }))
      }
   }
 

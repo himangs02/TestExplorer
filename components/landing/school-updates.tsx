@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { prisma } from "@/lib/prisma";
 import { Bell, Calendar, ArrowRight } from "lucide-react";
 import Image from "next/image";
 
@@ -8,15 +8,12 @@ const scrollAnimationStyles = {
 };
 
 export default async function SchoolUpdates({ school }: { school: any }) {
-  const supabase = await createClient();
-
   // 1. Fetch Announcements for this specific school
-  const { data: announcements } = await supabase
-    .from("school_announcements")
-    .select("*")
-    .eq("organization_id", school.id) // Filter by School ID
-    .order("created_at", { ascending: false })
-    .limit(5);
+  const announcements = await prisma.school_announcements.findMany({
+    where: { organization_id: school.id },
+    orderBy: { created_at: 'desc' },
+    take: 5
+  });
 
   const list = announcements || [];
   // Duplicate list for seamless infinite scrolling

@@ -72,17 +72,33 @@ export default function ProfileForm({ profile, email }: { profile: any, email?: 
         </div>
       </div>
 
-      <div>
-        <label className="block text-sm font-bold text-gray-700 mb-2">Address</label>
-        <div className="relative">
-          <MapPin className="absolute left-3 top-3.5 w-5 h-5 text-gray-400" />
-          <textarea 
-            name="address" 
-            defaultValue={profile?.address || ''} 
-            placeholder="Enter your full address..."
-            rows={3}
-            className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-black outline-none transition-all resize-none"
-          />
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-bold text-gray-700 mb-2">State</label>
+          <div className="relative">
+            <MapPin className="absolute left-3 top-3.5 w-5 h-5 text-gray-400" />
+            <input 
+              name="state" 
+              defaultValue={profile?.state || ''} 
+              type="text" 
+              placeholder="State..."
+              className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-black outline-none transition-all"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-bold text-gray-700 mb-2">City</label>
+          <div className="relative">
+            <MapPin className="absolute left-3 top-3.5 w-5 h-5 text-gray-400" />
+            <input 
+              name="city" 
+              defaultValue={profile?.city || ''} 
+              type="text" 
+              placeholder="City..."
+              className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-black outline-none transition-all"
+            />
+          </div>
         </div>
       </div>
 

@@ -1,16 +1,14 @@
-import { createClient } from '@/lib/supabase/server'
+import { prisma } from '@/lib/prisma'
 import { createSubjectAction } from '../actions'
 import { ArrowLeft, Save } from 'lucide-react'
 import Link from 'next/link'
 
 export default async function NewSubjectPage() {
-  const supabase = await createClient()
-
   // Fetch Courses for the dropdown
-  const { data: courses } = await supabase
-    .from('courses')
-    .select('id, title')
-    .order('title')
+  const courses = await prisma.courses.findMany({
+    select: { id: true, title: true },
+    orderBy: { title: 'asc' }
+  })
 
   return (
     <div className="max-w-2xl mx-auto py-8">

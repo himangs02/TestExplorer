@@ -1,19 +1,16 @@
-import { createClient } from '@/lib/supabase/server'
+import { prisma } from '@/lib/prisma'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Save } from 'lucide-react'
 import { updateSchoolAction } from '../../actions' // Import from parent actions
 
 export default async function EditSchoolPage({ params }: { params: Promise<{ id: string }> }) {
-  const supabase = await createClient()
   const { id } = await params
 
   // 1. Fetch the School Data
-  const { data: school } = await supabase
-    .from('organizations')
-    .select('*')
-    .eq('id', id)
-    .single()
+  const school = await prisma.organizations.findUnique({
+    where: { id }
+  })
 
   if (!school) return notFound()
 

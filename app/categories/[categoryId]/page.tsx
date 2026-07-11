@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { prisma } from '@/lib/prisma'
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, ArrowUpRight, BookOpen } from 'lucide-react'
@@ -8,24 +8,19 @@ export default async function CategoryExamsPage({
 }: { 
   params: Promise<{ categoryId: string }> 
 }) {
-  const supabase = await createClient()
   const { categoryId } = await params
 
   // 1. Fetch Category Info
-  const { data: category } = await supabase
-    .from('categories')
-    .select('*')
-    .eq('id', categoryId)
-    .single()
+  const category = await prisma.categories.findUnique({
+    where: { id: categoryId }
+  })
 
   if (!category) return notFound()
 
   // 2. Fetch Exams (Courses) in this Category
-  const { data: exams } = await supabase
-    .from('courses')
-    .select('*')
-    .eq('category_id', categoryId)
-    .eq('is_published', true)
+  const exams = await prisma.courses.findMany({
+    where: { category_id: categoryId, is_published: true }
+  })
 
   // --- SMART REDIRECT LOGIC ---
   // Only auto-redirect for "CUET" because it's a specific exam, not a stream.

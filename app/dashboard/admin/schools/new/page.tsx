@@ -1,25 +1,14 @@
-import { createClient } from '@supabase/supabase-js' // Use raw client for Admin actions
+import { prisma } from '@/lib/prisma'
 import { redirect } from 'next/navigation'
 import { ArrowLeft, Building2, Lock, Mail, User } from 'lucide-react'
 import Link from 'next/link'
+import bcrypt from 'bcryptjs'
 
 export default function AddSchoolPage() {
   
   async function createSchool(formData: FormData) {
     'use server'
     
-    // 1. Initialize Admin Client (Bypasses RLS)
-    const supabaseAdmin = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!, 
-      {
-        auth: {
-          autoRefreshToken: false,
-          persistSession: false
-        }
-      }
-    )
-
     // 2. Extract Form Data
     const name = formData.get('name') as string
     const slug = (formData.get('slug') as string).toLowerCase()
@@ -27,50 +16,63 @@ export default function AddSchoolPage() {
     const email = formData.get('email') as string
     const password = formData.get('password') as string
 
-    // 3. Create the Organization (School)
-    const { data: org, error: orgError } = await supabaseAdmin
-      .from('organizations')
-      .insert({ name, slug, welcome_message: `Welcome to ${name}` })
-      .select()
-      .single()
-
-    if (orgError) {
-      console.error('Org Error:', orgError)
-      // CHANGE HERE: Throw instead of return
-      throw new Error('Failed to create school. Slug might be taken.') 
+    // Check if user email is taken
+    const existingUser = await prisma.users.findUnique({ where: { email } })
+    if (existingUser) {
+      throw new Error('Failed to create admin user. Email is already taken.')
     }
 
-    // 4. Create the School Admin User (Auth)
-    const { data: authUser, error: authError } = await supabaseAdmin.auth.admin.createUser({
-      email,
-      password,
-      email_confirm: true,
-      user_metadata: { full_name: adminName }
-    })
-
-    if (authError) {
-      console.error('Auth Error:', authError)
-      // Cleanup orphan org
-      await supabaseAdmin.from('organizations').delete().eq('id', org.id)
-      // CHANGE HERE: Throw instead of return
-      throw new Error('Failed to create admin user. Email might be taken.')
+    // Check if slug is taken
+    const existingOrg = await prisma.organizations.findUnique({ where: { slug } })
+    if (existingOrg) {
+      throw new Error('Failed to create school. Slug might be taken.')
     }
 
-    // 5. Create Profile & Link to Org
-    if (authUser.user && org) {
-       const { error: profileError } = await supabaseAdmin
-        .from('profiles')
-        .upsert({ // <--- CHANGED FROM insert TO upsert
-          id: authUser.user.id,
-          full_name: adminName,
-          role: 'school_admin', // This will now overwrite 'student'
-          organization_id: org.id
+    try {
+      // Use transaction to ensure both or neither are created
+      await prisma.$transaction(async (tx) => {
+        // 3. Create the Organization (School)
+        const org = await tx.organizations.create({
+          data: {
+            name,
+            slug,
+            welcome_message: `Welcome to ${name}`,
+          }
         })
-      
-      if (profileError) {
-        console.error('Profile Error:', profileError)
-        // Optional: Throw error if critical
-      }
+
+        // Hash password
+        const hashedPassword = await bcrypt.hash(password, 10)
+
+        // 4. Create the School Admin User (Auth)
+        const authUser = await tx.users.create({
+          data: {
+            name: adminName,
+            email,
+            password: hashedPassword,
+            role: 'school_admin'
+          }
+        })
+
+        // 5. Create Profile & Link to Org
+        await tx.profiles.upsert({
+          where: { id: authUser.id },
+          update: {
+            full_name: adminName,
+            role: 'school_admin',
+            organization_id: org.id
+          },
+          create: {
+            id: authUser.id,
+            email: email,
+            full_name: adminName,
+            role: 'school_admin',
+            organization_id: org.id
+          }
+        })
+      })
+    } catch (error: any) {
+      console.error('Transaction Error:', error)
+      throw new Error('Failed to create school and user.')
     }
 
     redirect('/dashboard/admin/schools')

@@ -1,9 +1,9 @@
 'use client'
 
-import { createClient } from '@/lib/supabase/client' // Use Client Component wrapper here
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Loader2, Lock, Eye, EyeOff } from 'lucide-react'
+import { updatePassword } from './actions'
 
 export default function UpdatePasswordPage() {
   const [password, setPassword] = useState('')
@@ -11,17 +11,16 @@ export default function UpdatePasswordPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
-  const supabase = createClient()
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError(null)
 
-    const { error } = await supabase.auth.updateUser({ password })
+    const result = await updatePassword(password)
 
-    if (error) {
-      setError(error.message)
+    if (!result.success) {
+      setError(result.error || 'Failed to update password')
       setLoading(false)
     } else {
       router.push('/dashboard') // Or /categories based on role

@@ -1,39 +1,42 @@
-import { createClient } from '@/lib/supabase/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { FileText, Trophy, PlayCircle, Calendar, BarChart2, ListTodo } from 'lucide-react'
 
 export default async function MyExamsPage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const session = await getServerSession(authOptions)
+  const user = session?.user
 
   if (!user) return <div>Please login.</div>
 
   // Fetch all attempts with full hierarchy to build links
-  const { data: attempts } = await supabase
-    .from('exam_attempts')
-    .select(`
-      *,
-      exams (
-        id,
-        title,
-        subject_id,
-        subjects (
-          id,
-          course_id
-        )
-      ),
-      practice_tests (
-        id,
-        title,
-        subject_id,
-        subjects (
-          id,
-          course_id
-        )
-      )
-    `)
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false })
+  const attempts = await prisma.exam_attempts.findMany({
+    where: { user_id: user.id },
+    orderBy: { created_at: 'desc' },
+    include: {
+      exams: {
+        select: {
+          id: true,
+          title: true,
+          subject_id: true,
+          subjects: {
+            select: { id: true, course_id: true }
+          }
+        }
+      },
+      practice_tests: {
+        select: {
+          id: true,
+          title: true,
+          subject_id: true,
+          subjects: {
+            select: { id: true, course_id: true }
+          }
+        }
+      }
+    }
+  })
 
   return (
     <div className="max-w-5xl mx-auto">
@@ -65,7 +68,7 @@ export default async function MyExamsPage() {
               if (!testData) return null
 
               const title = testData.title
-              // @ts-ignore - Supabase types join
+              // @ts-ignore - Prisma relations
               const subjectId = testData.subject_id
               // @ts-ignore
               const courseId = testData.subjects?.course_id

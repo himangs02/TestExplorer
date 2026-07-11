@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { Plus, Pencil, Trash2, Layers } from 'lucide-react'
 import { deleteStreamAction } from './actions'
@@ -13,11 +13,9 @@ const DynamicIcon = ({ name, className }: { name: string, className?: string }) 
 }
 
 export default async function StreamsAdminPage() {
-  const supabase = await createClient()
-  const { data: streams } = await supabase
-    .from('categories')
-    .select('*')
-    .order('order_index', { ascending: true })
+  const streams = await prisma.categories.findMany({
+    orderBy: { order_index: 'asc' }
+  })
 
   return (
     <div className="max-w-5xl mx-auto">

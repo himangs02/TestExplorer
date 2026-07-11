@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { 
   Trophy, 
@@ -17,45 +17,46 @@ export default async function ResultPage({
   params: Promise<{ courseId: string; subjectId: string; testType: string; examId: string; attemptId: string }> 
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
-  const supabase = await createClient()
   const { examId, attemptId, courseId, subjectId, testType } = await params
   const { returnTo } = await searchParams
 
   const closeLink = returnTo ? decodeURIComponent(returnTo as string) : `/courses/${courseId}/subjects/${subjectId}`
 
   // 1. Fetch Attempt Data
-  const { data: attempt } = await supabase
-    .from('exam_attempts')
-    .select('*')
-    .eq('id', attemptId)
-    .single()
+  const attempt = await prisma.exam_attempts.findUnique({
+    where: { id: attemptId }
+  })
 
   if (!attempt) return <div>Result not found</div>
 
   // 2. Fetch Exam Title & Questions to calculate stats
   let examTitle = 'Test Result'
-  let questions = []
+  let questions: any = []
 
-  // Determine table based on testType
-  const examTable = testType === 'practice' ? 'practice_tests' : 'exams'
-  const questionFK = testType === 'practice' ? 'practice_test_id' : 'exam_id'
+  // Fetch Exam Title & Questions
+  if (testType === 'practice') {
+    const examData = await prisma.practice_tests.findUnique({
+      where: { id: examId },
+      select: { title: true }
+    })
+    if (examData) examTitle = examData.title
 
-  // Fetch Exam Title
-  const { data: examData } = await supabase
-    .from(examTable)
-    .select('title')
-    .eq('id', examId)
-    .single()
-  
-  if (examData) examTitle = examData.title
+    questions = await prisma.questions.findMany({
+      where: { practice_test_id: examId },
+      select: { id: true, question_options: { select: { id: true, is_correct: true } } }
+    })
+  } else {
+    const examData = await prisma.exams.findUnique({
+      where: { id: examId },
+      select: { title: true }
+    })
+    if (examData) examTitle = examData.title
 
-  // Fetch Questions (needed to know total count and correct answers for chart)
-  const { data: questionData } = await supabase
-    .from('questions')
-    .select('id, options:question_options(id, is_correct)')
-    .eq(questionFK, examId)
-  
-  questions = questionData || []
+    questions = await prisma.questions.findMany({
+      where: { exam_id: examId },
+      select: { id: true, question_options: { select: { id: true, is_correct: true } } }
+    })
+  }
 
   // 3. Calculate Detailed Stats
   const totalQuestions = questions.length
@@ -67,7 +68,7 @@ export default async function ResultPage({
 
   questions.forEach((q: any) => {
     const selectedOptionId = userAnswers[q.id]
-    const correctOption = q.options.find((o: any) => o.is_correct)
+    const correctOption = q.question_options.find((o: any) => o.is_correct)
 
     if (!selectedOptionId) {
       skippedCount++

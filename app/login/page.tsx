@@ -1,6 +1,6 @@
 'use client'
 import Link from 'next/link'
-import { login } from '@/app/auth/actions'
+import { signIn } from 'next-auth/react'
 import { useState } from 'react'
 import { Eye, EyeOff, Loader2 } from 'lucide-react'
 import Image from 'next/image'
@@ -10,15 +10,27 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const handleSubmit = async (formData: FormData) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const formData = new FormData(e.currentTarget)
+    const email = formData.get('email') as string
+    const password = formData.get('password') as string
+
     setLoading(true)
     setError(null)
     
-    const result = await login(formData)
+    const result = await signIn('credentials', {
+      email,
+      password,
+      redirect: false
+    })
     
     if (result?.error) {
       setError(result.error)
       setLoading(false)
+    } else {
+      // successful login, redirect to dashboard
+      window.location.href = '/dashboard'
     }
   }
 
@@ -61,7 +73,7 @@ export default function LoginPage() {
             <p className="text-gray-500 text-lg">Welcome back to you account.</p>
           </div>
 
-          <form action={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email Field */}
             <div>
               <label className="block text-base font-bold text-gray-900 mb-2">

@@ -1,4 +1,6 @@
-import { createClient } from '@/lib/supabase/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { ArrowLeft, BookOpen, ChevronRight, List, Lock } from 'lucide-react'
 import { notFound, redirect } from 'next/navigation'
@@ -10,48 +12,44 @@ export default async function PrepModulePage({
 }: { 
   params: Promise<{ courseId: string; subjectId: string; moduleId: string }> 
 }) {
-  const supabase = await createClient()
   const { courseId, subjectId, moduleId } = await params
 
   // 1. Authenticate User
-  const { data: { user } } = await supabase.auth.getUser()
+  const session = await getServerSession(authOptions)
+  const user = session?.user
+
   if (!user) return redirect('/login')
   
   // 2. Fetch Current Module Details (Needed for Title & 404 check)
-  const { data: moduleData } = await supabase
-    .from('prep_modules')
-    .select('title, description')
-    .eq('id', moduleId)
-    .single()
+  const moduleData = await prisma.prep_modules.findUnique({
+    where: { id: moduleId },
+    select: { title: true, description: true }
+  })
 
   if (!moduleData) return notFound()
 
   // 3. CHECK ACCESS (Freemium Logic)
-  const { data: enrollment } = await supabase
-    .from('student_enrollments')
-    .select('id')
-    .eq('user_id', user.id)
-    .eq('subject_id', subjectId)
-    .single()
+  const enrollment = await prisma.student_enrollments.findFirst({
+    where: { user_id: user.id, subject_id: subjectId },
+    select: { id: true }
+  })
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single()
+  const profile = await prisma.profiles.findUnique({
+    where: { id: user.id },
+    select: { role: true }
+  })
 
   const isAdmin = profile?.role === 'super_admin' || profile?.role === 'school_admin'
   const hasFullAccess = !!enrollment || isAdmin
 
   // 🔒 GATEKEEPING: If no full access, check if this module is in the "Free" tier (Top 2)
   if (!hasFullAccess) {
-    const { data: allowedModules } = await supabase
-       .from('prep_modules')
-       .select('id')
-       .eq('subject_id', subjectId)
-       .eq('is_published', true)
-       .order('created_at', { ascending: true }) // Must match Subject Page sort
-       .limit(2)
+    const allowedModules = await prisma.prep_modules.findMany({
+      where: { subject_id: subjectId, is_published: true },
+      orderBy: { created_at: 'asc' }, // Must match Subject Page sort
+      select: { id: true },
+      take: 2
+    })
 
     const isAllowed = allowedModules?.some(m => m.id === moduleId)
 
@@ -61,24 +59,33 @@ export default async function PrepModulePage({
   }
 
   // 4. Fetch Questions
-  const { data: questions } = await supabase
-    .from('questions')
-    .select(`
-      id, 
-      text, 
-      explanation, 
-      options:question_options(id, text, is_correct)
-    `)
-    .eq('module_id', moduleId)
-    .order('order_index', { ascending: true })
+  const questions = await prisma.questions.findMany({
+    where: { module_id: moduleId },
+    orderBy: { order_index: 'asc' },
+    select: {
+      id: true,
+      text: true,
+      explanation: true,
+      question_options: {
+        select: { id: true, text: true, is_correct: true }
+      }
+    }
+  })
+
+  // Normalize `question_options` to `options` for QuizInterface
+  const formattedQuestions = questions.map(q => ({
+    id: q.id,
+    text: q.text,
+    explanation: q.explanation,
+    options: q.question_options
+  }))
 
   // 5. Fetch All Modules for Sidebar
-  const { data: allModules } = await supabase
-    .from('prep_modules')
-    .select('id, title')
-    .eq('subject_id', subjectId)
-    .eq('is_published', true)
-    .order('created_at', { ascending: true })
+  const allModules = await prisma.prep_modules.findMany({
+    where: { subject_id: subjectId, is_published: true },
+    orderBy: { created_at: 'asc' },
+    select: { id: true, title: true }
+  })
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -175,7 +182,7 @@ export default async function PrepModulePage({
 
         {/* --- MAIN CONTENT (Quiz) --- */}
         <main className="flex-1 min-w-0">
-          {(!questions || questions.length === 0) ? (
+          {(!formattedQuestions || formattedQuestions.length === 0) ? (
             <div className="bg-white rounded-3xl p-12 text-center border border-gray-200 shadow-sm">
               <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
                  <span className="text-4xl">🚧</span>
@@ -184,7 +191,7 @@ export default async function PrepModulePage({
               <p className="text-gray-500">This module is currently being updated. Please check the sidebar for other modules.</p>
             </div>
           ) : (
-            <QuizInterface questions={questions} />
+            <QuizInterface questions={formattedQuestions} />
           )}
         </main>
 

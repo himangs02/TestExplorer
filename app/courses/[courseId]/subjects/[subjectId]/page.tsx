@@ -1,4 +1,6 @@
-import { createClient } from '@/lib/supabase/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { ArrowLeft, BookOpen, Lock } from 'lucide-react'
 import { notFound, redirect } from 'next/navigation'
@@ -11,90 +13,69 @@ export default async function SubjectDetailsPage({
   params: Promise<{ courseId: string; subjectId: string }> 
   searchParams: Promise<{ from?: string }>
 }) {
-  const supabase = await createClient()
-  
   // 1. Resolve Params & Authenticate User
   const { courseId, subjectId } = await params
   const { from } = await searchParams
 
-  const { data: { user } } = await supabase.auth.getUser()
+  const session = await getServerSession(authOptions)
+  const user = session?.user
 
   if (!user) return redirect('/login')
 
   // 2. Fetch Subject & Course Info
-  const { data: subject } = await supabase
-    .from('subjects')
-    .select(`
-      title,
-      course:courses(title)
-    `)
-    .eq('id', subjectId)
-    .single()
+  const subject = await prisma.subjects.findUnique({
+    where: { id: subjectId },
+    include: { courses: { select: { title: true } } }
+  })
 
   if (!subject) return notFound()
 
   // 3. CHECK ENROLLMENT STATUS
-  const { data: enrollment } = await supabase
-    .from('student_enrollments')
-    .select('id')
-    .eq('user_id', user.id)
-    .eq('subject_id', subjectId)
-    .single()
+  const enrollment = await prisma.student_enrollments.findFirst({
+    where: { user_id: user.id, subject_id: subjectId }
+  })
 
   // 4. CHECK USER ROLE
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single()
+  const profile = await prisma.profiles.findUnique({
+    where: { id: user.id },
+    select: { role: true }
+  })
 
   const isAdmin = profile?.role === 'super_admin' || profile?.role === 'school_admin'
 
   // 5. DETERMINE ACCESS LEVEL (FREEMIUM LOGIC)
   const hasFullAccess = !!enrollment || isAdmin
 
-  // Handle Supabase Relation Array/Object weirdness for Course Title
-  // @ts-ignore
-  const courseData = subject.course as unknown as CourseRelation | CourseRelation[] | null
-  const courseTitle = Array.isArray(courseData) 
-    ? courseData[0]?.title 
-    : courseData?.title
+  const courseTitle = subject.courses?.title
 
   // 6. Fetch Page Content (Fetching ALL content + Question Counts)
-  const [modulesRes, practiceRes, mockRes] = await Promise.all([
-    // A. Prep Modules
-    supabase
-      .from('prep_modules')
-      .select('*, questions(count)')
-      .eq('subject_id', subjectId)
-      .eq('is_published', true)
-      .order('created_at', { ascending: true }),
-      
-    // B. Practice Tests
-    supabase
-      .from('practice_tests')
-      .select('*, questions(count)')
-      .eq('subject_id', subjectId)
-      .eq('is_published', true)
-      .order('created_at', { ascending: false }),
-      
-    // C. Mock Tests
-    supabase
-      .from('exams')
-      .select('*, questions(count)')
-      .eq('subject_id', subjectId)
-      .eq('category', 'mock')
-      .eq('is_published', true)
-      .order('created_at', { ascending: false })
-  ])
+  
+  // A. Prep Modules
+  const modulesRes = await prisma.prep_modules.findMany({
+    where: { subject_id: subjectId, is_published: true },
+    orderBy: { created_at: 'asc' },
+    include: { _count: { select: { questions: true } } }
+  })
+  
+  // B. Practice Tests
+  const practiceRes = await prisma.practice_tests.findMany({
+    where: { subject_id: subjectId, is_published: true },
+    orderBy: { created_at: 'desc' },
+    include: { _count: { select: { questions: true } } }
+  })
+  
+  // C. Mock Tests
+  const mockRes = await prisma.exams.findMany({
+    where: { subject_id: subjectId, category: 'mock', is_published: true },
+    orderBy: { created_at: 'desc' },
+    include: { _count: { select: { questions: true } } }
+  })
 
   // Helper to extract count safely
-  const formatData = (data: any[] | null) => {
-    if (!data) return []
+  const formatData = (data: any[]) => {
     return data.map((item) => ({
       ...item,
-      // Supabase returns questions: [{ count: 5 }]
-      question_count: item.questions?.[0]?.count || 0
+      question_count: item._count?.questions || 0
     }))
   }
 
@@ -142,9 +123,9 @@ export default async function SubjectDetailsPage({
         </div>
 
         <SubjectContent 
-          modules={formatData(modulesRes.data)}
-          practiceTests={formatData(practiceRes.data)}
-          mockTests={formatData(mockRes.data)}
+          modules={formatData(modulesRes)}
+          practiceTests={formatData(practiceRes)}
+          mockTests={formatData(mockRes)}
           courseId={courseId}
           subjectId={subjectId}
           hasFullAccess={hasFullAccess} 

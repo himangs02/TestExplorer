@@ -1,15 +1,12 @@
-import { createClient } from '@/lib/supabase/server'
+import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { Plus, Edit2, ExternalLink } from 'lucide-react'
 import DeleteBlogButton from '@/components/blogs/delete-button'
 
 export default async function AdminBlogsPage() {
-  const supabase = await createClient()
-
-  const { data: blogs } = await supabase
-    .from('blogs')
-    .select('*')
-    .order('created_at', { ascending: false })
+  const blogs = await prisma.blogs.findMany({
+    orderBy: { created_at: 'desc' }
+  })
 
   return (
     <div className="max-w-7xl mx-auto space-y-8">

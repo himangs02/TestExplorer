@@ -1,29 +1,29 @@
-import { createClient } from '@/lib/supabase/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { prisma } from '@/lib/prisma'
 import { redirect } from 'next/navigation'
 import { createAnnouncementAction, deleteAnnouncementAction } from './actions'
 import { Megaphone, Trash2, Plus, Bell } from 'lucide-react'
 
 export default async function AnnouncementsPage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const session = await getServerSession(authOptions)
+  const user = session?.user
   
   if (!user) return redirect('/login')
 
   // 1. Get User's School
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('organization_id')
-    .eq('id', user.id)
-    .single()
+  const profile = await prisma.profiles.findUnique({
+    where: { id: user.id },
+    select: { organization_id: true }
+  })
 
   if (!profile?.organization_id) return <div>You are not assigned to a school.</div>
 
   // 2. Fetch Announcements
-  const { data: announcements } = await supabase
-    .from('school_announcements')
-    .select('*')
-    .eq('organization_id', profile.organization_id)
-    .order('created_at', { ascending: false })
+  const announcements = await prisma.school_announcements.findMany({
+    where: { organization_id: profile.organization_id },
+    orderBy: { created_at: 'desc' }
+  })
 
   return (
     <div className="max-w-4xl mx-auto">

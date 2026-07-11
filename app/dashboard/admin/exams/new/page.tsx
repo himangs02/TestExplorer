@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { prisma } from '@/lib/prisma'
 import { createExamAction } from '../actions'
 import { ArrowLeft, Save, Upload } from 'lucide-react'
 import Link from 'next/link'
@@ -8,13 +8,12 @@ export default async function NewExamPage({
 }: { 
   searchParams: Promise<{ type: string }> 
 }) {
-  const supabase = await createClient()
   const { type } = await searchParams
   const validTypes = ['prep', 'mock', 'practice']
   const currentType = validTypes.includes(type) ? type : 'prep'
 
   // Fetch Subjects for Dropdown
-  const { data: subjects } = await supabase.from('subjects').select('id, title').order('title')
+  const subjects = await prisma.subjects.findMany({ select: { id: true, title: true }, orderBy: { title: 'asc' } })
 
   return (
     <div className="max-w-3xl mx-auto py-8">

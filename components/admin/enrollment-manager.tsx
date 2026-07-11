@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { createClient } from "@/lib/supabase/client";
 import { BookOpen, Check, Loader2, Save, Search, X } from "lucide-react";
 import { toast } from "sonner";
+import { getStudentEnrollments, updateStudentEnrollments } from "@/app/dashboard/admin/users/actions";
 
 // Types for props
 interface CourseRelation {
@@ -33,27 +33,22 @@ export default function EnrollmentManager({
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [search, setSearch] = useState("");
   
-  const supabase = createClient();
-
   // 1. Fetch User's EXISTING enrollments when modal opens
   useEffect(() => {
     if (isOpen) {
       const fetchEnrollments = async () => {
         setLoadingData(true);
-        const { data, error } = await supabase
-          .from("student_enrollments")
-          .select("subject_id")
-          .eq("user_id", studentId);
+        const { data, success } = await getStudentEnrollments(studentId);
 
-        if (data) {
-          setSelectedIds(data.map((item) => item.subject_id));
+        if (success && data) {
+          setSelectedIds(data);
         }
         setLoadingData(false);
       };
 
       fetchEnrollments();
     }
-  }, [isOpen, studentId, supabase]);
+  }, [isOpen, studentId]);
 
   // 2. Group Subjects by Course (Same logic as before)
   const castedSubjects = allSubjects as Subject[];
@@ -82,22 +77,17 @@ export default function EnrollmentManager({
   const handleSave = async () => {
     setSaving(true);
     try {
-      await supabase.from("student_enrollments").delete().eq("user_id", studentId);
+      const res = await updateStudentEnrollments(studentId, selectedIds);
 
-      if (selectedIds.length > 0) {
-        const inserts = selectedIds.map((subject_id) => ({
-          user_id: studentId,
-          subject_id: subject_id,
-        }));
-        await supabase.from("student_enrollments").insert(inserts);
+      if (res.success) {
+        setIsOpen(false);
+        // REPLACED ALERT WITH TOAST
+        toast.success("Enrollments updated successfully", {
+          description: `Granted access to ${selectedIds.length} subjects.`
+        });
+      } else {
+        throw new Error(res.error);
       }
-      setIsOpen(false);
-      
-      // REPLACED ALERT WITH TOAST
-      toast.success("Enrollments updated successfully", {
-        description: `Granted access to ${selectedIds.length} subjects.`
-      });
-
     } catch (error) {
       console.error(error);
       toast.error("Failed to save enrollments", {

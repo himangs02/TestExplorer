@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { 
   Building2, 
@@ -11,22 +11,20 @@ import {
 } from 'lucide-react'
 
 export default async function SuperAdminDashboard() {
-  const supabase = await createClient()
-
   // Fetch Stats (Parallel)
-  const [schools, students, courses, subjects, exams] = await Promise.all([
-    supabase.from('organizations').select('id', { count: 'exact' }),
-    supabase.from('profiles').select('id', { count: 'exact' }).eq('role', 'student'),
-    supabase.from('courses').select('id', { count: 'exact' }),
-    supabase.from('subjects').select('id', { count: 'exact' }),
-    supabase.from('exams').select('id', { count: 'exact' })
+  const [schoolsCount, studentsCount, coursesCount, subjectsCount, examsCount] = await Promise.all([
+    prisma.organizations.count(),
+    prisma.profiles.count({ where: { role: 'student' } }),
+    prisma.courses.count(),
+    prisma.subjects.count(),
+    prisma.exams.count()
   ])
 
   const stats = [
-    { label: 'Total Schools', value: schools.count || 0, icon: Building2, color: 'text-blue-600', bg: 'bg-blue-50', link: '/dashboard/admin/schools' },
-    { label: 'Total Students', value: students.count || 0, icon: Users, color: 'text-purple-600', bg: 'bg-purple-50', link: '/dashboard/admin/users' },
-    { label: 'Active Courses', value: courses.count || 0, icon: BookOpen, color: 'text-green-600', bg: 'bg-green-50', link: '/dashboard/admin/courses' },
-    { label: 'Total Exams', value: exams.count || 0, icon: Activity, color: 'text-orange-600', bg: 'bg-orange-50', link: '/dashboard/admin/exams' },
+    { label: 'Total Schools', value: schoolsCount || 0, icon: Building2, color: 'text-blue-600', bg: 'bg-blue-50', link: '/dashboard/admin/schools' },
+    { label: 'Total Students', value: studentsCount || 0, icon: Users, color: 'text-purple-600', bg: 'bg-purple-50', link: '/dashboard/admin/users' },
+    { label: 'Active Courses', value: coursesCount || 0, icon: BookOpen, color: 'text-green-600', bg: 'bg-green-50', link: '/dashboard/admin/courses' },
+    { label: 'Total Exams', value: examsCount || 0, icon: Activity, color: 'text-orange-600', bg: 'bg-orange-50', link: '/dashboard/admin/exams' },
   ]
 
   return (

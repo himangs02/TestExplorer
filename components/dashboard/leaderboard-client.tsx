@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { createClient } from "@/lib/supabase/client";
 import { 
   Trophy, 
   BookOpen, 
@@ -10,6 +9,7 @@ import {
   School,
   GraduationCap
 } from "lucide-react";
+import { getSubjectsForCourse, getLeaderboard } from '@/app/dashboard/leaderboard/actions'
 
 interface Course {
   id: string;
@@ -36,8 +36,6 @@ interface Props {
 }
 
 export default function LeaderboardClient({ courses, schoolId }: Props) {
-  const supabase = createClient();
-
   // Selection States
   const [selectedCourse, setSelectedCourse] = useState<string>("");
   const [selectedSubject, setSelectedSubject] = useState<string>("");
@@ -60,12 +58,8 @@ export default function LeaderboardClient({ courses, schoolId }: Props) {
 
     const fetchSubjects = async () => {
       setLoadingSubjects(true);
-      // Assuming 'subjects' table has 'course_id' column
-      const { data, error } = await supabase
-        .from('subjects')
-        .select('id, title')
-        .eq('course_id', selectedCourse)
-        .order('title');
+      
+      const { data, error } = await getSubjectsForCourse(selectedCourse)
 
       if (error) {
         console.error("Error fetching subjects:", error);
@@ -79,7 +73,7 @@ export default function LeaderboardClient({ courses, schoolId }: Props) {
     };
 
     fetchSubjects();
-  }, [selectedCourse, supabase]);
+  }, [selectedCourse]);
 
   // 2. Fetch Leaderboard when Subject Changes
   useEffect(() => {
@@ -91,13 +85,7 @@ export default function LeaderboardClient({ courses, schoolId }: Props) {
     const fetchLeaderboard = async () => {
       setLoadingLeaderboard(true);
       
-      const { data, error } = await supabase.rpc(
-        'get_subject_leaderboard', 
-        { 
-          target_subject_id: selectedSubject,
-          target_school_id: schoolId || null
-        }
-      );
+      const { data, error } = await getLeaderboard(selectedSubject, schoolId || null)
 
       if (error) console.error("Leaderboard Error:", error);
       setLeaderboardData(data || []);
@@ -105,7 +93,7 @@ export default function LeaderboardClient({ courses, schoolId }: Props) {
     };
 
     fetchLeaderboard();
-  }, [selectedSubject, schoolId, supabase]);
+  }, [selectedSubject, schoolId]);
 
   // UI Helper for Medals
   const getRankIcon = (index: number) => {

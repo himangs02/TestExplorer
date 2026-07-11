@@ -1,29 +1,27 @@
-import { createClient } from '@/lib/supabase/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { prisma } from '@/lib/prisma'
 import { redirect } from 'next/navigation'
 import SchoolSettingsForm from './school-settings-form'
 
 export default async function SchoolSettingsPage() {
-  const supabase = await createClient()
-  
-  const { data: { user } } = await supabase.auth.getUser()
+  const session = await getServerSession(authOptions)
+  const user = session?.user
   
   // 1. Get the admin's organization ID
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('organization_id')
-    .eq('id', user?.id)
-    .single()
+  const profile = await prisma.profiles.findUnique({
+    where: { id: user?.id },
+    select: { organization_id: true }
+  })
 
   if (!profile?.organization_id) {
     return <div>Error: You are not linked to a school.</div>
   }
 
   // 2. Fetch School Details
-  const { data: school } = await supabase
-    .from('organizations')
-    .select('*')
-    .eq('id', profile.organization_id)
-    .single()
+  const school = await prisma.organizations.findUnique({
+    where: { id: profile.organization_id }
+  })
 
   return (
     <div className="max-w-4xl">

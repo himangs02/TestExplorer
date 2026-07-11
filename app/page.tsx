@@ -1,21 +1,20 @@
-import { createClient } from '@/lib/supabase/server';
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { prisma } from '@/lib/prisma'
 import LandingPage from '@/components/Home/LandingPage';
 
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const session = await getServerSession(authOptions)
+  const user = session?.user
 
   let profile = null;
 
   if (user) {
-    // FIXED: Use select('*') to avoid "column not found" errors
-    const { data } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', user.id)
-      .single();
+    const data = await prisma.profiles.findUnique({
+      where: { id: user.id }
+    })
     
     // If profile exists, use it. 
     // Fallback only if data is null (shouldn't happen now)

@@ -1,4 +1,6 @@
-import { createClient } from '@/lib/supabase/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { prisma } from '@/lib/prisma'
 import { redirect } from 'next/navigation'
 import { headers } from 'next/headers'
 import Link from 'next/link'
@@ -25,18 +27,15 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode
 }) {
-  const supabase = await createClient()
-
   // 1. Verify Session
-  const { data: { user } } = await supabase.auth.getUser()
+  const session = await getServerSession(authOptions)
+  const user = session?.user
   if (!user) return redirect('/login')
 
   // 2. Fetch Profile & Role
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user.id)
-    .single()
+  const profile = await prisma.profiles.findUnique({
+    where: { id: user.id }
+  })
 
   if (!profile) return redirect('/')
 
@@ -187,7 +186,7 @@ export default async function DashboardLayout({
     },
   ]
 
-  const visibleItems = navItems.filter(item => item.roles.includes(profile.role))
+  const visibleItems = navItems.filter(item => item.roles.includes(profile.role || 'student'))
 
   return (
     <div className="min-h-screen flex bg-gray-50">
@@ -254,7 +253,7 @@ export default async function DashboardLayout({
             <div className="overflow-hidden">
               <p className="text-sm font-bold text-gray-900 truncate">{profile.full_name}</p>
               <p className="text-xs text-gray-500 capitalize truncate">
-                {profile.role.replace('_', ' ')}
+                {(profile.role || 'student').replace('_', ' ')}
               </p>
             </div>
           </div>
@@ -265,7 +264,7 @@ export default async function DashboardLayout({
       <main className="flex-1 flex flex-col md:ml-64 min-h-screen">
         <header className="h-16 bg-white border-b border-gray-200 sticky top-0 z-40 flex items-center justify-between px-4 md:px-8">
           <h1 className="font-bold text-lg text-gray-800">Dashboard</h1>
-          <UserNav profile={profile} email={user.email} />
+          <UserNav profile={{ ...profile, role: profile.role || 'student' }} email={user.email || undefined} />
         </header>
 
         <div className="flex-1 p-4 md:p-8 overflow-auto">

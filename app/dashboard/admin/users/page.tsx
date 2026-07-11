@@ -1,15 +1,13 @@
-import { createClient } from '@/lib/supabase/server'
+import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { Building2, Users, ArrowRight, User } from 'lucide-react'
 
 export default async function AdminUsersPage() {
-  const supabase = await createClient()
-
   // 1. Fetch Organizations (Schools)
-  const { data: schools } = await supabase
-    .from('organizations') // Assuming table name is 'organizations' or 'schools'
-    .select('id, name, slug, logo_url')
-    .order('name')
+  const schools = await prisma.organizations.findMany({
+    select: { id: true, name: true, slug: true, logo_url: true },
+    orderBy: { name: 'asc' }
+  })
 
   // 2. Fetch Student Counts (Optional optimization: create a view for this)
   // For now, we'll just link to the pages.

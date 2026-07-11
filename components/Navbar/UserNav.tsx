@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { signout } from '@/app/auth/actions'
+import { signOut } from 'next-auth/react'
 import { 
   LogOut, 
   LayoutDashboard, 
@@ -105,7 +105,7 @@ export default function UserNav({ profile, email }: UserNavProps) {
           className="text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer py-2.5"
           onSelect={(e) => {
             e.preventDefault() 
-            signout()
+            signOut({ callbackUrl: '/' })
           }}
         >
           <LogOut className="mr-3 h-4 w-4" />

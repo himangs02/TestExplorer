@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { prisma } from '@/lib/prisma'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Calendar, Clock, Share2 } from 'lucide-react'
@@ -32,25 +32,22 @@ function extractHeadings(htmlContent: string) {
 }
 
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
-  const supabase = await createClient()
   const { slug } = await params
 
   // 1. Fetch Blog Data
-  const { data: blog } = await supabase
-    .from('blogs')
-    .select('*')
-    .eq('slug', slug)
-    .single()
+  const blog: any = await prisma.blogs.findUnique({
+    where: { slug }
+  })
 
   if (!blog) return notFound()
 
   // 2. Fetch Related Articles (Exclude current one)
-  const { data: relatedPosts } = await supabase
-    .from('blogs')
-    .select('id, title, slug, image_url, created_at')
-    .neq('id', blog.id)
-    .limit(4)
-    .order('created_at', { ascending: false })
+  const relatedPosts = await prisma.blogs.findMany({
+    where: { id: { not: blog.id } },
+    select: { id: true, title: true, slug: true, image_url: true, created_at: true },
+    orderBy: { created_at: 'desc' },
+    take: 4
+  })
 
   // 3. Generate Table of Contents from HTML Content
   const toc = extractHeadings(blog.content || "");

@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import { School, Plus, Lock } from 'lucide-react' // Added Lock icon
-import { createClient } from '@/lib/supabase/client'
+import { searchSchools } from '@/app/signup/actions'
 
 type SchoolOption = {
   id: string
@@ -14,7 +14,6 @@ interface SchoolSearchInputProps {
 }
 
 export default function SchoolSearchInput({ prefilledSchool, readOnly = false }: SchoolSearchInputProps) {
-  const supabase = createClient()
   const [query, setQuery] = useState('')
   const [isOpen, setIsOpen] = useState(false)
   const [options, setOptions] = useState<SchoolOption[]>([])
@@ -37,18 +36,14 @@ export default function SchoolSearchInput({ prefilledSchool, readOnly = false }:
     const fetchSchools = async () => {
       if (query.length < 2) return
       
-      const { data } = await supabase
-        .from('organizations')
-        .select('id, name')
-        .ilike('name', `%${query}%`)
-        .limit(5)
+      const data = await searchSchools(query)
       
       if (data) setOptions(data)
     }
 
     const timeoutId = setTimeout(fetchSchools, 300)
     return () => clearTimeout(timeoutId)
-  }, [query, supabase, readOnly])
+  }, [query, readOnly])
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {

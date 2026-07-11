@@ -1,6 +1,6 @@
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
+import { prisma } from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
@@ -8,34 +8,22 @@ function parseTags(tagString: string): string[] {
   return tagString.split(',').map(t => t.trim()).filter(t => t.length > 0)
 }
 
-// Helper to upload file and return URL
-async function uploadImage(file: File, supabase: any, bucket: string = 'blog-images'): Promise<string | null> {
+// Helper to convert file to base64
+async function uploadImage(file: File): Promise<string | null> {
   if (!file || file.size === 0) return null
 
-  const fileExt = file.name.split('.').pop()
-  const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
-  const filePath = `${fileName}`
-
-  const { error } = await supabase.storage
-    .from(bucket)
-    .upload(filePath, file)
-
-  if (error) throw new Error(`Upload failed: ${error.message}`)
-
-  const { data } = supabase.storage
-    .from(bucket)
-    .getPublicUrl(filePath)
-
-  return data.publicUrl
+  const arrayBuffer = await file.arrayBuffer()
+  const buffer = Buffer.from(arrayBuffer)
+  const base64Data = buffer.toString('base64')
+  
+  // Return Data URI format
+  return `data:${file.type || 'image/jpeg'};base64,${base64Data}`
 }
 
 export async function createBlogAction(formData: FormData) {
-  const supabase = await createClient()
-  
   // Basic Info
   const title = formData.get('title') as string
   const slug = formData.get('slug') as string
-  // const excerpt = formData.get('excerpt') as string // Removed based on new wireframe requirements if strictly following, but good to keep as fallback
   const content = formData.get('content') as string
   const category_id = formData.get('category_id') as string
   const tags = parseTags(formData.get('tags') as string)
@@ -61,27 +49,28 @@ export async function createBlogAction(formData: FormData) {
   const imageFile = formData.get('image_file') as File
   const ogImageFile = formData.get('og_image_file') as File
   
-  let image_url = await uploadImage(imageFile, supabase)
-  let og_image_url = await uploadImage(ogImageFile, supabase)
+  let image_url = await uploadImage(imageFile)
+  let og_image_url = await uploadImage(ogImageFile)
 
   // Default placeholder
   if (!image_url) {
     image_url = 'https://images.unsplash.com/photo-1499750310159-5b5f226932b7?auto=format&fit=crop&w=800&q=80' 
   }
 
-  const { error } = await supabase.from('blogs').insert({
-    title, slug, content, category_id, tags, is_featured, is_published,
-    image_url,
-    // SEO Fields
-    meta_title, meta_description, keywords, robots, canonical_url,
-    // OG Fields
-    og_title, og_description, og_image_url,
-    // Author
-    author_id: author_id || null, // Handle empty string
-    enable_structured_data
-  })
-
-  if (error) throw new Error(error.message)
+  try {
+    await prisma.blogs.create({
+      data: {
+        title, slug, content, category_id, tags: JSON.stringify(tags), is_featured, is_published,
+        image_url,
+        meta_title, meta_description, keywords: JSON.stringify(keywords), robots, canonical_url,
+        og_title, og_description, og_image_url,
+        author_id: author_id || null,
+        enable_structured_data
+      }
+    })
+  } catch (error: any) {
+    throw new Error(error.message)
+  }
 
   revalidatePath('/dashboard/admin/blogs')
   revalidatePath('/blogs')
@@ -89,7 +78,6 @@ export async function createBlogAction(formData: FormData) {
 }
 
 export async function updateBlogAction(formData: FormData) {
-  const supabase = await createClient()
   const id = formData.get('id') as string
   
   // Basic Info
@@ -120,24 +108,28 @@ export async function updateBlogAction(formData: FormData) {
   const imageFile = formData.get('image_file') as File
   const ogImageFile = formData.get('og_image_file') as File
   
-  const newImageUrl = await uploadImage(imageFile, supabase)
-  const newOgImageUrl = await uploadImage(ogImageFile, supabase)
+  const newImageUrl = await uploadImage(imageFile)
+  const newOgImageUrl = await uploadImage(ogImageFile)
 
   const updateData: any = {
-    title, slug, content, category_id, tags, is_featured, is_published,
-    meta_title, meta_description, keywords, robots, canonical_url,
+    title, slug, content, category_id, tags: JSON.stringify(tags), is_featured, is_published,
+    meta_title, meta_description, keywords: JSON.stringify(keywords), robots, canonical_url,
     og_title, og_description,
     author_id: author_id || null,
-    enable_structured_data,
-    updated_at: new Date().toISOString()
+    enable_structured_data
   }
 
   if (newImageUrl) updateData.image_url = newImageUrl
   if (newOgImageUrl) updateData.og_image_url = newOgImageUrl
 
-  const { error } = await supabase.from('blogs').update(updateData).eq('id', id)
-
-  if (error) throw new Error(error.message)
+  try {
+    await prisma.blogs.update({
+      where: { id },
+      data: updateData
+    })
+  } catch (error: any) {
+    throw new Error(error.message)
+  }
 
   revalidatePath('/dashboard/admin/blogs')
   revalidatePath('/blogs')
@@ -145,11 +137,13 @@ export async function updateBlogAction(formData: FormData) {
 }
 
 export async function deleteBlogAction(formData: FormData) {
-  const supabase = await createClient()
   const id = formData.get('id') as string
 
-  const { error } = await supabase.from('blogs').delete().eq('id', id)
-  if (error) throw new Error(error.message)
+  try {
+    await prisma.blogs.delete({ where: { id } })
+  } catch (error: any) {
+    throw new Error(error.message)
+  }
 
   revalidatePath('/dashboard/admin/blogs')
   revalidatePath('/blogs')

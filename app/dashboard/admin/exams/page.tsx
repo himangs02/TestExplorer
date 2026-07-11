@@ -1,14 +1,22 @@
-import { createClient } from '@/lib/supabase/server'
+import { prisma } from '@/lib/prisma'
 import ExamsClient from './exams-client'
 
 export default async function ExamsAdminPage() {
-  const supabase = await createClient()
-
   // Parallel Fetching for all 3 types
-  const [prepRes, mockRes, practiceRes] = await Promise.all([
-    supabase.from('prep_modules').select('*, subjects(title)').order('created_at', { ascending: false }),
-    supabase.from('exams').select('*, subjects(title)').eq('category', 'mock').order('created_at', { ascending: false }),
-    supabase.from('practice_tests').select('*, subjects(title)').order('created_at', { ascending: false })
+  const [prepModules, mockTests, practiceTests] = await Promise.all([
+    prisma.prep_modules.findMany({
+      include: { subjects: { select: { title: true } } },
+      orderBy: { created_at: 'desc' }
+    }),
+    prisma.exams.findMany({
+      where: { category: 'mock' },
+      include: { subjects: { select: { title: true } } },
+      orderBy: { created_at: 'desc' }
+    }),
+    prisma.practice_tests.findMany({
+      include: { subjects: { select: { title: true } } },
+      orderBy: { created_at: 'desc' }
+    })
   ])
 
   return (
@@ -19,9 +27,9 @@ export default async function ExamsAdminPage() {
       </div>
 
       <ExamsClient 
-        prepModules={prepRes.data || []}
-        mockTests={mockRes.data || []}
-        practiceTests={practiceRes.data || []}
+        prepModules={prepModules as any}
+        mockTests={mockTests as any}
+        practiceTests={practiceTests as any}
       />
     </div>
   )

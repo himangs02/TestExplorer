@@ -1,16 +1,13 @@
-import { createClient } from '@/lib/supabase/server'
+import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { Plus, Building, ExternalLink, Pencil, Trash2 } from 'lucide-react'
 import { deleteSchoolAction } from './actions'
 
 export default async function ManageSchoolsPage() {
-  const supabase = await createClient()
-
   // Fetch schools
-  const { data: schools } = await supabase
-    .from('organizations')
-    .select('*')
-    .order('created_at', { ascending: false })
+  const schools = await prisma.organizations.findMany({
+    orderBy: { created_at: 'desc' }
+  })
 
   return (
     <div className="max-w-6xl mx-auto">

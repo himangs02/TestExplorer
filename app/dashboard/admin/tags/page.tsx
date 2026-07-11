@@ -1,15 +1,12 @@
-import { createClient } from '@/lib/supabase/server'
+import { prisma } from '@/lib/prisma'
 import { createTagAction, deleteTagAction } from './actions'
 import { Trash2, Tag as TagIcon, Plus } from 'lucide-react'
 
 export default async function TagsPage() {
-  const supabase = await createClient()
-  
   // Fetch existing tags
-  const { data: tags } = await supabase
-    .from('tags')
-    .select('*')
-    .order('name', { ascending: true })
+  const tags = await prisma.tags.findMany({
+    orderBy: { name: 'asc' }
+  })
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">

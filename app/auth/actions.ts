@@ -2,69 +2,17 @@
 
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
-import { createClient as createDirectClient } from '@supabase/supabase-js'
-
-function getAdminClient() {
-  return createDirectClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false
-      }
-    }
-  )
-}
-
-// Helper to determine redirect path based on role
-async function getRedirectPath(userId: string) {
-  const supabase = await createClient()
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', userId)
-    .single()
-
-  if (profile?.role === 'super_admin') return '/dashboard/admin'
-  if (profile?.role === 'school_admin') return '/dashboard'
-  
-  return '/categories'
-}
-
-export async function login(formData: FormData) {
-  const supabase = await createClient()
-
-  const email = formData.get('email') as string
-  const password = formData.get('password') as string
-
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  })
-
-  if (error) {
-    return { error: error.message }
-  }
-
-  revalidatePath('/', 'layout')
-  const destination = await getRedirectPath(data.user.id)
-  redirect(destination)
-}
+import { prisma } from '@/lib/prisma'
+import bcrypt from 'bcryptjs'
 
 export async function signup(formData: FormData) {
-  const supabase = await createClient() 
-  const adminClient = getAdminClient() 
-
   const email = formData.get('email') as string
   const password = formData.get('password') as string
   const fullName = formData.get('fullName') as string
   const phone = formData.get('phone') as string
-  const address = formData.get('address') as string // <--- NEW: Get Address
+  const address = formData.get('address') as string 
   const stream = formData.get('stream') as string
   
-  // Logic Changed: Prefer 'schoolId' (UUID) from the hidden input in SchoolSearchInput
   const schoolId = formData.get('schoolId') as string
   
   let organizationId = null
@@ -72,61 +20,47 @@ export async function signup(formData: FormData) {
     organizationId = schoolId
   }
 
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
+  try {
+    const existingUser = await prisma.users.findUnique({
+      where: { email }
+    })
+
+    if (existingUser) {
+      return { error: "User already exists with this email" }
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10)
+
+    // Using uuid package or let prisma handle defaults if id is cuid/uuid
+    // Based on the migration, the ID might be a UUID. If Prisma schema has @default(uuid()), we can omit id.
+    const user = await prisma.users.create({
       data: {
-        full_name: fullName,
-        phone: phone,
-        organization_id: schoolId, // Assuming you map 'school_id' to 'organization_id' in your schema
-        stream: stream, // <--- Saving Stream to user_metadata
-        role: 'student',
-      },
-    },
-  })
+        email,
+        password: hashedPassword,
+        name: fullName,
+        role: 'student', // default role
+      }
+    })
 
-  if (error) {
-    return { error: error.message }
-  }
-
-  if (data.user) {
-    await adminClient
-      .from('profiles')
-      .upsert({ 
-        id: data.user.id,
+    await prisma.profiles.create({
+      data: {
+        id: user.id, // Foreign key to users
         full_name: fullName,
-        phone: phone,
-        address: address, // <--- NEW: Save Address
+        phone,
         role: 'student',
         organization_id: organizationId,
-        stream: stream, // <--- NEW: Save Stream
-      })
+        stream,
+      }
+    })
+
+    return { success: true }
+  } catch (error: any) {
+    console.error("Signup error:", error)
+    return { error: error.message || "Failed to sign up" }
   }
-
-  revalidatePath('/', 'layout')
-  redirect('/categories')
-}
-
-export async function signout() {
-  const supabase = await createClient()
-  await supabase.auth.signOut()
-  revalidatePath('/', 'layout')
-  redirect('/')
 }
 
 export async function forgotPassword(formData: FormData) {
-  const supabase = await createClient()
-  const email = formData.get('email') as string
-  const callbackUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/auth/callback?next=/update-password`
-
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: callbackUrl,
-  })
-
-  if (error) {
-    return { error: error.message }
-  }
-
-  return { success: true }
+  // TODO: implement with Nodemailer or other email service for NextAuth
+  return { error: "Forgot password not implemented yet in NextAuth migration" }
 }

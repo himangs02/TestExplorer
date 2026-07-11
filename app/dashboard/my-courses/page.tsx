@@ -1,4 +1,6 @@
-import { createClient } from '@/lib/supabase/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { prisma } from '@/lib/prisma'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { BookOpen, ChevronRight, GraduationCap, Lock } from 'lucide-react'
@@ -14,26 +16,27 @@ interface EnrolledSubject {
 }
 
 export default async function MyCoursesPage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const session = await getServerSession(authOptions)
+  const user = session?.user
 
   if (!user) return redirect('/login')
 
   // ... (Data Fetching Logic remains the same) ...
-  const { data: enrollments } = await supabase
-    .from('student_enrollments')
-    .select(`
-      subject_id,
-      subjects (
-        id,
-        title,
-        courses (
-          id,
-          title
-        )
-      )
-    `)
-    .eq('user_id', user.id)
+  const enrollments = await prisma.student_enrollments.findMany({
+    where: { user_id: user.id },
+    select: {
+      subject_id: true,
+      subjects: {
+        select: {
+          id: true,
+          title: true,
+          courses: {
+            select: { id: true, title: true }
+          }
+        }
+      }
+    }
+  })
 
   const groupedCourses: Record<string, { id: string, subjects: any[] }> = {}
 

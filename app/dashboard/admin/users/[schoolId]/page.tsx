@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { prisma } from '@/lib/prisma'
 import { Phone, MapPin, ArrowLeft, User, GraduationCap } from 'lucide-react'
 import Link from 'next/link'
 import EnrollmentManager from '@/components/admin/enrollment-manager'
@@ -13,36 +13,34 @@ export default async function SchoolStudentsPage({
   params: Promise<{ schoolId: string }>;
   searchParams: Promise<{ search?: string; sort?: string }>;
 }) {
-  const supabase = await createClient()
   const { schoolId } = await params
   const { search, sort } = await searchParams
   
   const query = search || ''
 
   // 1. Determine Filter Logic
-  let dbQuery = supabase
-    .from('profiles')
-    .select('*, organizations(name)')
-    .eq('role', 'student')
+  let whereClause: any = { role: 'student' }
 
   if (schoolId === 'public') {
-    dbQuery = dbQuery.is('organization_id', null)
+    whereClause.organization_id = null
   } else {
-    dbQuery = dbQuery.eq('organization_id', schoolId)
+    whereClause.organization_id = schoolId
   }
 
   // 2. Apply Search (Server Side Filtering)
   if (query) {
-    dbQuery = dbQuery.ilike('full_name', `%${query}%`)
+    whereClause.full_name = { contains: query }
   }
 
   // 3. Fetch Data
-  const { data: allSubjects } = await supabase
-    .from('subjects')
-    .select('*')
-    .order('title')
+  const allSubjects = await prisma.subjects.findMany({
+    orderBy: { title: 'asc' }
+  })
 
-  const { data: rawStudents } = await dbQuery
+  let rawStudents = await prisma.profiles.findMany({
+    where: whereClause,
+    include: { organizations: { select: { name: true } } }
+  })
   let students = rawStudents || []
 
 if (sort === 'name_asc') {

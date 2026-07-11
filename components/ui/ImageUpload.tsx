@@ -1,6 +1,5 @@
 'use client'
 
-import { createClient } from '@/lib/supabase/client'
 import { useState } from 'react'
 import { Upload, X, Loader2, ImageIcon } from 'lucide-react'
 
@@ -18,42 +17,29 @@ export default function ImageUpload({
   bucket = 'school-assets' 
 }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false)
-  const supabase = createClient()
-
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
     try {
-      setUploading(true)
-      const file = e.target.files?.[0]
-      if (!file) return
-
-      // 1. Generate unique filename
-      const fileExt = file.name.split('.').pop()
-      const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`
-      const filePath = `${fileName}`
-
-      // 2. Upload to Supabase
-      const { error: uploadError } = await supabase.storage
-        .from(bucket)
-        .upload(filePath, file)
-
-      if (uploadError) {
-        throw uploadError
-      }
-
-      // 3. Get Public URL
-      const { data } = supabase.storage
-        .from(bucket)
-        .getPublicUrl(filePath)
-
-      onChange(data.publicUrl)
-
+        setUploading(true);
+        const formData = new FormData();
+        formData.append('file', file);
+        const res = await fetch('/api/upload-image', {
+            method: 'POST',
+            body: formData,
+        });
+        if (!res.ok) {
+            throw new Error('Upload failed');
+        }
+        const data = await res.json();
+        onChange(data.url);
     } catch (error) {
-      console.error('Upload failed:', error)
-      alert('Error uploading image')
+        console.error('Upload failed:', error);
+        alert('Error uploading image');
     } finally {
-      setUploading(false)
+        setUploading(false);
     }
-  }
+};
 
   return (
     <div className="w-full">

@@ -1,0 +1,419 @@
+generator client {
+  provider = "prisma-client-js"
+  engineType = "library"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model attempts {
+  id           String    @id @default(uuid())
+  user_id      String
+  test_id      String
+  score        Int?
+  responses    Json?
+  submitted_at DateTime? @default(now())
+  users        users     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model blogs {
+  id                     String      @id @default(uuid())
+  title                  String
+  slug                   String      @unique
+  excerpt                String?
+  content                String?
+  image_url              String?     @db.LongText
+  tags                   Json        @default("[]")
+  faqs                   Json?       @default("[]")
+  is_featured            Boolean?    @default(false)
+  is_published           Boolean?    @default(true)
+  created_at             DateTime    @default(now())
+  category_id            String?
+  meta_title             String?
+  meta_description       String?
+  keywords               Json
+  robots                 String?     @default("index, follow")
+  canonical_url          String?
+  og_title               String?
+  og_description         String?
+  og_image_url           String?     @db.LongText
+  author_id              String?
+  enable_structured_data Boolean?    @default(true)
+  profiles               profiles?   @relation(fields: [author_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  categories             categories? @relation(fields: [category_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model categories {
+  id          String    @id @default(uuid())
+  title       String
+  description String?
+  icon_key    String?
+  bg_color    String?
+  order_index Int?      @default(0)
+  created_at  DateTime? @default(now())
+  blogs       blogs[]
+  courses     courses[]
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model contact_messages {
+  id              String         @id @default(uuid())
+  created_at      DateTime?      @default(now())
+  name            String
+  email           String
+  message         String
+  status          String?        @default("unread")
+  organization_id String?
+  subject         String?
+  organizations   organizations? @relation(fields: [organization_id], references: [id], onUpdate: NoAction)
+}
+
+model courses {
+  id                    String                  @id @default(uuid())
+  title                 String
+  description           String?
+  is_published          Boolean?                @default(true)
+  created_at            DateTime?               @default(now())
+  category_id           String?
+  slug                  String?                 @unique
+  details               Json?                   @default("{}")
+  categories            categories?             @relation(fields: [category_id], references: [id], onUpdate: NoAction)
+  exam_rank_predictions exam_rank_predictions[]
+  exams                 exams[]
+  mock_blueprints       mock_blueprints[]
+  mock_tests            mock_tests[]
+  subjects              subjects[]
+
+  @@index([slug], map: "idx_courses_slug")
+}
+
+model exam_attempts {
+  id                 String          @id @default(uuid())
+  user_id            String
+  exam_id            String?
+  practice_test_id   String?
+  status             String          @default("in_progress")
+  score              Int?            @default(0)
+  total_marks        Int?            @default(0)
+  duration_minutes   Int?            @default(0)
+  time_taken_seconds Int?            @default(0)
+  answers            Json?           @default("{}")
+  started_at         DateTime?       @default(now())
+  completed_at       DateTime?
+  mock_test_id       String?
+  percentage         Decimal?        @default(0) @db.Decimal
+  exams              exams?          @relation(fields: [exam_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  mock_tests         mock_tests?     @relation(fields: [mock_test_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  practice_tests     practice_tests? @relation(fields: [practice_test_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users              users           @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([mock_test_id], map: "idx_exam_attempts_mock_test")
+  @@index([mock_test_id], map: "idx_exam_attempts_mock_test_id")
+  @@index([user_id], map: "idx_exam_attempts_student")
+}
+
+model exam_rank_predictions {
+  id                String      @id @default(uuid())
+  exam_id           String?
+  min_score         Decimal     @db.Decimal
+  max_score         Decimal     @db.Decimal
+  approx_rank       String?
+  approx_percentile String?
+  created_at        DateTime?   @default(now())
+  course_id         String?
+  courses           courses?    @relation(fields: [course_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  mock_tests        mock_tests? @relation(fields: [exam_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([course_id, min_score, max_score], map: "idx_rank_predictions_course_score")
+}
+
+model exams {
+  id                String          @id @default(uuid())
+  title             String
+  description       String?
+  subject_id        String?
+  duration_minutes  Int?            @default(60)
+  is_published      Boolean?        @default(false)
+  created_at        DateTime?       @default(now())
+  category          String?         @default("practice")
+  course_id         String?
+  total_marks       Int?            @default(0)
+  marks_correct     Decimal?        @default(4) @db.Decimal
+  marks_incorrect   Decimal?        @default(-1) @db.Decimal
+  marks_unattempted Decimal?        @default(0) @db.Decimal
+  exam_attempts     exam_attempts[]
+  courses           courses?        @relation(fields: [course_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  subjects          subjects?       @relation(fields: [subject_id], references: [id], onUpdate: NoAction)
+  questions         questions[]
+}
+
+model mock_blueprint_items {
+  id              String          @id @default(uuid())
+  blueprint_id    String
+  subject_id      String
+  question_count  Int
+  mock_blueprints mock_blueprints @relation(fields: [blueprint_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  subjects        subjects        @relation(fields: [subject_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model mock_blueprints {
+  id                     String                 @id @default(uuid())
+  course_id              String
+  title                  String
+  total_duration_minutes Int                    @default(180)
+  total_marks            Int                    @default(300)
+  created_at             DateTime?              @default(now())
+  mock_blueprint_items   mock_blueprint_items[]
+  courses                courses                @relation(fields: [course_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model mock_test_questions {
+  id           String     @id @default(uuid())
+  mock_test_id String
+  question_id  String
+  created_at   DateTime?  @default(now())
+  mock_tests   mock_tests @relation(fields: [mock_test_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  questions    questions  @relation(fields: [question_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([mock_test_id, question_id], map: "mock_test_questions_unique_pair")
+  @@index([mock_test_id], map: "idx_mock_test_questions_mock_test_id")
+}
+
+model mock_tests {
+  id                    String                  @id @default(uuid())
+  course_id             String
+  title                 String
+  description           String?
+  duration_minutes      Int?                    @default(60)
+  total_marks           Int?                    @default(100)
+  is_active             Boolean?                @default(true)
+  created_at            DateTime?               @default(now())
+  updated_at            DateTime?               @default(now())
+  marks_correct         Decimal?                @default(1) @db.Decimal
+  marks_incorrect       Decimal?                @default(0) @db.Decimal
+  marks_unattempted     Decimal?                @default(0) @db.Decimal
+  subject_id            String?
+  exam_attempts         exam_attempts[]
+  exam_rank_predictions exam_rank_predictions[]
+  mock_test_questions   mock_test_questions[]
+  courses               courses                 @relation(fields: [course_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  subjects              subjects?               @relation(fields: [subject_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([course_id], map: "idx_mock_tests_course_id")
+  @@index([subject_id], map: "idx_mock_tests_subject")
+}
+
+model organizations {
+  id                   String                 @id @default(uuid())
+  name                 String
+  slug                 String                 @unique
+  logo_url             String?                @db.LongText
+  hero_image_url       String?                @db.LongText
+  welcome_message      String?
+  created_at           DateTime?              @default(now())
+  email                String?
+  phone                String?
+  updated_at           DateTime?              @default(now())
+  principal_message    String?
+  principal_image      String?                @db.LongText
+  contact_messages     contact_messages[]
+  profiles             profiles[]
+  school_announcements school_announcements[]
+  school_testimonials  school_testimonials[]
+}
+
+model practice_tests {
+  id                String          @id @default(uuid())
+  title             String
+  description       String?
+  subject_id        String?
+  duration_minutes  Int?            @default(30)
+  is_published      Boolean?        @default(true)
+  created_at        DateTime?       @default(now())
+  marks_correct     Int?            @default(1)
+  marks_incorrect   Int?            @default(0)
+  marks_unattempted Int?            @default(0)
+  exam_attempts     exam_attempts[]
+  subjects          subjects?       @relation(fields: [subject_id], references: [id], onUpdate: NoAction)
+  questions         questions[]
+}
+
+model prep_modules {
+  id           String      @id @default(uuid())
+  title        String
+  description  String?
+  subject_id   String?
+  difficulty   String?     @default("Beginner")
+  is_published Boolean?    @default(true)
+  created_at   DateTime?   @default(now())
+  subjects     subjects?   @relation(fields: [subject_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  questions    questions[]
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model profiles {
+  id                                                            String                @id
+  email                                                         String?
+  full_name                                                     String?
+  role                                                          String?               @default("student")
+  organization_id                                               String?
+  created_at                                                    DateTime?             @default(now())
+  phone_no                                                      String?
+  phone                                                         String?
+  updated_at                                                    DateTime?             @default(now())
+  stream                                                        String?
+  state                                                         String?
+  city                                                          String?
+  blogs                                                         blogs[]
+  organizations                                                 organizations?        @relation(fields: [organization_id], references: [id], onUpdate: NoAction)
+  student_enrollments_student_enrollments_assigned_byToprofiles student_enrollments[] @relation("student_enrollments_assigned_byToprofiles")
+  student_enrollments_student_enrollments_user_idToprofiles     student_enrollments[] @relation("student_enrollments_user_idToprofiles")
+}
+
+model question_banks {
+  id          String      @id @default(uuid())
+  subject_id  String
+  title       String
+  description String?
+  created_at  DateTime    @default(now())
+  subjects    subjects    @relation(fields: [subject_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  questions   questions[]
+}
+
+model question_options {
+  id          String     @id @default(uuid())
+  question_id String?
+  text        String
+  is_correct  Boolean?   @default(false)
+  explanation String?
+  questions   questions? @relation(fields: [question_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model questions {
+  id                  String                @id @default(uuid())
+  module_id           String?
+  text                String
+  explanation         String?
+  order_index         Int?                  @default(0)
+  created_at          DateTime?             @default(now())
+  practice_test_id    String?
+  exam_id             String?
+  direction           String?
+  question_bank_id    String?
+  mock_test_questions mock_test_questions[]
+  question_options    question_options[]
+  exams               exams?                @relation(fields: [exam_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  prep_modules        prep_modules?         @relation(fields: [module_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  practice_tests      practice_tests?       @relation(fields: [practice_test_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  question_banks      question_banks?       @relation(fields: [question_bank_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model school_announcements {
+  id              String        @id @default(uuid())
+  organization_id String
+  title           String
+  content         String
+  created_at      DateTime?     @default(now())
+  organizations   organizations @relation(fields: [organization_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model school_testimonials {
+  id              String         @id @default(uuid())
+  organization_id String?
+  student_name    String
+  student_image   String?        @db.LongText
+  course_name     String?
+  message         String
+  created_at      DateTime       @default(now())
+  organizations   organizations? @relation(fields: [organization_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model student_enrollments {
+  id                                                 String    @id @default(uuid())
+  user_id                                            String
+  subject_id                                         String
+  assigned_by                                        String?
+  created_at                                         DateTime  @default(now())
+  profiles_student_enrollments_assigned_byToprofiles profiles? @relation("student_enrollments_assigned_byToprofiles", fields: [assigned_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  subjects                                           subjects  @relation(fields: [subject_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  profiles_student_enrollments_user_idToprofiles     profiles  @relation("student_enrollments_user_idToprofiles", fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([user_id, subject_id])
+}
+
+model subjects {
+  id                   String                 @id @default(uuid())
+  course_id            String?
+  title                String
+  created_at           DateTime?              @default(now())
+  exams                exams[]
+  mock_blueprint_items mock_blueprint_items[]
+  mock_tests           mock_tests[]
+  practice_tests       practice_tests[]
+  prep_modules         prep_modules[]
+  question_banks       question_banks[]
+  student_enrollments  student_enrollments[]
+  courses              courses?               @relation(fields: [course_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model tags {
+  id         String    @id @default(uuid())
+  name       String    @unique
+  created_at DateTime? @default(now())
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+
+model users {
+  id            String          @id @default(uuid())
+  name          String?
+  email         String?         @unique
+  emailVerified DateTime?
+  image         String?         @db.LongText
+  password      String?
+  role          String?         @default("student")
+  accounts      Account[]
+  sessions      Session[]
+  attempts      attempts[]
+  exam_attempts exam_attempts[]
+}
+
+model Account {
+  id                String  @id @default(uuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user users @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
