@@ -70,7 +70,7 @@ export default async function ReviewPage({
     <ReviewInterface 
       examTitle={examTitle}
       questions={formattedQuestions}
-      userAnswers={attempt.answers || {}} // Ensure defaults if null
+      userAnswers={(attempt.answers as Record<string, string>) || {}} // Ensure defaults if null
       backLink={backLink}
     />
   )

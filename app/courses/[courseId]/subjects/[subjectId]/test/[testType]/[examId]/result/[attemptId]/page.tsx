@@ -60,7 +60,7 @@ export default async function ResultPage({
 
   // 3. Calculate Detailed Stats
   const totalQuestions = questions.length
-  const userAnswers = attempt.answers || {}
+  const userAnswers = (attempt.answers as Record<string, string>) || {}
   
   let correctCount = 0
   let incorrectCount = 0
@@ -93,9 +93,10 @@ export default async function ResultPage({
   )`
 
   // Basic Stats
-  const score = attempt.score || 0
+  const score = attempt.score ?? 0
   const percentage = totalQuestions > 0 ? ((score / totalQuestions) * 100).toFixed(1) : "0.0"
-  const timeUsed = `${Math.floor(attempt.time_taken_seconds / 60)}m ${attempt.time_taken_seconds % 60}s`
+  const timeTaken = attempt.time_taken_seconds ?? 0
+  const timeUsed = `${Math.floor(timeTaken / 60)}m ${timeTaken % 60}s`
 
   // Dummy Topper Data
   const topperScore = Math.min(totalQuestions, score + 2)
