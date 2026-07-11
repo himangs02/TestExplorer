@@ -23,18 +23,27 @@ export default function LoginForm({ schoolSlug, schoolName }: LoginFormProps) {
     const email = formData.get('email') as string
     const password = formData.get('password') as string
 
-    const result = await signIn('credentials', {
-      redirect: false,
-      email,
-      password,
-      schoolSlug: schoolSlug || ''
-    })
-    
-    if (result?.error) {
-      setError(result.error)
+    try {
+      const result = await signIn('credentials', {
+        redirect: false,
+        email,
+        password,
+        schoolSlug: schoolSlug || ''
+      })
+      
+      if (result?.error) {
+        setError(result.error)
+        setLoading(false)
+      } else if (result?.ok) {
+        window.location.href = '/dashboard'
+      } else {
+        setError("An unexpected error occurred.")
+        setLoading(false)
+      }
+    } catch (err) {
+      console.error("Login Error:", err)
+      setError("Failed to connect to the authentication server. Please try again.")
       setLoading(false)
-    } else {
-      window.location.href = '/dashboard'
     }
   }
 
