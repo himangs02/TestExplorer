@@ -61,7 +61,7 @@ export default async function StreamsAdminPage() {
                     style={finalStyle}
                   >
                      {/* Show the actual icon instead of just the number */}
-                     <DynamicIcon name={stream.icon_key} className="w-5 h-5 text-gray-900 opacity-70" />
+                     <DynamicIcon name={stream.icon_key ?? 'GraduationCap'} className="w-5 h-5 text-gray-900 opacity-70" />
                   </div>
                   
                   <div>

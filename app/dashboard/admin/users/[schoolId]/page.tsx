@@ -49,7 +49,7 @@ if (sort === 'name_asc') {
     students.sort((a, b) => (b.full_name || '').localeCompare(a.full_name || ''))
   } else {
     // Default: Newest
-    students.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    students.sort((a, b) => new Date(b.created_at ?? 0).getTime() - new Date(a.created_at ?? 0).getTime())
   }
 
   // Get School Name for Header
@@ -157,7 +157,7 @@ if (sort === 'name_asc') {
                     <td className="px-8 py-5 text-right">
                       <EnrollmentManager 
                         studentId={student.id}
-                        studentName={student.full_name}
+                        studentName={student.full_name ?? 'Unknown'}
                         allSubjects={allSubjects || []} 
                       />
                     </td>

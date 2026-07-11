@@ -31,19 +31,19 @@ export default async function EditStreamPage({ params }: { params: Promise<{ id:
             </div>
             <div>
               <label className="block text-sm font-bold text-gray-900 mb-2">Sort Order</label>
-              <input name="order_index" defaultValue={stream.order_index} type="number" className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-black transition-all" />
+              <input name="order_index" defaultValue={stream.order_index ?? 0} type="number" className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-black transition-all" />
             </div>
           </div>
           
           <div>
             <label className="block text-sm font-bold text-gray-900 mb-2">Description</label>
-            <textarea name="description" defaultValue={stream.description} rows={3} className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-black transition-all" />
+            <textarea name="description" defaultValue={stream.description ?? ''} rows={3} className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-black transition-all" />
           </div>
 
           <div className="grid md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-bold text-gray-900 mb-2">Icon Key</label>
-              <select name="icon_key" defaultValue={stream.icon_key} className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-black bg-white transition-all">
+              <select name="icon_key" defaultValue={stream.icon_key ?? 'GraduationCap'} className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-black bg-white transition-all">
                 <option value="PenTool">Pen Tool (Engineering)</option>
                 <option value="Stethoscope">Stethoscope (Medical)</option>
                 <option value="Briefcase">Briefcase (Management)</option>
@@ -55,7 +55,7 @@ export default async function EditStreamPage({ params }: { params: Promise<{ id:
             </div>
             <div>
               <label className="block text-sm font-bold text-gray-900 mb-2">Background Color</label>
-              <select name="bg_color" defaultValue={stream.bg_color} className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-black bg-white transition-all">
+              <select name="bg_color" defaultValue={stream.bg_color ?? 'bg-gray-100'} className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-black bg-white transition-all">
                 <option value="bg-[#CEFF1A]">Neon Lime</option>
                 <option value="bg-[#D4F5FF]">Soft Cyan</option>
                 <option value="bg-[#E5D4FF]">Soft Purple</option>

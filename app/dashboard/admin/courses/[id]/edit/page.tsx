@@ -60,11 +60,11 @@ export default async function EditCoursePage({ params }: { params: Promise<{ id:
           
           <div>
             <label className="block text-sm font-bold text-gray-900 mb-2">Description</label>
-            <textarea name="description" defaultValue={course.description} rows={3} className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-black" />
+            <textarea name="description" defaultValue={course.description ?? ''} rows={3} className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-black" />
           </div>
 
           <div className="flex items-center gap-3">
-             <input type="checkbox" name="is_published" id="pub" defaultChecked={course.is_published} className="w-5 h-5 accent-black" />
+             <input type="checkbox" name="is_published" id="pub" defaultChecked={course.is_published ?? false} className="w-5 h-5 accent-black" />
              <label htmlFor="pub" className="text-sm font-medium text-gray-700">Published</label>
           </div>
 

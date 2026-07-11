@@ -41,8 +41,8 @@ export async function submitExamAction(
   let incorrectCount = 0
   const totalQuestions = questions.length
 
-  questions.forEach(q => {
-    const correctOption = q.question_options.find(o => o.is_correct)
+  questions.forEach((q: { id: string; question_options: { id: string; is_correct: boolean | null }[] }) => {
+    const correctOption = q.question_options.find((o: { id: string; is_correct: boolean | null }) => o.is_correct)
     const userSelectedOptionId = answers[q.id]
     
     // Check if user attempted the question

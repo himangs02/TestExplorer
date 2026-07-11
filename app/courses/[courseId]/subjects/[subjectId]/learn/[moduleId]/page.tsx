@@ -77,7 +77,11 @@ export default async function PrepModulePage({
     id: q.id,
     text: q.text,
     explanation: q.explanation,
-    options: q.question_options
+    options: q.question_options.map(opt => ({
+      id: opt.id,
+      text: opt.text,
+      is_correct: opt.is_correct ?? false,
+    })),
   }))
 
   // 5. Fetch All Modules for Sidebar

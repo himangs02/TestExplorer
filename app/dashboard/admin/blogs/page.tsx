@@ -57,12 +57,12 @@ export default async function AdminBlogsPage() {
                 </td>
                 <td className="px-6 py-4">
                   <div className="flex gap-1 flex-wrap">
-                    {blog.tags?.slice(0, 3).map((t: string) => (
+                    {Array.isArray(blog.tags) && (blog.tags as string[]).slice(0, 3).map((t: string) => (
                       <span key={t} className="px-2 py-0.5 bg-gray-100 text-gray-500 text-[10px] font-bold rounded border border-gray-200">
                         {t}
                       </span>
                     ))}
-                    {blog.tags?.length > 3 && <span className="text-xs text-gray-400">+{blog.tags.length - 3}</span>}
+                    {Array.isArray(blog.tags) && (blog.tags as string[]).length > 3 && <span className="text-xs text-gray-400">+{(blog.tags as string[]).length - 3}</span>}
                   </div>
                 </td>
                 <td className="px-6 py-4 text-right flex items-center justify-end gap-2">

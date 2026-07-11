@@ -17,7 +17,7 @@ import 'react-quill-new/dist/quill.snow.css'
 interface Props {
   blog?: any
   availableTags?: string[]
-  defaultAuthor?: { id: string, full_name: string } | null
+  defaultAuthor?: { id: string, full_name: string | null } | null
 }
 
 export default function BlogForm({ blog, availableTags = [], defaultAuthor }: Props) {

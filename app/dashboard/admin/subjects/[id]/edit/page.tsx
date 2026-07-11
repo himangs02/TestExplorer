@@ -37,7 +37,7 @@ export default async function EditSubjectPage({ params }: { params: Promise<{ id
             <div className="relative">
               <select 
                 name="course_id" 
-                defaultValue={subject.course_id}
+                defaultValue={subject.course_id ?? ''}
                 required
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-black bg-white appearance-none cursor-pointer"
               >

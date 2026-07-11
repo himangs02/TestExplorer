@@ -45,7 +45,7 @@ export default async function ManageSchoolsPage() {
                     {school.slug}
                   </span>
                   <span>•</span>
-                  <span>{new Date(school.created_at).toLocaleDateString()}</span>
+                  <span>{new Date(school.created_at ?? Date.now()).toLocaleDateString()}</span>
                 </div>
               </div>
             </div>

@@ -66,7 +66,7 @@ export default async function EditSchoolPage({ params }: { params: Promise<{ id:
             <label className="block text-sm font-bold text-gray-900 mb-2">Welcome Message</label>
             <textarea 
               name="welcome_message" 
-              defaultValue={school.welcome_message}
+              defaultValue={school.welcome_message ?? ''}
               rows={3}
               className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-black outline-none transition-all"
             />
