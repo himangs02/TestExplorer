@@ -60,7 +60,8 @@ export default async function ResultPage({
 
   // 3. Calculate Detailed Stats
   const totalQuestions = questions.length
-  const userAnswers = (attempt.answers as Record<string, string>) || {}
+  const parsedAnswers = typeof attempt.answers === 'string' ? JSON.parse(attempt.answers) : attempt.answers;
+  const userAnswers = (parsedAnswers as Record<string, string>) || {}
   
   let correctCount = 0
   let incorrectCount = 0

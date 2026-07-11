@@ -67,7 +67,7 @@ export async function submitExamAction(
         total_marks: totalQuestions,
         percentage: totalQuestions > 0 ? (score / totalQuestions) * 100 : 0,
         time_taken_seconds: timeTaken,
-        answers: answers,
+        answers: JSON.stringify(answers),
         exam_id: testType === 'mock' ? examId : null, 
         practice_test_id: testType === 'practice' ? examId : null 
       }

@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js"
+  provider   = "prisma-client-js"
   engineType = "library"
 }
 
@@ -15,9 +15,11 @@ model attempts {
   user_id      String
   test_id      String
   score        Int?
-  responses    Json?
+  responses    String?   @db.LongText
   submitted_at DateTime? @default(now())
   users        users     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([user_id], map: "attempts_user_id_fkey")
 }
 
 model blogs {
@@ -27,15 +29,15 @@ model blogs {
   excerpt                String?
   content                String?
   image_url              String?     @db.LongText
-  tags                   Json        @default("[]")
-  faqs                   Json?       @default("[]")
+  tags                   String      @db.LongText
+  faqs                   String?     @db.LongText
   is_featured            Boolean?    @default(false)
   is_published           Boolean?    @default(true)
   created_at             DateTime    @default(now())
   category_id            String?
   meta_title             String?
   meta_description       String?
-  keywords               Json
+  keywords               String      @db.LongText
   robots                 String?     @default("index, follow")
   canonical_url          String?
   og_title               String?
@@ -45,6 +47,9 @@ model blogs {
   enable_structured_data Boolean?    @default(true)
   profiles               profiles?   @relation(fields: [author_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   categories             categories? @relation(fields: [category_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([author_id], map: "blogs_author_id_fkey")
+  @@index([category_id], map: "blogs_category_id_fkey")
 }
 
 model categories {
@@ -71,6 +76,8 @@ model contact_messages {
   organization_id String?
   subject         String?
   organizations   organizations? @relation(fields: [organization_id], references: [id], onUpdate: NoAction)
+
+  @@index([organization_id], map: "contact_messages_organization_id_fkey")
 }
 
 model courses {
@@ -81,7 +88,7 @@ model courses {
   created_at            DateTime?               @default(now())
   category_id           String?
   slug                  String?                 @unique
-  details               Json?                   @default("{}")
+  details               String?                 @db.LongText
   categories            categories?             @relation(fields: [category_id], references: [id], onUpdate: NoAction)
   exam_rank_predictions exam_rank_predictions[]
   exams                 exams[]
@@ -90,6 +97,7 @@ model courses {
   subjects              subjects[]
 
   @@index([slug], map: "idx_courses_slug")
+  @@index([category_id], map: "courses_category_id_fkey")
 }
 
 model exam_attempts {
@@ -102,11 +110,11 @@ model exam_attempts {
   total_marks        Int?            @default(0)
   duration_minutes   Int?            @default(0)
   time_taken_seconds Int?            @default(0)
-  answers            Json?           @default("{}")
+  answers            String?         @db.LongText
   started_at         DateTime?       @default(now())
   completed_at       DateTime?
   mock_test_id       String?
-  percentage         Decimal?        @default(0) @db.Decimal
+  percentage         Decimal?        @default(0) @db.Decimal(10, 0)
   exams              exams?          @relation(fields: [exam_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   mock_tests         mock_tests?     @relation(fields: [mock_test_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   practice_tests     practice_tests? @relation(fields: [practice_test_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
@@ -115,13 +123,15 @@ model exam_attempts {
   @@index([mock_test_id], map: "idx_exam_attempts_mock_test")
   @@index([mock_test_id], map: "idx_exam_attempts_mock_test_id")
   @@index([user_id], map: "idx_exam_attempts_student")
+  @@index([exam_id], map: "exam_attempts_exam_id_fkey")
+  @@index([practice_test_id], map: "exam_attempts_practice_test_id_fkey")
 }
 
 model exam_rank_predictions {
   id                String      @id @default(uuid())
   exam_id           String?
-  min_score         Decimal     @db.Decimal
-  max_score         Decimal     @db.Decimal
+  min_score         Decimal     @db.Decimal(10, 0)
+  max_score         Decimal     @db.Decimal(10, 0)
   approx_rank       String?
   approx_percentile String?
   created_at        DateTime?   @default(now())
@@ -130,6 +140,7 @@ model exam_rank_predictions {
   mock_tests        mock_tests? @relation(fields: [exam_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([course_id, min_score, max_score], map: "idx_rank_predictions_course_score")
+  @@index([exam_id], map: "exam_rank_predictions_exam_id_fkey")
 }
 
 model exams {
@@ -143,13 +154,16 @@ model exams {
   category          String?         @default("practice")
   course_id         String?
   total_marks       Int?            @default(0)
-  marks_correct     Decimal?        @default(4) @db.Decimal
-  marks_incorrect   Decimal?        @default(-1) @db.Decimal
-  marks_unattempted Decimal?        @default(0) @db.Decimal
+  marks_correct     Decimal?        @default(4) @db.Decimal(10, 0)
+  marks_incorrect   Decimal?        @default(-1) @db.Decimal(10, 0)
+  marks_unattempted Decimal?        @default(0) @db.Decimal(10, 0)
   exam_attempts     exam_attempts[]
   courses           courses?        @relation(fields: [course_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   subjects          subjects?       @relation(fields: [subject_id], references: [id], onUpdate: NoAction)
   questions         questions[]
+
+  @@index([course_id], map: "exams_course_id_fkey")
+  @@index([subject_id], map: "exams_subject_id_fkey")
 }
 
 model mock_blueprint_items {
@@ -159,6 +173,9 @@ model mock_blueprint_items {
   question_count  Int
   mock_blueprints mock_blueprints @relation(fields: [blueprint_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   subjects        subjects        @relation(fields: [subject_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([blueprint_id], map: "mock_blueprint_items_blueprint_id_fkey")
+  @@index([subject_id], map: "mock_blueprint_items_subject_id_fkey")
 }
 
 model mock_blueprints {
@@ -170,6 +187,8 @@ model mock_blueprints {
   created_at             DateTime?              @default(now())
   mock_blueprint_items   mock_blueprint_items[]
   courses                courses                @relation(fields: [course_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([course_id], map: "mock_blueprints_course_id_fkey")
 }
 
 model mock_test_questions {
@@ -182,6 +201,7 @@ model mock_test_questions {
 
   @@unique([mock_test_id, question_id], map: "mock_test_questions_unique_pair")
   @@index([mock_test_id], map: "idx_mock_test_questions_mock_test_id")
+  @@index([question_id], map: "mock_test_questions_question_id_fkey")
 }
 
 model mock_tests {
@@ -194,9 +214,9 @@ model mock_tests {
   is_active             Boolean?                @default(true)
   created_at            DateTime?               @default(now())
   updated_at            DateTime?               @default(now())
-  marks_correct         Decimal?                @default(1) @db.Decimal
-  marks_incorrect       Decimal?                @default(0) @db.Decimal
-  marks_unattempted     Decimal?                @default(0) @db.Decimal
+  marks_correct         Decimal?                @default(1) @db.Decimal(10, 0)
+  marks_incorrect       Decimal?                @default(0) @db.Decimal(10, 0)
+  marks_unattempted     Decimal?                @default(0) @db.Decimal(10, 0)
   subject_id            String?
   exam_attempts         exam_attempts[]
   exam_rank_predictions exam_rank_predictions[]
@@ -241,6 +261,8 @@ model practice_tests {
   exam_attempts     exam_attempts[]
   subjects          subjects?       @relation(fields: [subject_id], references: [id], onUpdate: NoAction)
   questions         questions[]
+
+  @@index([subject_id], map: "practice_tests_subject_id_fkey")
 }
 
 model prep_modules {
@@ -253,6 +275,8 @@ model prep_modules {
   created_at   DateTime?   @default(now())
   subjects     subjects?   @relation(fields: [subject_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   questions    questions[]
+
+  @@index([subject_id], map: "prep_modules_subject_id_fkey")
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
@@ -273,6 +297,8 @@ model profiles {
   organizations                                                 organizations?        @relation(fields: [organization_id], references: [id], onUpdate: NoAction)
   student_enrollments_student_enrollments_assigned_byToprofiles student_enrollments[] @relation("student_enrollments_assigned_byToprofiles")
   student_enrollments_student_enrollments_user_idToprofiles     student_enrollments[] @relation("student_enrollments_user_idToprofiles")
+
+  @@index([organization_id], map: "profiles_organization_id_fkey")
 }
 
 model question_banks {
@@ -283,6 +309,8 @@ model question_banks {
   created_at  DateTime    @default(now())
   subjects    subjects    @relation(fields: [subject_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   questions   questions[]
+
+  @@index([subject_id], map: "question_banks_subject_id_fkey")
 }
 
 model question_options {
@@ -292,6 +320,8 @@ model question_options {
   is_correct  Boolean?   @default(false)
   explanation String?
   questions   questions? @relation(fields: [question_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([question_id], map: "question_options_question_id_fkey")
 }
 
 model questions {
@@ -311,6 +341,11 @@ model questions {
   prep_modules        prep_modules?         @relation(fields: [module_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   practice_tests      practice_tests?       @relation(fields: [practice_test_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   question_banks      question_banks?       @relation(fields: [question_bank_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([exam_id], map: "questions_exam_id_fkey")
+  @@index([module_id], map: "questions_module_id_fkey")
+  @@index([practice_test_id], map: "questions_practice_test_id_fkey")
+  @@index([question_bank_id], map: "questions_question_bank_id_fkey")
 }
 
 model school_announcements {
@@ -320,6 +355,8 @@ model school_announcements {
   content         String
   created_at      DateTime?     @default(now())
   organizations   organizations @relation(fields: [organization_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([organization_id], map: "school_announcements_organization_id_fkey")
 }
 
 model school_testimonials {
@@ -331,6 +368,8 @@ model school_testimonials {
   message         String
   created_at      DateTime       @default(now())
   organizations   organizations? @relation(fields: [organization_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([organization_id], map: "school_testimonials_organization_id_fkey")
 }
 
 model student_enrollments {
@@ -344,6 +383,8 @@ model student_enrollments {
   profiles_student_enrollments_user_idToprofiles     profiles  @relation("student_enrollments_user_idToprofiles", fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@unique([user_id, subject_id])
+  @@index([assigned_by], map: "student_enrollments_assigned_by_fkey")
+  @@index([subject_id], map: "student_enrollments_subject_id_fkey")
 }
 
 model subjects {
@@ -359,6 +400,8 @@ model subjects {
   question_banks       question_banks[]
   student_enrollments  student_enrollments[]
   courses              courses?               @relation(fields: [course_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([course_id], map: "subjects_course_id_fkey")
 }
 
 model tags {
@@ -366,8 +409,6 @@ model tags {
   name       String    @unique
   created_at DateTime? @default(now())
 }
-
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 
 model users {
   id            String          @id @default(uuid())
@@ -396,10 +437,10 @@ model Account {
   scope             String?
   id_token          String? @db.Text
   session_state     String?
-
-  user users @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              users   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@index([userId], map: "Account_userId_fkey")
 }
 
 model Session {
@@ -408,6 +449,8 @@ model Session {
   userId       String
   expires      DateTime
   user         users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId], map: "Session_userId_fkey")
 }
 
 model VerificationToken {

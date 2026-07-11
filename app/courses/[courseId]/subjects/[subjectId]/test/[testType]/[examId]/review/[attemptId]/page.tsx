@@ -65,12 +65,14 @@ export default async function ReviewPage({
   // Link to go back to (Result Page)
   const defaultBack = `/courses/${courseId}/subjects/${subjectId}/test/${testType}/${examId}/result/${attemptId}`
   const backLink = returnTo ? decodeURIComponent(returnTo as string) : defaultBack
+  
+  const parsedAnswers = typeof attempt.answers === 'string' ? JSON.parse(attempt.answers) : attempt.answers;
 
   return (
     <ReviewInterface 
       examTitle={examTitle}
       questions={formattedQuestions}
-      userAnswers={(attempt.answers as Record<string, string>) || {}} // Ensure defaults if null
+      userAnswers={(parsedAnswers as Record<string, string>) || {}} // Ensure defaults if null
       backLink={backLink}
     />
   )
