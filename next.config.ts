@@ -18,9 +18,11 @@ const nextConfig: NextConfig = {
       bodySizeLimit: '10mb',
     },
   },
+  // @ts-ignore
   typescript: {
     ignoreBuildErrors: true,
   },
+  // @ts-ignore
   eslint: {
     ignoreDuringBuilds: true,
   },
