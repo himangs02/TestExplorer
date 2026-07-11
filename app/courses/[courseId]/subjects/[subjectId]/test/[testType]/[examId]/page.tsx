@@ -92,8 +92,17 @@ export default async function TestPage({
      }
   } else {
      // MOCK
-     examData = await prisma.mock_tests.findUnique({ where: { id: examId } })
-     if(examData) {
+     const mockExam = await prisma.mock_tests.findUnique({ where: { id: examId } })
+     if(mockExam) {
+        // Strip Decimals to avoid Client Component serialization errors
+        examData = {
+          id: mockExam.id,
+          title: mockExam.title,
+          description: mockExam.description,
+          duration_minutes: mockExam.duration_minutes,
+          total_marks: mockExam.total_marks
+        }
+
         const q = await prisma.mock_test_questions.findMany({
           where: { mock_test_id: examId },
           orderBy: { created_at: 'asc' },

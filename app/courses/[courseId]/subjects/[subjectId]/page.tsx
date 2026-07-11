@@ -71,10 +71,14 @@ export default async function SubjectDetailsPage({
     include: { _count: { select: { mock_test_questions: true } } }
   })
 
-  // Helper to extract count safely
+  // Helper to extract count safely and strip non-serializable objects (like Decimals)
   const formatData = (data: any[]) => {
     return data.map((item) => ({
-      ...item,
+      id: item.id,
+      title: item.title,
+      description: item.description || null,
+      difficulty: item.difficulty || null,
+      duration_minutes: item.duration_minutes || null,
       question_count: item._count?.questions || item._count?.mock_test_questions || 0
     }))
   }
