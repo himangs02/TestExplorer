@@ -54,17 +54,17 @@ export default async function SchoolStudentsPage({
   // 3. Handle Sorting
   switch (sort) {
     case 'name_asc':
-      students.sort((a, b) => a.full_name.localeCompare(b.full_name))
+      students.sort((a, b) => (a.full_name || '').localeCompare(b.full_name || ''))
       break
     case 'name_desc':
-      students.sort((a, b) => b.full_name.localeCompare(a.full_name))
+      students.sort((a, b) => (b.full_name || '').localeCompare(a.full_name || ''))
       break
     case 'oldest':
-      students.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+      students.sort((a, b) => new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime())
       break
     case 'newest':
     default:
-      students.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+      students.sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime())
       break
   }
 
@@ -106,9 +106,9 @@ export default async function SchoolStudentsPage({
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 font-bold border border-gray-200">
-                          {student.full_name.charAt(0).toUpperCase()}
+                          {(student.full_name || '?').charAt(0).toUpperCase()}
                         </div>
-                        <span className="font-bold text-gray-900">{student.full_name}</span>
+                        <span className="font-bold text-gray-900">{student.full_name || 'Unknown'}</span>
                       </div>
                     </td>
 
@@ -129,7 +129,7 @@ export default async function SchoolStudentsPage({
                     <td className="px-6 py-4 text-right">
                       <div className="inline-flex items-center gap-2 text-sm text-gray-500">
                         <Calendar className="w-3.5 h-3.5" />
-                        {new Date(student.created_at).toLocaleDateString()}
+                        {new Date(student.created_at || Date.now()).toLocaleDateString()}
                       </div>
                     </td>
                   </tr>

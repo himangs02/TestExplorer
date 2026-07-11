@@ -91,7 +91,7 @@ export default async function BlogsPage({
                   {/* Category Badge Overlay */}
                   <div className="absolute top-4 left-4">
                     <span className="px-3 py-1 bg-blue-600 text-white text-xs font-bold rounded-full uppercase tracking-wide">
-                      {post.tags?.[0] || 'General'}
+                      {Array.isArray(post.tags) ? (post.tags as any)[0] : 'General'}
                     </span>
                   </div>
                 </div>

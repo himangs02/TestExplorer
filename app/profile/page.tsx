@@ -59,7 +59,7 @@ export default async function ProfilePage() {
                <p className="text-sm font-medium text-gray-500 capitalize">{profile?.role?.replace('_', ' ')} Account</p>
              </div>
 
-             <ProfileForm profile={profile} email={user.email} />
+             <ProfileForm profile={profile as any} email={user.email || undefined} />
           </div>
         </div>
 

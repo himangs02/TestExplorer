@@ -76,7 +76,7 @@ export default async function AnnouncementsPage() {
                      <h3 className="font-bold text-gray-900 text-lg mb-1">{item.title}</h3>
                      <p className="text-gray-600 text-sm leading-relaxed">{item.content}</p>
                      <p className="text-xs text-gray-400 mt-3 font-medium">
-                       Posted on {new Date(item.created_at).toLocaleDateString()}
+                       Posted on {new Date(item.created_at || Date.now()).toLocaleDateString()}
                      </p>
                    </div>
                    <form action={deleteAnnouncementAction}>

@@ -13,7 +13,7 @@ export default async function MyExamsPage() {
   // Fetch all attempts with full hierarchy to build links
   const attempts = await prisma.exam_attempts.findMany({
     where: { user_id: user.id },
-    orderBy: { created_at: 'desc' },
+    orderBy: { started_at: 'desc' },
     include: {
       exams: {
         select: {
@@ -62,7 +62,7 @@ export default async function MyExamsPage() {
             {attempts.map((attempt) => {
               // Determine Type & Data
               const isMock = !!attempt.exam_id
-              const testData = isMock ? attempt.exams : attempt.practice_tests
+              const testData = isMock ? (attempt as any).exams : (attempt as any).practice_tests
               
               // Safeguard if test was deleted
               if (!testData) return null
@@ -81,10 +81,10 @@ export default async function MyExamsPage() {
               const resultLink = `/courses/${courseId}/subjects/${subjectId}/test/${type}/${examId}/result/${attempt.id}?returnTo=${returnPath}`
               const reviewLink = `/courses/${courseId}/subjects/${subjectId}/test/${type}/${examId}/review/${attempt.id}?returnTo=${returnPath}`
 
-              const date = new Date(attempt.created_at).toLocaleDateString('en-US', { 
+              const date = new Date(attempt.started_at || new Date()).toLocaleDateString('en-US', { 
                 weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' 
               })
-              const time = new Date(attempt.created_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+              const time = new Date(attempt.started_at || new Date()).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
 
               return (
                 <div key={attempt.id} className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:bg-gray-50 transition-colors">
@@ -115,8 +115,8 @@ export default async function MyExamsPage() {
                         </div>
                         <div>
                           <div className="text-xs font-bold text-gray-400 uppercase tracking-wider">Accuracy</div>
-                          <div className={`text-lg font-black ${attempt.percentage >= 70 ? 'text-green-600' : attempt.percentage >= 40 ? 'text-yellow-600' : 'text-red-600'}`}>
-                            {attempt.percentage}%
+                          <div className={`text-lg font-black ${Number(attempt.percentage || 0) >= 70 ? 'text-green-600' : Number(attempt.percentage || 0) >= 40 ? 'text-yellow-600' : 'text-red-600'}`}>
+                            {String(attempt.percentage || 0)}%
                           </div>
                         </div>
                       </div>

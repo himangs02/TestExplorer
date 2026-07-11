@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { login } from '@/app/auth/actions'
+import { signIn } from 'next-auth/react'
 import { Loader2 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -14,20 +14,27 @@ export default function LoginForm({ schoolSlug, schoolName }: LoginFormProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const handleSubmit = async (formData: FormData) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
     setLoading(true)
     setError(null)
     
-    // Add school slug if not present (though hidden input handles it)
-    if (schoolSlug && !formData.get('schoolSlug')) {
-      formData.append('schoolSlug', schoolSlug)
-    }
+    const formData = new FormData(e.currentTarget)
+    const email = formData.get('email') as string
+    const password = formData.get('password') as string
 
-    const result = await login(formData)
+    const result = await signIn('credentials', {
+      redirect: false,
+      email,
+      password,
+      schoolSlug: schoolSlug || ''
+    })
     
     if (result?.error) {
       setError(result.error)
       setLoading(false)
+    } else {
+      window.location.href = '/dashboard'
     }
   }
 
@@ -42,7 +49,7 @@ export default function LoginForm({ schoolSlug, schoolName }: LoginFormProps) {
         </p>
       </div>
 
-      <form action={handleSubmit} className="mt-8 space-y-6">
+      <form onSubmit={handleSubmit} className="mt-8 space-y-6">
         
         {/* --- CRITICAL FIX: HIDDEN INPUT --- */}
         <input type="hidden" name="schoolSlug" value={schoolSlug || ''} />
