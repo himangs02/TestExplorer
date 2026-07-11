@@ -65,17 +65,17 @@ export default async function SubjectDetailsPage({
   })
   
   // C. Mock Tests
-  const mockRes = await prisma.exams.findMany({
-    where: { subject_id: subjectId, category: 'mock', is_published: true },
+  const mockRes = await prisma.mock_tests.findMany({
+    where: { subject_id: subjectId, is_active: true },
     orderBy: { created_at: 'desc' },
-    include: { _count: { select: { questions: true } } }
+    include: { _count: { select: { mock_test_questions: true } } }
   })
 
   // Helper to extract count safely
   const formatData = (data: any[]) => {
     return data.map((item) => ({
       ...item,
-      question_count: item._count?.questions || 0
+      question_count: item._count?.questions || item._count?.mock_test_questions || 0
     }))
   }
 

@@ -53,8 +53,8 @@ export default async function TestPage({
      } 
      else if (testType === 'mock') {
         // Fetch top 2 mock tests (Free Tier)
-        const allowedTests = await prisma.exams.findMany({
-          where: { subject_id: subjectId, category: 'mock', is_published: true },
+        const allowedTests = await prisma.mock_tests.findMany({
+          where: { subject_id: subjectId, is_active: true },
           orderBy: { created_at: 'desc' }, // Must match Subject Page sort order
           select: { id: true },
           take: 2
@@ -92,21 +92,25 @@ export default async function TestPage({
      }
   } else {
      // MOCK
-     examData = await prisma.exams.findUnique({ where: { id: examId } })
+     examData = await prisma.mock_tests.findUnique({ where: { id: examId } })
      if(examData) {
-        const q = await prisma.questions.findMany({
-          where: { exam_id: examId },
-          orderBy: { order_index: 'asc' },
+        const q = await prisma.mock_test_questions.findMany({
+          where: { mock_test_id: examId },
+          orderBy: { created_at: 'asc' },
           select: {
-            id: true,
-            text: true,
-            direction: true,
-            question_options: { select: { id: true, text: true } }
+            questions: {
+              select: {
+                id: true,
+                text: true,
+                direction: true,
+                question_options: { select: { id: true, text: true } }
+              }
+            }
           }
         })
-        questionsData = q.map(question => ({
-          ...question,
-          options: question.question_options
+        questionsData = q.map(mockQ => ({
+          ...mockQ.questions,
+          options: mockQ.questions.question_options
         }))
      }
   }

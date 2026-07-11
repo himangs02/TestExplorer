@@ -26,10 +26,13 @@ export async function submitExamAction(
       select: { id: true, question_options: { select: { id: true, is_correct: true } } }
     })
   } else {
-    questions = await prisma.questions.findMany({
-      where: { exam_id: examId },
-      select: { id: true, question_options: { select: { id: true, is_correct: true } } }
+    const mockQs = await prisma.mock_test_questions.findMany({
+      where: { mock_test_id: examId },
+      select: {
+        questions: { select: { id: true, question_options: { select: { id: true, is_correct: true } } } }
+      }
     })
+    questions = mockQs.map(m => m.questions)
   }
 
   if (!questions) {

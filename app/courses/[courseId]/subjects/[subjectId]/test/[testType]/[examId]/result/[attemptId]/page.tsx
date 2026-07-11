@@ -46,16 +46,19 @@ export default async function ResultPage({
       select: { id: true, question_options: { select: { id: true, is_correct: true } } }
     })
   } else {
-    const examData = await prisma.exams.findUnique({
+    const examData = await prisma.mock_tests.findUnique({
       where: { id: examId },
       select: { title: true }
     })
     if (examData) examTitle = examData.title
 
-    questions = await prisma.questions.findMany({
-      where: { exam_id: examId },
-      select: { id: true, question_options: { select: { id: true, is_correct: true } } }
+    const mockQs = await prisma.mock_test_questions.findMany({
+      where: { mock_test_id: examId },
+      select: {
+        questions: { select: { id: true, question_options: { select: { id: true, is_correct: true } } } }
+      }
     })
+    questions = mockQs.map(m => m.questions)
   }
 
   // 3. Calculate Detailed Stats

@@ -39,19 +39,23 @@ export default async function ReviewPage({
       }
     })
   } else {
-    const data = await prisma.exams.findUnique({ where: { id: examId }, select: { title: true } })
+    const data = await prisma.mock_tests.findUnique({ where: { id: examId }, select: { title: true } })
     if (data) examTitle = data.title
 
-    questions = await prisma.questions.findMany({
-      where: { exam_id: examId },
-      orderBy: { order_index: 'asc' },
+    const mockQs = await prisma.mock_test_questions.findMany({
+      where: { mock_test_id: examId },
       select: {
-        id: true,
-        text: true,
-        explanation: true,
-        question_options: { select: { id: true, text: true, is_correct: true } }
+        questions: {
+          select: {
+            id: true,
+            text: true,
+            explanation: true,
+            question_options: { select: { id: true, text: true, is_correct: true } }
+          }
+        }
       }
     })
+    questions = mockQs.map(m => m.questions)
   }
 
   if (!questions) return <div>Failed to load questions.</div>
