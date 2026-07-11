@@ -102,7 +102,7 @@ export default async function BlogsPage({
                   <div className="flex items-center gap-4 text-xs text-gray-500 font-medium mb-3">
                     <div className="flex items-center gap-1.5">
                       <Calendar className="w-3.5 h-3.5" />
-                      {formatDate(post.created_at)}
+                      {formatDate(post.created_at.toISOString())}
                     </div>
                     <div className="flex items-center gap-1.5">
                       <Clock className="w-3.5 h-3.5" />
@@ -159,7 +159,7 @@ export default async function BlogsPage({
                     />
                     <div className="absolute top-4 left-4">
                       <span className="px-3 py-1 bg-blue-600 text-white text-[10px] font-bold rounded-full uppercase tracking-wide">
-                        {post.tags?.[0] || 'Article'}
+                        {Array.isArray(post.tags) ? (post.tags as any)[0] : 'Article'}
                       </span>
                     </div>
                   </div>
@@ -168,7 +168,7 @@ export default async function BlogsPage({
                   <div className="p-5 flex flex-col flex-1">
                     <div className="flex items-center gap-4 text-xs text-gray-400 font-medium mb-3">
                       <span className="flex items-center gap-1">
-                        <Calendar className="w-3 h-3" /> {formatDate(post.created_at)}
+                        <Calendar className="w-3 h-3" /> {formatDate(post.created_at.toISOString())}
                       </span>
                       <span className="flex items-center gap-1">
                         <Clock className="w-3 h-3" /> 5 min read
