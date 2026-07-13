@@ -54,7 +54,7 @@ export default async function DashboardLayout({
     }
   }
 
-  const basePath = subdomain ? "/" : ""
+  const basePath = ""
 
   const rawNavItems = [
     { label: 'My Stats', href: '/dashboard', iconName: 'LayoutDashboard', roles: ['student'] },
