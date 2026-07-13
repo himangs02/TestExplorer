@@ -17,8 +17,8 @@ interface SiteHeaderProps {
 export function SiteHeader({ school, user, profile, schoolSlug }: SiteHeaderProps) {
   const pathname = usePathname();
 
-  // Define the Base Path (e.g., "/ops" or "")
-  const basePath = schoolSlug ? `/${schoolSlug}` : "";
+  // Define the Base Path (subdomain routing does not use path prefixes)
+  const basePath = "";
 
   // 1. Hide Navbar on Test/Practice Pages
   // We strip the schoolSlug from the pathname to check against prefixes reliably
