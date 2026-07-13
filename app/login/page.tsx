@@ -4,6 +4,7 @@ import { signIn } from 'next-auth/react'
 import { useState } from 'react'
 import { Eye, EyeOff, Loader2 } from 'lucide-react'
 import Image from 'next/image'
+import { toast } from 'sonner'
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false)
@@ -18,6 +19,7 @@ export default function LoginPage() {
 
     setLoading(true)
     setError(null)
+    const toastId = toast.loading('Signing in...')
     
     const result = await signIn('credentials', {
       email,
@@ -25,10 +27,13 @@ export default function LoginPage() {
       redirect: false
     })
     
+    toast.dismiss(toastId)
     if (result?.error) {
       setError(result.error)
       setLoading(false)
+      toast.error(result.error === 'CredentialsSignin' ? 'Invalid email or password' : result.error)
     } else {
+      toast.success('Signed in successfully!')
       // successful login, redirect to dashboard
       window.location.href = '/dashboard'
     }

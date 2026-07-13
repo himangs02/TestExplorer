@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { signOut } from 'next-auth/react'
+import { toast } from 'sonner'
 import { 
   LogOut, 
   LayoutDashboard, 
@@ -105,6 +106,7 @@ export default function UserNav({ profile, email }: UserNavProps) {
           className="text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer py-2.5"
           onSelect={async (e) => {
             e.preventDefault() 
+            const toastId = toast.loading('Signing out...')
             if (typeof window !== 'undefined' && 'credentials' in navigator) {
               try {
                 await navigator.credentials.preventSilentAccess();
