@@ -28,6 +28,9 @@ export default async function AdminMockTestsPage() {
   // Map to the shape expected by CategoryAccordion
   const formattedMocks = mockTests.map(mock => ({
     ...mock,
+    marks_correct: mock.marks_correct ? Number(mock.marks_correct) : 0,
+    marks_incorrect: mock.marks_incorrect ? Number(mock.marks_incorrect) : 0,
+    marks_unattempted: mock.marks_unattempted ? Number(mock.marks_unattempted) : 0,
     questions: [{ count: mock.mock_test_questions.length }]
   }))
 
