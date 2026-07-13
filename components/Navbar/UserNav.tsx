@@ -103,8 +103,15 @@ export default function UserNav({ profile, email }: UserNavProps) {
         
         <DropdownMenuItem 
           className="text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer py-2.5"
-          onSelect={(e) => {
+          onSelect={async (e) => {
             e.preventDefault() 
+            if (typeof window !== 'undefined' && 'credentials' in navigator) {
+              try {
+                await navigator.credentials.preventSilentAccess();
+              } catch (err) {
+                console.error("Failed to prevent silent access:", err);
+              }
+            }
             signOut({ callbackUrl: '/' })
           }}
         >
