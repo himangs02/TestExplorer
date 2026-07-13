@@ -41,7 +41,8 @@ export default async function SuperAdminDashboard() {
       include: {
         users: true,
         exams: true,
-        mock_tests: true
+        mock_tests: true,
+        practice_tests: true
       }
     })
   ])
