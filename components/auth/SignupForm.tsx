@@ -8,6 +8,7 @@ import SearchSchoolInput from '@/components/signup/schoolSearchInput'
 import { toast } from "sonner"
 import { State, City } from 'country-state-city'
 import { useRouter } from 'next/navigation'
+import { signIn } from 'next-auth/react'
 
 interface SignupFormProps {
   school?: { id: string; name: string } | null
@@ -52,11 +53,21 @@ export default function SignupForm({ school, redirectTo, prefilledEmail }: Signu
         toast.error(result.error)
         setError(result.error)
         setLoading(false)
-      } else if (result?.success && (result as any)?.redirectUrl) {
+      } else if (result?.success) {
         toast.dismiss(toastId)
         toast.success('Account created successfully!')
-        // Redirect to the URL returned by the server action (Ad funnel or Dashboard)
-        router.push((result as any).redirectUrl)
+        
+        // Auto-login after successful signup
+        const email = formData.get('email') as string
+        const password = formData.get('password') as string
+        await signIn('credentials', {
+          email,
+          password,
+          redirect: false
+        })
+
+        const destination = redirectTo || (result as any)?.redirectUrl || '/categories'
+        router.push(destination)
       }
     } catch (err) {
       toast.dismiss(toastId)

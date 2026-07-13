@@ -23,11 +23,7 @@ export default async function CategoryExamsPage({
   })
 
   // --- SMART REDIRECT LOGIC ---
-  // Only auto-redirect for "CUET" because it's a specific exam, not a stream.
-  // For Engineering/Medical, we ALWAYS show the list, so users can see "JEE Main", "JEE Advanced", etc.
-  if (category.title.trim().toUpperCase() === 'CUET' && exams && exams.length > 0) {
-    redirect(`/courses/${exams[0].id}`)
-  }
+  // (Removed auto-redirect to follow the correct page hierarchy)
 
   // --- LIST VIEW ---
   return (
@@ -57,7 +53,7 @@ export default async function CategoryExamsPage({
             exams.map((exam) => (
               <Link 
                 key={exam.id}
-                href={`/courses/${exam.id}`} 
+                href={`/exams/${exam.slug}`} 
                 className="group block relative"
               >
                 <div className="relative z-10 p-8 rounded-4xl border-2 border-black bg-white transition-all hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
