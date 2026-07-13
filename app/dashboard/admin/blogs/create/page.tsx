@@ -26,7 +26,7 @@ export default async function CreateBlogPage() {
   return (
     <BlogForm 
       availableTags={tags?.map(t => t.name) || []} 
-      defaultAuthor={currentUserProfile} // Pass current user
+      defaultAuthor={currentUserProfile as any} // Pass current user
     />
   )
 }

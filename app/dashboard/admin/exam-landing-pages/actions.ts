@@ -85,7 +85,7 @@ export async function createExamStub(title: string, slug: string) {
       data: { 
         title, 
         slug, 
-        details: {}, // Start with empty details
+        details: '{}', // Start with empty details
         category_id: '' // Provide a dummy or fetch valid if required, assuming it might be optional or handled
       },
       select: { id: true }

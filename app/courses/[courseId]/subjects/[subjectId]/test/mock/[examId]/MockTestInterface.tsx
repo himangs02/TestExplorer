@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Info, Loader2 } from 'lucide-react' 
-import { submitExamAction } from '../../[testType]/[examId]/actions'
+import { submitExamAction } from '@/app/courses/[courseId]/subjects/[subjectId]/test/[testType]/[examId]/actions' 
 import { InstructionStage } from '@/components/exam/stages/InstructionStage'
 import { ConsentStage } from '@/components/exam/stages/ConsentStage'
 import { ResultReportModal } from '@/components/exam/modals/ResultReportModal'
@@ -14,26 +14,19 @@ import { toast } from 'sonner'
 interface MockInterfaceProps {
   exam: any
   questions: Question[]
-  examId: string
   courseId: string
   subjectId: string
+  examId: string
   user: any
 }
 
-export default function MockTestInterface({
-  exam,
-  questions,
-  examId,
-  courseId,
-  subjectId,
-  user
+export default function MockTestInterface({ 
+  exam, questions, courseId, subjectId, examId, user
 }: MockInterfaceProps) {
   const router = useRouter()
   const [stage, setStage] = useState<'instructions' | 'consent' | 'test' | 'report'>('instructions')
-  
-  const [timeLeft, setTimeLeft] = useState((exam.duration_minutes || 180) * 60)
+  const [timeLeft, setTimeLeft] = useState((exam?.duration_minutes || 180) * 60)
   const [currentQIndex, setCurrentQIndex] = useState(0)
-  
   const [answers, setAnswers] = useState<Record<string, string>>({}) 
   const [questionStatus, setQuestionStatus] = useState<Record<string, string>>({}) 
   const [reportData, setReportData] = useState<any>(null)
@@ -45,8 +38,8 @@ export default function MockTestInterface({
   if (!questions || questions.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100 font-sans">
-        <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md text-center border border-gray-200">
-          <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-600">
+        <div className="bg-white p-8 rounded shadow-md text-center max-w-md">
+          <div className="w-16 h-16 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center mx-auto mb-4">
             <Info className="w-8 h-8" />
           </div>
           <h2 className="text-xl font-bold text-gray-900 mb-2">No Questions Found</h2>
@@ -63,7 +56,7 @@ export default function MockTestInterface({
       setTimeLeft(prev => {
         if (prev <= 1) {
           clearInterval(timer)
-          handleSubmit() 
+          handleSubmit()
           return 0
         }
         return prev - 1
@@ -104,35 +97,42 @@ export default function MockTestInterface({
     const timeTaken = ((exam.duration_minutes || 180) * 60) - timeLeft
     
     try {
-      const result = await submitExamAction(examId, courseId, subjectId, answers, timeTaken, 'mock')
+      const result: any = await submitExamAction(examId, courseId, subjectId, answers, timeTaken, 'mock')
       
-      if (!result.success) {
-        toast.error("Submission failed.")
+      if (result && 'error' in result) {
+        toast.error(result.error)
         setIsSubmitting(false)
         return
       }
 
-      const returnPath = encodeURIComponent('/dashboard')
-      const url = result.redirectUrl || '/dashboard'
-      setReviewUrl(url)
+      // 1. Construct the Review URL
+      const attemptId = result.attemptId 
+      
+      if (attemptId) {
+        const returnPath = encodeURIComponent('/dashboard')
+        const url = `/courses/${courseId}/subjects/${subjectId}/test/mock/${examId}/review/${attemptId}?returnTo=${returnPath}`
+        setReviewUrl(url)
+      }
 
+      // 2. Set Report Data (Including Rank Prediction)
       setReportData({
-        examTitle: exam.title || 'Test Result',
-        sections: [],
+        examTitle: result.examTitle || 'Test Result',
+        sections: result.sections || [],
         score: result.score ?? 0,            
-        totalMarks: questions.length,
+        totalMarks: result.totalMarks ?? 0,
         correctCount: result.correct ?? 0,
         incorrectCount: result.incorrect ?? 0,
-        unattemptedCount: questions.length - ((result.correct ?? 0) + (result.incorrect ?? 0)),
+        unattemptedCount: result.unattempted ?? 0,
         timeTaken: timeTaken,
-        predictedRank: null,
-        predictedPercentile: null
+        // ✅ NEW: Capture Rank Data from Action
+        predictedRank: result.predictedRank,
+        predictedPercentile: result.predictedPercentile
       })
   
       setStage('report')
-    } catch (error: any) {
+    } catch (error) {
       console.error("Submission failed", error)
-      toast.error(error.message || "Failed to submit exam.")
+      toast.error("Failed to submit exam.")
     } finally {
       setIsSubmitting(false)
     }
@@ -152,19 +152,26 @@ export default function MockTestInterface({
       {stage === 'instructions' && (
         <InstructionStage onNext={() => setStage('consent')} user={user} />
       )}
-      
+
       {stage === 'consent' && (
-        <ConsentStage onNext={() => setStage('test')} />
+        <ConsentStage 
+          exam={exam} 
+          user={user} 
+          onPrev={() => setStage('instructions')} 
+          onStart={() => setStage('test')} 
+        />
       )}
 
       {stage === 'test' && (
         <TestStage 
+          exam={exam}
           questions={questions}
+          user={user}
           currentQIndex={currentQIndex}
-          setCurrentQIndex={setCurrentQIndex}
-          timeLeft={timeLeft}
           answers={answers}
           questionStatus={questionStatus}
+          timeLeft={timeLeft}
+          onNavigate={setCurrentQIndex}
           onAnswer={handleAnswer}
           onSaveNext={handleSaveNext}
           onReviewNext={handleReviewNext}
@@ -184,6 +191,7 @@ export default function MockTestInterface({
           unattemptedCount={reportData.unattemptedCount}
           timeTaken={reportData.timeTaken}
           reviewUrl={reviewUrl} 
+          // ✅ NEW: Pass Rank Data to Modal
           predictedRank={reportData.predictedRank}
           predictedPercentile={reportData.predictedPercentile}
           onClose={() => router.push('/dashboard')} 

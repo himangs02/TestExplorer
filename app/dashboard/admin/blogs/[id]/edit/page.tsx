@@ -36,7 +36,7 @@ export default async function EditBlogPage({ params }: { params: Promise<{ id: s
     <BlogForm 
       blog={blog} 
       availableTags={tags?.map(t => t.name) || []}
-      defaultAuthor={authorProfile}
+      defaultAuthor={authorProfile as any}
     />
   )
 }

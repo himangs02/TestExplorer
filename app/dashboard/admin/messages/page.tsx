@@ -86,7 +86,7 @@ export default async function MessagesPage({
                       {msg.message}
                     </p>
                     <p className="text-[10px] text-slate-400 mt-1 uppercase font-bold">
-                      {new Date(msg.created_at).toLocaleDateString()}
+                      {new Date(msg.created_at || new Date()).toLocaleDateString()}
                     </p>
                   </td>
                   <td className="p-5 text-right">

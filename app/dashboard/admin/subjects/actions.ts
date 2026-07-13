@@ -5,7 +5,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
 // Create Subject
-export async function createSubjectAction(formData: FormData) {
+export async function createSubjectAction(formData: FormData): Promise<any> {
   const title = formData.get('title') as string
   const course_id = formData.get('course_id') as string
 
@@ -14,7 +14,7 @@ export async function createSubjectAction(formData: FormData) {
       data: { title, course_id }
     })
   } catch (error: any) {
-    throw new Error(error.message)
+    return { error: error.message }
   }
 
   revalidatePath('/dashboard/admin/subjects')
@@ -23,7 +23,7 @@ export async function createSubjectAction(formData: FormData) {
 }
 
 // Update Subject
-export async function updateSubjectAction(formData: FormData) {
+export async function updateSubjectAction(formData: FormData): Promise<any> {
   const id = formData.get('id') as string
   const title = formData.get('title') as string
   const course_id = formData.get('course_id') as string
@@ -34,7 +34,7 @@ export async function updateSubjectAction(formData: FormData) {
       data: { title, course_id }
     })
   } catch (error: any) {
-    throw new Error(error.message)
+    return { error: error.message }
   }
 
   revalidatePath('/dashboard/admin/subjects')
@@ -43,7 +43,7 @@ export async function updateSubjectAction(formData: FormData) {
 }
 
 // Delete Subject
-export async function deleteSubjectAction(formData: FormData) {
+export async function deleteSubjectAction(formData: FormData): Promise<any> {
   const id = formData.get('id') as string
 
   try {
@@ -82,10 +82,11 @@ export async function deleteSubjectAction(formData: FormData) {
     // 5. DELETE SUBJECT
     await prisma.subjects.delete({ where: { id } })
   } catch (error: any) {
-    throw new Error(error.message || 'Failed to delete subject')
+    return { error: error.message || 'Failed to delete subject' }
   }
   revalidatePath('/dashboard/admin/subjects')
   revalidatePath('/dashboard/admin/manage-content')
+  return { success: true }
 }
 
 // -----------------------------------------------------------------------------

@@ -3,7 +3,7 @@
 import { prisma } from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 
-export async function createTagAction(formData: FormData) {
+export async function createTagAction(formData: FormData): Promise<any> {
   const name = formData.get('name') as string
 
   if (!name) return
@@ -12,14 +12,15 @@ export async function createTagAction(formData: FormData) {
     await prisma.tags.create({ data: { name } })
   } catch (error: any) {
     console.error('Error creating tag:', error)
-    throw new Error('Tag already exists or failed to create')
+    return { error: 'Tag already exists or failed to create' }
   }
 
   revalidatePath('/dashboard/admin/tags')
   revalidatePath('/dashboard/admin/blogs/create')
+  return { success: true }
 }
 
-export async function deleteTagAction(formData: FormData) {
+export async function deleteTagAction(formData: FormData): Promise<any> {
   const id = formData.get('id') as string
 
   try {
@@ -30,4 +31,5 @@ export async function deleteTagAction(formData: FormData) {
 
   revalidatePath('/dashboard/admin/tags')
   revalidatePath('/dashboard/admin/blogs/create')
+  return { success: true }
 }

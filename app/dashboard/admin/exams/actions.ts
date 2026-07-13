@@ -76,7 +76,7 @@ async function parseAndInsertQuestions(file: File, parentId: string, type: 'prep
   }
 }
 
-export async function createExamAction(formData: FormData) {
+export async function createExamAction(formData: FormData): Promise<any> {
   const type = formData.get('type') as 'prep' | 'mock' | 'practice'
   const title = formData.get('title') as string
   const description = formData.get('description') as string
@@ -108,7 +108,7 @@ export async function createExamAction(formData: FormData) {
       newRecordId = data.id
     }
   } catch (error: any) {
-    throw new Error(error.message)
+    return { error: error.message }
   }
 
   // 2. Process CSV if uploaded
@@ -120,7 +120,7 @@ export async function createExamAction(formData: FormData) {
   redirect('/dashboard/admin/exams')
 }
 
-export async function deleteExamAction(formData: FormData) {
+export async function deleteExamAction(formData: FormData): Promise<any> {
   const id = formData.get('id') as string
   const type = formData.get('type') as string
 
@@ -133,13 +133,14 @@ export async function deleteExamAction(formData: FormData) {
       await prisma.practice_tests.delete({ where: { id } })
     }
   } catch (error: any) {
-    throw new Error(error.message)
+    return { error: error.message }
   }
 
   revalidatePath('/dashboard/admin/exams')
+  return { success: true }
 }
 
-export async function updateExamAction(formData: FormData) {
+export async function updateExamAction(formData: FormData): Promise<any> {
   const id = formData.get('id') as string
   const type = formData.get('type') as 'prep' | 'mock' | 'practice'
   const title = formData.get('title') as string
@@ -163,7 +164,7 @@ export async function updateExamAction(formData: FormData) {
       await prisma.practice_tests.update({ where: { id }, data: updatePayload })
     }
   } catch (error: any) {
-    throw new Error(error.message)
+    return { error: error.message }
   }
 
   if (csvFile && csvFile.size > 0) {
@@ -174,20 +175,21 @@ export async function updateExamAction(formData: FormData) {
   redirect('/dashboard/admin/exams')
 }
 
-export async function deleteQuestionAction(formData: FormData) {
+export async function deleteQuestionAction(formData: FormData): Promise<any> {
   const questionId = formData.get('question_id') as string
   const examId = formData.get('exam_id') as string
   
   try {
     await prisma.questions.delete({ where: { id: questionId } })
   } catch (error: any) {
-    throw new Error(error.message)
+    return { error: error.message }
   }
 
   revalidatePath(`/dashboard/admin/exams/${examId}/edit`)
+  return { success: true }
 }
 
-export async function deleteAllQuestionsAction(formData: FormData) {
+export async function deleteAllQuestionsAction(formData: FormData): Promise<any> {
   const examId = formData.get('exam_id') as string
   const type = formData.get('exam_type') as string
 
@@ -200,8 +202,9 @@ export async function deleteAllQuestionsAction(formData: FormData) {
       where: { [questionFK]: examId }
     })
   } catch (error: any) {
-    throw new Error(error.message)
+    return { error: error.message }
   }
 
   revalidatePath(`/dashboard/admin/exams/${examId}/edit`)
+  return { success: true }
 }

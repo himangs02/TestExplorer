@@ -101,7 +101,7 @@ async function parseAndInsertQuestions(file: File, parentId: string) {
           }
         })
 
-      await prisma.question_options.createMany({ data: optionsData })
+      await prisma.question_options.createMany({ data: optionsData as any })
 
       insertedCount++
 

@@ -5,7 +5,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
 // Create Stream
-export async function createStreamAction(formData: FormData) {
+export async function createStreamAction(formData: FormData): Promise<any> {
   const title = formData.get('title') as string
   const description = formData.get('description') as string
   const icon_key = formData.get('icon_key') as string
@@ -17,7 +17,7 @@ export async function createStreamAction(formData: FormData) {
       data: { title, description, icon_key, bg_color, order_index }
     })
   } catch (error: any) {
-    throw new Error(error.message)
+    return { error: error.message }
   }
 
   revalidatePath('/dashboard/admin/streams')
@@ -26,7 +26,7 @@ export async function createStreamAction(formData: FormData) {
 }
 
 // Update Stream
-export async function updateStreamAction(formData: FormData) {
+export async function updateStreamAction(formData: FormData): Promise<any> {
   const id = formData.get('id') as string
   const title = formData.get('title') as string
   const description = formData.get('description') as string
@@ -40,7 +40,7 @@ export async function updateStreamAction(formData: FormData) {
       data: { title, description, icon_key, bg_color, order_index }
     })
   } catch (error: any) {
-    throw new Error(error.message)
+    return { error: error.message }
   }
 
   revalidatePath('/dashboard/admin/streams')
@@ -49,15 +49,16 @@ export async function updateStreamAction(formData: FormData) {
 }
 
 // Delete Stream
-export async function deleteStreamAction(formData: FormData) {
+export async function deleteStreamAction(formData: FormData): Promise<any> {
   const id = formData.get('id') as string
 
   try {
     await prisma.categories.delete({ where: { id } })
   } catch (error: any) {
-    throw new Error(error.message)
+    return { error: error.message }
   }
   
   revalidatePath('/dashboard/admin/streams')
   revalidatePath('/categories')
+  return { success: true }
 }

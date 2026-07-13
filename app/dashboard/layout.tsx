@@ -100,12 +100,12 @@ export default async function DashboardLayout({
         visibleItems={visibleItems}
         schoolData={schoolData}
         basePath={basePath}
-        profile={profile}
+        profile={profile as any}
       />
       <main className="flex-1 flex flex-col md:ml-64 min-h-screen">
         <header className="h-16 bg-white border-b border-gray-200 sticky top-0 z-40 flex items-center justify-between px-4 md:px-8">
           <h1 className="font-bold text-lg text-gray-800">Dashboard</h1>
-          <UserNav profile={profile} email={user.email || undefined} />
+          <UserNav profile={profile as any} email={user.email || undefined} />
         </header>
         <div className="flex-1 p-4 md:p-8 overflow-auto">
           {children}

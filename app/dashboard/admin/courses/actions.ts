@@ -5,7 +5,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
 // Create Course
-export async function createCourseAction(formData: FormData) {
+export async function createCourseAction(formData: FormData): Promise<any> {
   const title = formData.get('title') as string
   const description = formData.get('description') as string
   const category_id = formData.get('category_id') as string
@@ -21,7 +21,7 @@ export async function createCourseAction(formData: FormData) {
       }
     })
   } catch (error: any) {
-    throw new Error(error.message)
+    return { error: error.message }
   }
 
   revalidatePath('/dashboard/admin/courses')
@@ -29,7 +29,7 @@ export async function createCourseAction(formData: FormData) {
 }
 
 // Update Course
-export async function updateCourseAction(formData: FormData) {
+export async function updateCourseAction(formData: FormData): Promise<any> {
   const id = formData.get('id') as string
   const title = formData.get('title') as string
   const description = formData.get('description') as string
@@ -47,7 +47,7 @@ export async function updateCourseAction(formData: FormData) {
       }
     })
   } catch (error: any) {
-    throw new Error(error.message)
+    return { error: error.message }
   }
 
   revalidatePath('/dashboard/admin/courses')
@@ -55,14 +55,15 @@ export async function updateCourseAction(formData: FormData) {
 }
 
 // Delete Course
-export async function deleteCourseAction(formData: FormData) {
+export async function deleteCourseAction(formData: FormData): Promise<any> {
   const id = formData.get('id') as string
 
   try {
     await prisma.courses.delete({ where: { id } })
   } catch (error: any) {
-    throw new Error(error.message)
+    return { error: error.message }
   }
   
   revalidatePath('/dashboard/admin/courses')
+  return { success: true }
 }
