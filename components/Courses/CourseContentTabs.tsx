@@ -146,7 +146,7 @@ export function CourseContentTabs({
                 </div>
                 
                 <div className="mt-6 md:mt-0">
-                  <Link href={`/courses/${courseId}/mocks/${test.id}`} className="inline-flex items-center gap-2 rounded-full bg-black px-6 py-3 text-sm font-bold text-white transition-transform hover:scale-105">
+                  <Link href={`/courses/${courseId}/subjects/${test.subject_id || 'general'}/test/mock/${test.id}`} className="inline-flex items-center gap-2 rounded-full bg-black px-6 py-3 text-sm font-bold text-white transition-transform hover:scale-105">
                     Start Test <PlayCircle className="h-4 w-4" />
                   </Link>
                 </div>

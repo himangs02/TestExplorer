@@ -1,4 +1,4 @@
-import MockTestInterface from '@/app/courses/[courseId]/subjects/[subjectId]/test/mock/[examId]/MockTestInterface'
+import MockTestInterface from '@/components/exam/MockTestInterface'
 import { prisma } from '@/lib/prisma'
 import { notFound, redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'

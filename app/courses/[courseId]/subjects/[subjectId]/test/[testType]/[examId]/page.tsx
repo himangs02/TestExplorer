@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { notFound, redirect } from 'next/navigation'
 import AccessDenied from '@/components/ui/access-denied'
 // Ensure these paths match your project structure
-import MockTestInterface from '../../mock/[examId]/MockTestInterface' 
+import MockTestInterface from '@/components/exam/MockTestInterface' 
 import TestInterface from '@/components/Courses/TestInterface' 
 import { submitExamAction } from './actions' 
 
