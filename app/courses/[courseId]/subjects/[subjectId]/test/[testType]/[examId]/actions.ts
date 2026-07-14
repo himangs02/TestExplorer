@@ -82,6 +82,7 @@ export async function submitExamAction(
     return { 
       success: true, 
       redirectUrl: `/courses/${courseId}/subjects/${subjectId}/test/${testType}/${examId}/result/${attempt.id}`,
+      attemptId: attempt.id,
       score: score,
       correct: correctCount,
       incorrect: incorrectCount

@@ -64,7 +64,12 @@ export default async function CategoryExamsPage({
                     <ArrowUpRight className="w-6 h-6 text-gray-300 group-hover:text-black transition-colors" />
                   </div>
                   <h3 className="text-2xl font-bold text-gray-900 mb-2">{exam.title}</h3>
-                  <p className="text-gray-500 font-medium text-sm line-clamp-2">{exam.description}</p>
+                  {exam.description && (
+                    <p className="text-gray-500 font-medium text-sm line-clamp-2">{exam.description}</p>
+                  )}
+                  <div className="mt-6 flex items-center text-sm font-bold text-blue-600 group-hover:text-blue-700 transition-colors">
+                    View Exam Details <span className="ml-1">→</span>
+                  </div>
                 </div>
               </Link>
             ))
