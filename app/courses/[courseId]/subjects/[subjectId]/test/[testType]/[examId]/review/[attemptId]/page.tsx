@@ -44,6 +44,7 @@ export default async function ReviewPage({
 
     const mockQs = await prisma.mock_test_questions.findMany({
       where: { mock_test_id: examId },
+      orderBy: { created_at: 'asc' },
       select: {
         questions: {
           select: {

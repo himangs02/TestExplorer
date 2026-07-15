@@ -253,7 +253,7 @@ export default function TestInterface({
             <ListTodo className="w-4 h-4" /> Question Palette
           </div>
 
-          <div className="grid grid-cols-4 gap-3 content-start overflow-y-auto pr-2">
+          <div className="grid grid-cols-4 gap-3 content-start overflow-y-auto -m-2 p-2 pr-4">
             {questions.map((q, idx) => {
               const isAnswered = !!answers[q.id]
               const isReview = markedForReview.includes(q.id)

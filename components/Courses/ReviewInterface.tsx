@@ -204,7 +204,7 @@ export default function ReviewInterface({
             <ListTodo className="w-4 h-4" /> Question Map
           </div>
 
-          <div className="grid grid-cols-4 gap-3 content-start ">
+          <div className="grid grid-cols-4 gap-3 content-start overflow-y-auto -m-2 p-2 pr-4">
             {questions.map((q, idx) => {
               const status = getQuestionStatus(q)
               const isCurrent = idx === currentQIndex
