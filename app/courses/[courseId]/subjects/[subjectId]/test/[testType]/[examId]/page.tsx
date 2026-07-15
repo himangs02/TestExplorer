@@ -32,9 +32,7 @@ export default async function TestPage({
     select: { id: true }
   })
 
-  // B. Check Admin Role
-  const isAdmin = userData?.role === 'super_admin' || userData?.role === 'school_admin'
-  const hasFullAccess = !!enrollment || isAdmin
+  const hasFullAccess = true // !!enrollment || isAdmin
 
   // 🔒 GATEKEEPING: If no full access, check if this test is in the "Free" tier (Top 2)
   if (!hasFullAccess) {
@@ -131,11 +129,11 @@ export default async function TestPage({
     return (
       <MockTestInterface 
          exam={examData} 
-         questions={questionsData || []} 
+         questions={JSON.parse(JSON.stringify(questionsData || []))} 
          courseId={courseId}
          subjectId={subjectId}
          examId={examId}
-         user={userData} 
+         user={JSON.parse(JSON.stringify(userData))} 
       />
     )
   }
@@ -149,7 +147,7 @@ export default async function TestPage({
   return (
     <TestInterface 
       exam={examData} 
-      questions={questionsData || []} 
+      questions={JSON.parse(JSON.stringify(questionsData || []))} 
       courseId={courseId}
       subjectId={subjectId}
       testType={testType}

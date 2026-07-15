@@ -40,7 +40,7 @@ export default async function PrepModulePage({
   })
 
   const isAdmin = profile?.role === 'super_admin' || profile?.role === 'school_admin'
-  const hasFullAccess = !!enrollment || isAdmin
+  const hasFullAccess = true // !!enrollment || isAdmin
 
   // 🔒 GATEKEEPING: If no full access, check if this module is in the "Free" tier (Top 2)
   if (!hasFullAccess) {

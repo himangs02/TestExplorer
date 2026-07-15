@@ -46,22 +46,7 @@ export default function CourseTabs({
     id: string,
     type: "subject" | "mock"
   ) => {
-    if (hasFullAccess) return;
-
-    if (type === "subject") {
-      if (enrolledSubjectIds.includes(id)) return;
-    }
-
-    if (type === "mock") {
-      if (enrolledSubjectIds.length > 0) return;
-    }
-
-    e.preventDefault();
-    toast.error("Access Restricted", {
-      description:
-        "You do not have access to this content. Please contact your administrator.",
-      duration: 4000,
-    });
+    return;
   };
 
   return (
@@ -98,7 +83,7 @@ export default function CourseTabs({
               const style = SUBJECT_COLORS[index % SUBJECT_COLORS.length];
               const [bgColor, borderColor] = style.split(" ");
 
-              const isLocked = !hasFullAccess && !enrolledSubjectIds.includes(subject.id);
+              const isLocked = false;
 
               return (
                 <Link
@@ -166,7 +151,7 @@ export default function CourseTabs({
             />
           ) : (
             examMocks.map((mock: any) => {
-              const isLocked = !hasFullAccess && enrolledSubjectIds.length === 0;
+              const isLocked = false;
 
               return (
                 <div
