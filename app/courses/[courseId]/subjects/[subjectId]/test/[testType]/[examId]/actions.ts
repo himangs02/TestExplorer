@@ -74,7 +74,8 @@ export async function submitExamAction(
         time_taken_seconds: timeTaken,
         answers: JSON.stringify(answers),
         mock_test_id: testType === 'mock' ? examId : undefined,
-        practice_test_id: testType === 'practice' ? examId : undefined 
+        practice_test_id: testType === 'practice' ? examId : undefined,
+        status: 'completed'
       }
     })
 

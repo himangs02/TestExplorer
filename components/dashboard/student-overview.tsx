@@ -11,7 +11,7 @@ export default function StudentOverview({ profile, attempts = [] }: StudentOverv
   const safeAttempts = Array.isArray(attempts) ? attempts : []
   
   // FILTER: Only calculate stats for COMPLETED tests
-  const completedAttempts = safeAttempts.filter(a => a.status === 'completed')
+  const completedAttempts = safeAttempts.filter(a => a.status === 'completed' || a.score != null)
   const totalTests = completedAttempts.length
 
   // 1. AVG SCORE (Only from completed tests)
@@ -114,7 +114,7 @@ export default function StudentOverview({ profile, attempts = [] }: StudentOverv
               // Priority: Exam -> Practice -> Mock -> Unknown
               const title = attempt.exams?.title || attempt.practice_tests?.title || attempt.mock_tests?.title || 'Unknown Test'
               const isMock = !!attempt.mock_test_id
-              const isCompleted = attempt.status === 'completed'
+              const isCompleted = attempt.status === 'completed' || attempt.score != null
               const date = new Date(attempt.started_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
               const score = attempt.score ?? 0
               const total = attempt.total_marks ?? 0
