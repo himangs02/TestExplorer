@@ -53,7 +53,7 @@ export default async function CategoryExamsPage({
             exams.map((exam) => (
               <Link 
                 key={exam.id}
-                href={`/exams/${exam.slug}`} 
+                href={`/exams/${exam.slug || exam.id}`} 
                 className="group block relative"
               >
                 <div className="relative z-10 p-8 rounded-4xl border-2 border-black bg-white transition-all hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">

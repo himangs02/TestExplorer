@@ -137,8 +137,13 @@ interface PageProps {
 
 export default async function ExamLandingPage({ params }: PageProps) {
   const { slug } = await params
-  const course = await prisma.courses.findUnique({
-    where: { slug }
+  const course = await prisma.courses.findFirst({
+    where: { 
+      OR: [
+        { slug: slug },
+        { id: slug }
+      ]
+    }
   })
 
   if (!course) return notFound()
@@ -146,7 +151,7 @@ export default async function ExamLandingPage({ params }: PageProps) {
   // 2. Fetch Other Exams for Sidebar (Upcoming/Similar)
   // Fetching 6 random exams other than current one
   const relatedExams = await prisma.courses.findMany({
-    where: { NOT: { slug } },
+    where: { NOT: { id: course.id } },
     select: { id: true, title: true, slug: true, details: true },
     take: 6
   })

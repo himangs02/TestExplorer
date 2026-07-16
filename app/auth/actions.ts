@@ -61,6 +61,79 @@ export async function signup(formData: FormData) {
 }
 
 export async function forgotPassword(formData: FormData) {
-  // TODO: implement with Nodemailer or other email service for NextAuth
-  return { error: "Forgot password not implemented yet in NextAuth migration" }
+  const email = formData.get('email') as string
+  
+  if (!email) {
+    return { error: "Email is required" }
+  }
+
+  try {
+    const user = await prisma.users.findUnique({
+      where: { email }
+    })
+
+    if (!user) {
+      // Return success even if user doesn't exist to prevent email enumeration
+      return { success: true }
+    }
+
+    const token = crypto.randomUUID()
+    
+    // Save to VerificationToken table
+    await prisma.verificationToken.create({
+      data: {
+        identifier: email,
+        token,
+        expires: new Date(Date.now() + 1000 * 60 * 60 * 24) // 24 hours
+      }
+    })
+
+    // Simulate sending email (in development)
+    console.log(`\n======================================================`)
+    console.log(`Password reset requested for ${email}`)
+    console.log(`Reset link: http://localhost:3000/reset-password?token=${token}`)
+    console.log(`======================================================\n`)
+
+    return { success: true }
+  } catch (error: any) {
+    console.error("Forgot password error:", error)
+    return { error: error.message || "Failed to process request" }
+  }
+}
+
+export async function resetPassword(formData: FormData) {
+  const token = formData.get('token') as string
+  const password = formData.get('password') as string
+  const confirmPassword = formData.get('confirmPassword') as string
+
+  if (!token) return { error: "Invalid or missing token" }
+  if (password !== confirmPassword) return { error: "Passwords do not match" }
+  if (password.length < 6) return { error: "Password must be at least 6 characters" }
+
+  try {
+    const verificationToken = await prisma.verificationToken.findUnique({
+      where: { token }
+    })
+
+    if (!verificationToken || verificationToken.expires < new Date()) {
+      return { error: "Token is invalid or has expired" }
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10)
+
+    await prisma.users.update({
+      where: { email: verificationToken.identifier },
+      data: { password: hashedPassword }
+    })
+
+    // Delete used token
+    await prisma.verificationToken.delete({
+      where: { token }
+    })
+
+    return { success: true }
+  } catch (error: any) {
+    console.error("Reset password error:", error)
+    return { error: error.message || "Failed to reset password" }
+  }
 }
