@@ -73,6 +73,10 @@ export async function forgotPassword(formData: FormData) {
     })
 
     if (!user) {
+      console.log(`\n======================================================`)
+      console.log(`[DEV INFO] Forgot Password requested for ${email}, but this email does NOT exist in the database.`)
+      console.log(`No reset token was generated. Returning success to UI to prevent email enumeration.`)
+      console.log(`======================================================\n`)
       // Return success even if user doesn't exist to prevent email enumeration
       return { success: true }
     }
