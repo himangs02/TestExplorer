@@ -29,7 +29,7 @@ export async function middleware(request: NextRequest) {
   const url = request.nextUrl
   const path = url.pathname
   
-  const authRoutes = ['/login', '/signup', '/forgot-password', '/reset-password', '/update-password']
+  const authRoutes = ['/login', '/signup', '/forgot-password', '/update-password']
   if (user && authRoutes.some(route => path.startsWith(route))) {
     return NextResponse.redirect(new URL('/categories', request.url))
   }
