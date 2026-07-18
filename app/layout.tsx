@@ -8,7 +8,6 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
 import { NextAuthProvider } from "@/components/providers/NextAuthProvider";
 import { Metadata } from "next";
-import { cookies } from "next/headers";
 
 export const metadata: Metadata = {
   title: "Test Explorer",
@@ -40,25 +39,19 @@ export default async function RootLayout({
   const domain = headersList.get("x-current-domain") || headersList.get("host") || "";
   const hostname = headersList.get("host") || "";
   
-  // 2.1 Check Cookie first
-  const cookieStore = await cookies();
-  const cookieSchool = cookieStore.get("school_slug")?.value;
-  
   let schoolData = null;
-  let subdomain = cookieSchool || null;
+  let subdomain = null;
 
-  // Split hostname into parts if cookie not present
-  if (!subdomain) {
-    if (domain.includes("localhost")) {
-      const parts = domain.split(".");
-      if (parts.length >= 2) {
-        subdomain = parts[0];
-      }
-    } else {
-      const parts = domain.split(".");
-      if (parts.length >= 3) {
-        subdomain = parts[0];
-      }
+  // Split hostname into parts
+  if (domain.includes("localhost")) {
+    const parts = domain.split(".");
+    if (parts.length >= 2) {
+      subdomain = parts[0];
+    }
+  } else {
+    const parts = domain.split(".");
+    if (parts.length >= 3) {
+      subdomain = parts[0];
     }
   }
 

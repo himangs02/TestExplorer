@@ -54,7 +54,7 @@ export default async function ManageSchoolsPage() {
             <div className="flex items-center gap-2">
                {/* 1. Visit Site */}
                <a 
-                 href={`/school/${school.slug}`} 
+                 href={`http://${school.slug}.localhost:3000`} 
                  target="_blank"
                  className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                  title="Visit Live Site"
