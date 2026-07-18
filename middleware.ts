@@ -18,6 +18,21 @@ export async function middleware(request: NextRequest) {
   requestHeaders.set('x-current-domain', hostname)
   requestHeaders.set('x-current-path', request.nextUrl.pathname)
 
+  // 1. Check for /school/[slug] route to set school manually via cookie
+  if (request.nextUrl.pathname.startsWith('/school/')) {
+    const slug = request.nextUrl.pathname.split('/')[2];
+    if (slug) {
+      const redirectUrl = new URL('/', request.url);
+      const res = NextResponse.redirect(redirectUrl);
+      if (slug === 'clear') {
+        res.cookies.delete('school_slug');
+      } else {
+        res.cookies.set('school_slug', slug, { path: '/' });
+      }
+      return res;
+    }
+  }
+
   const response = NextResponse.next({
     request: { headers: requestHeaders },
   })

@@ -1,9 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { ChevronRight, ChevronDown, Folder, BookOpen, Upload, X, FileText, Loader2, Database, CheckCircle, HelpCircle } from 'lucide-react'
+import { ChevronRight, ChevronDown, Folder, BookOpen, Upload, X, FileText, Loader2, Database, CheckCircle, HelpCircle, BrainCircuit } from 'lucide-react'
 import { uploadQuestionBankAction } from '@/app/dashboard/admin/question-uploads/actions'
 import { toast } from 'sonner'
+import SmartPdfUploader from '@/components/admin/smart-pdf-uploader'
 
 export default function SubjectUploader({ streams }: { streams: any[] }) {
   
@@ -11,6 +12,7 @@ export default function SubjectUploader({ streams }: { streams: any[] }) {
   const [openCourses, setOpenCourses] = useState<Record<string, boolean>>({})
   const [selectedSubject, setSelectedSubject] = useState<{id: string, title: string} | null>(null)
   
+  const [uploadMode, setUploadMode] = useState<'csv' | 'pdf'>('csv')
   const [loading, setLoading] = useState(false)
   const [fileName, setFileName] = useState<string | null>(null)
 
@@ -146,85 +148,109 @@ export default function SubjectUploader({ streams }: { streams: any[] }) {
               </p>
             </div>
 
-            {/* ✅ UPDATED FORM TAG */}
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <input type="hidden" name="subject_id" value={selectedSubject.id} />
+            {/* TAB SELECTOR */}
+            <div className="flex bg-gray-100 p-1 rounded-xl mb-6">
+              <button 
+                onClick={() => setUploadMode('csv')}
+                className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${uploadMode === 'csv' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+              >
+                CSV Upload
+              </button>
+              <button 
+                onClick={() => setUploadMode('pdf')}
+                className={`flex-1 flex items-center justify-center gap-1 py-2 text-sm font-bold rounded-lg transition-all ${uploadMode === 'pdf' ? 'bg-purple-600 text-white shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+              >
+                <BrainCircuit className="w-3 h-3" /> AI PDF OCR
+              </button>
+            </div>
 
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1">Batch Title</label>
-                <input 
-                  name="title" 
-                  placeholder={`e.g. ${selectedSubject.title} - 2024 Question Bank`}
-                  defaultValue={`${selectedSubject.title} Pool - ${new Date().toLocaleDateString()}`}
-                  required 
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-black outline-none text-sm" 
-                />
-              </div>
+            {uploadMode === 'csv' ? (
+              <form onSubmit={handleSubmit} className="space-y-4 animate-in fade-in">
+                <input type="hidden" name="subject_id" value={selectedSubject.id} />
 
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1">Description (Optional)</label>
-                <textarea 
-                  name="description" 
-                  placeholder="Notes about this batch (e.g. source, difficulty)..."
-                  rows={2}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-black outline-none text-sm" 
-                />
-              </div>
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 mb-1">Batch Title</label>
+                  <input 
+                    name="title" 
+                    placeholder={`e.g. ${selectedSubject.title} - 2024 Question Bank`}
+                    defaultValue={`${selectedSubject.title} Pool - ${new Date().toLocaleDateString()}`}
+                    required 
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-black outline-none text-sm" 
+                  />
+                </div>
 
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1">CSV File</label>
-                <div 
-                  className={`
-                    border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center transition-all cursor-pointer relative
-                    ${fileName ? 'border-green-400 bg-green-50' : 'border-gray-200 bg-gray-50 hover:bg-white hover:border-blue-400'}
-                  `}
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 mb-1">Description (Optional)</label>
+                  <textarea 
+                    name="description" 
+                    placeholder="Notes about this batch (e.g. source, difficulty)..."
+                    rows={2}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-black outline-none text-sm" 
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 mb-1">CSV File</label>
+                  <div 
+                    className={`
+                      border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center transition-all cursor-pointer relative
+                      ${fileName ? 'border-green-400 bg-green-50' : 'border-gray-200 bg-gray-50 hover:bg-white hover:border-blue-400'}
+                    `}
+                  >
+                    {fileName ? (
+                      <>
+                        <CheckCircle className="w-8 h-8 text-green-500 mb-2 animate-in zoom-in" />
+                        <span className="text-sm font-bold text-gray-900 text-center break-all">{fileName}</span>
+                        <span className="text-xs text-green-600 mt-1">Click to change</span>
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="w-8 h-8 text-gray-300 mb-2" />
+                        <span className="text-xs font-bold text-gray-400">Click to browse CSV</span>
+                      </>
+                    )}
+                    
+                    <input 
+                      type="file" 
+                      name="csv_file" 
+                      accept=".csv"
+                      required 
+                      onChange={handleFileChange}
+                      className="absolute inset-0 opacity-0 cursor-pointer" 
+                    />
+                  </div>
+                  
+                  <p className="text-[10px] text-gray-400 mt-2 bg-gray-100 p-2 rounded">
+                    <strong>Required Columns:</strong> question, option_a, option_b, option_c, option_d, correct_option
+                  </p>
+                </div>
+
+                <button 
+                  type="submit" 
+                  disabled={loading}
+                  className={`w-full py-3 font-bold rounded-xl transition-all flex items-center justify-center gap-2 
+                    ${loading ? 'bg-gray-800 text-gray-400 cursor-not-allowed' : 'bg-black text-white hover:bg-gray-800'}`}
                 >
-                  {fileName ? (
+                  {loading ? (
                     <>
-                      <CheckCircle className="w-8 h-8 text-green-500 mb-2 animate-in zoom-in" />
-                      <span className="text-sm font-bold text-gray-900 text-center break-all">{fileName}</span>
-                      <span className="text-xs text-green-600 mt-1">Click to change</span>
+                      <Loader2 className="w-4 h-4 animate-spin" /> Uploading...
                     </>
                   ) : (
                     <>
-                      <Upload className="w-8 h-8 text-gray-300 mb-2" />
-                      <span className="text-xs font-bold text-gray-400">Click to browse CSV</span>
+                      <Upload className="w-4 h-4" /> Upload to Pool
                     </>
                   )}
-                  
-                  <input 
-                    type="file" 
-                    name="csv_file" 
-                    accept=".csv"
-                    required 
-                    onChange={handleFileChange}
-                    className="absolute inset-0 opacity-0 cursor-pointer" 
-                  />
-                </div>
-                
-                <p className="text-[10px] text-gray-400 mt-2 bg-gray-100 p-2 rounded">
-                  <strong>Required Columns:</strong> question, option_a, option_b, option_c, option_d, correct_option
-                </p>
+                </button>
+              </form>
+            ) : (
+              <div className="animate-in fade-in">
+                <SmartPdfUploader 
+                  subjectId={selectedSubject.id} 
+                  subjectTitle={selectedSubject.title}
+                  onCancel={() => setSelectedSubject(null)}
+                />
               </div>
-
-              <button 
-                type="submit" 
-                disabled={loading}
-                className={`w-full py-3 font-bold rounded-xl transition-all flex items-center justify-center gap-2 
-                  ${loading ? 'bg-gray-800 text-gray-400 cursor-not-allowed' : 'bg-black text-white hover:bg-gray-800'}`}
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" /> Uploading...
-                  </>
-                ) : (
-                  <>
-                    <Upload className="w-4 h-4" /> Upload to Pool
-                  </>
-                )}
-              </button>
-            </form>
-
+            )}
           </div>
         </div>
       )}
