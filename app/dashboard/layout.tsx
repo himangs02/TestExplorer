@@ -28,27 +28,11 @@ export default async function DashboardLayout({
 
   if (!profile) return redirect('/complete-profile')
 
-  const headersList = await headers()
-  const domain = headersList.get("x-current-domain") || headersList.get("host") || "";
-  
   let schoolData = null;
-  let subdomain = null;
 
-  if (domain.includes("localhost")) {
-    const parts = domain.split(".");
-    if (parts.length >= 2) {
-      subdomain = parts[0];
-    }
-  } else {
-    const parts = domain.split(".");
-    if (parts.length >= 3) {
-      subdomain = parts[0];
-    }
-  }
-
-  if (subdomain && subdomain !== "www" && subdomain !== "test-explorer") {
+  if (profile?.organization_id) {
     try {
-      schoolData = await getSchoolBySubdomain(subdomain);
+      schoolData = await prisma.organizations.findUnique({ where: { id: profile.organization_id } });
     } catch (err) {
       console.error("Failed to fetch school data in DashboardLayout:", err);
     }

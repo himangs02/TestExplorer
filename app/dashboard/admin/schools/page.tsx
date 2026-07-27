@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma'
+import { headers } from 'next/headers'
 import Link from 'next/link'
 import { Plus, Building, ExternalLink, Pencil, Trash2 } from 'lucide-react'
 import { deleteSchoolAction } from './actions'
@@ -8,6 +9,9 @@ export default async function ManageSchoolsPage() {
   const schools = await prisma.organizations.findMany({
     orderBy: { created_at: 'desc' }
   })
+  
+  const headersList = await headers();
+  const host = headersList.get('host') || 'localhost:3000';
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -53,14 +57,23 @@ export default async function ManageSchoolsPage() {
             {/* Actions Toolbar */}
             <div className="flex items-center gap-2">
                {/* 1. Visit Site */}
-               <a 
-                 href={`http://${school.slug}.localhost:3000`} 
-                 target="_blank"
-                 className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                 title="Visit Live Site"
-               >
-                 <ExternalLink className="w-5 h-5" />
-               </a>
+               {(() => {
+                 const isLocalhost = host.includes('localhost');
+                 const protocol = isLocalhost ? 'http' : 'https';
+                 // The admin panel is accessed on the main domain
+                 // So we just append the school slug to the path
+                 const siteUrl = `${protocol}://${host}/${school.slug}`;
+                 return (
+                   <a 
+                     href={siteUrl} 
+                     target="_blank"
+                     className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                     title="Visit Live Site"
+                   >
+                     <ExternalLink className="w-5 h-5" />
+                   </a>
+                 );
+               })()}
 
                {/* 2. Edit Button */}
                <Link

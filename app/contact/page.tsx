@@ -3,36 +3,13 @@ import { getSchoolBySubdomain } from "@/lib/db/school";
 import { Mail, MapPin, Phone, Building2 } from "lucide-react";
 
 export default async function ContactPage() {
-  // 1. Detect Subdomain
-  const headersList = await headers();
-  const hostname = headersList.get("host") || "";
-  let schoolData = null;
-
-  const parts = hostname.split(".");
-  let subdomain = null;
-
-  if (hostname.includes("localhost")) {
-    // Localhost logic: dps.localhost:3000
-    if (parts.length >= 2) subdomain = parts[0];
-  } else {
-    // Production logic: dps.testexplorer.com
-    if (parts.length >= 3) subdomain = parts[0];
-  }
-
-  // 2. Fetch School Data if valid subdomain
-  if (subdomain && subdomain !== "www" && subdomain !== "test-explorer") {
-    schoolData = await getSchoolBySubdomain(subdomain);
-  }
-
-  // 3. Define Display Constants (Fallback to Test Explorer defaults)
+  // 1. Define Display Constants (Default to Test Explorer)
   const contactInfo = {
-    title: schoolData ? `Contact ${schoolData.name}` : "Let's Talk",
-    description: schoolData 
-      ? `Have questions about admissions, academics, or events at ${schoolData.name}? We're here to help.` 
-      : "Have a question about our pricing, features, or just want to say hi? Drop us a line.",
-    email: schoolData?.email || "hello@testexplorer.com",
-    phone: schoolData?.phone || "+91 98765 43210",
-    companyName: schoolData ? schoolData.name : "Test Explorer Inc."
+    title: "Let's Talk",
+    description: "Have a question about our pricing, features, or just want to say hi? Drop us a line.",
+    email: "hello@testexplorer.com",
+    phone: "+91 98765 43210",
+    companyName: "Test Explorer Inc."
   };
 
   return (
@@ -123,7 +100,7 @@ export default async function ContactPage() {
               <label className="text-sm font-bold text-gray-900">Message</label>
               <textarea 
                 className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all h-32 resize-none" 
-                placeholder={schoolData ? `Hi ${schoolData.name}, I would like to inquire about...` : "Tell us what you need..."}
+                placeholder="Tell us what you need..."
               />
             </div>
 

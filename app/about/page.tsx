@@ -8,23 +8,11 @@ export default async function AboutPage({
 }: {
   searchParams: Promise<{ success?: string }>;
 }) {
-  // 1. Get Params & Headers
+  // 1. Get Params
   const params = await searchParams;
   const isSuccess = params.success === "true";
   
-  const headersList = await headers();
-  const schoolSlug = headersList.get("x-school-slug"); 
-  
-  // 2. Fetch School Data using your Slug Logic
-  let schoolName = "Test Explorer";
-  let schoolData: any = null;
-
-  if (schoolSlug && !["www", "test-explorer", "testexplorer"].includes(schoolSlug)) {
-    schoolData = await getSchoolBySubdomain(schoolSlug);
-    if (schoolData) {
-      schoolName = schoolData.name;
-    }
-  }
+  const schoolName = "Test Explorer";
 
   const values = [
     { title: "Student-First", desc: "Every feature we build starts with the question: 'How does this help a student learn?'", icon: <Heart className="w-6 h-6" />, color: "text-rose-500 bg-rose-50" },

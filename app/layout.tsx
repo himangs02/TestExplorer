@@ -34,32 +34,36 @@ export default async function RootLayout({
     }
   }
 
-  // 2. ROBUST SUBDOMAIN DETECTION
   const headersList = await headers();
-  const domain = headersList.get("x-current-domain") || headersList.get("host") || "";
-  const hostname = headersList.get("host") || "";
+  const currentPath = headersList.get("x-current-path") || "";
   
   let schoolData = null;
-  let subdomain = null;
+  let schoolSlug = null;
 
-  // Split hostname into parts
-  if (domain.includes("localhost")) {
-    const parts = domain.split(".");
-    if (parts.length >= 2) {
-      subdomain = parts[0];
-    }
-  } else {
-    const parts = domain.split(".");
-    if (parts.length >= 3) {
-      subdomain = parts[0];
-    }
-  }
+  // Reserved paths that are NOT school slugs
+  const reservedPaths = ['about', 'contact', 'login', 'signup', 'dashboard', 'api', 'categories', 'courses', 'exams', 'mocktest', 'forgot-password', 'reset-password', 'auth', 'streams', 'blogs', 'complete-profile', 'cookie-policy', 'faqs', 'getting-started', 'library', 'privacy', 'profile', 'security', 'terms', 'update-password'];
 
-  if (subdomain && subdomain !== "www" && subdomain !== "test-explorer") {
+  // First check if user is logged in and has an organization
+  if (profile?.organization_id) {
     try {
-      schoolData = await getSchoolBySubdomain(subdomain);
+      schoolData = await prisma.organizations.findUnique({ where: { id: profile.organization_id } });
+      if (schoolData) schoolSlug = schoolData.slug;
     } catch (err) {
-      console.error("Failed to fetch school data in RootLayout:", err);
+      console.error("Failed to fetch school data from profile in RootLayout:", err);
+    }
+  } 
+  // If not logged in, try to get school from the URL path slug
+  else {
+    const segments = currentPath.split('/').filter(Boolean);
+    const potentialSlug = segments.length > 0 ? segments[0] : null;
+    
+    if (potentialSlug && !reservedPaths.includes(potentialSlug)) {
+      try {
+        schoolData = await prisma.organizations.findUnique({ where: { slug: potentialSlug } });
+        if (schoolData) schoolSlug = potentialSlug;
+      } catch (err) {
+        console.error("Failed to fetch school data from path in RootLayout:", err);
+      }
     }
   }
 
@@ -71,7 +75,7 @@ export default async function RootLayout({
             school={schoolData} 
             user={user} 
             profile={profile}
-            schoolSlug={subdomain} 
+            schoolSlug={schoolSlug} 
           />
           <main>{children}</main>
           <Toaster />
