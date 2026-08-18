@@ -20,7 +20,19 @@ export default async function ManageContentPage() {
           subjects: {
             select: {
               id: true,
-              title: true
+              title: true,
+              status: true,
+              chapters: {
+                select: {
+                  _count: { select: { topics: true } }
+                }
+              },
+              _count: {
+                select: {
+                  chapters: true,
+                  questions: true
+                }
+              }
             }
           }
         }
@@ -29,10 +41,28 @@ export default async function ManageContentPage() {
     orderBy: { order_index: 'asc' }
   })
 
+  // We need to map over streams to calculate topics count from chapters
+  const processedStreams = streams.map(stream => ({
+    ...stream,
+    courses: stream.courses.map(course => ({
+      ...course,
+      subjects: course.subjects.map(subject => {
+        const topicsCount = subject.chapters.reduce((sum, ch) => sum + (ch._count?.topics || 0), 0)
+        return {
+          ...subject,
+          _count: {
+            ...subject._count,
+            topics: topicsCount
+          }
+        }
+      })
+    }))
+  }))
+
   return (
     <div className="min-h-screen bg-gray-50/50 p-6 md:p-10">
       {/* @ts-ignore */}
-      <ContentManager streams={streams || []} />
+      <ContentManager streams={processedStreams || []} />
     </div>
   )
 }

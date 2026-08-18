@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import { headers } from 'next/headers'
 import { getSchoolBySubdomain } from '@/lib/db/school'
-import UserNav from '@/components/Navbar/UserNav' 
+import UserNav from '@/components/Navbar/UserNav'
 import DashboardSidebar from '@/components/dashboard/DashboardSidebar'
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
@@ -14,7 +14,7 @@ export default async function DashboardLayout({
 }) {
   const session = await getServerSession(authOptions)
   const user = session?.user
-  
+
   if (!user) return redirect('/login')
 
   let profile = null;
@@ -50,15 +50,17 @@ export default async function DashboardLayout({
     { label: 'My Students', href: '/dashboard/students', iconName: 'Users', roles: ['school_admin'] },
     { label: 'Announcements', href: '/dashboard/announcements', iconName: 'Megaphone', roles: ['school_admin'] },
     { label: 'Leaderboard', href: '/dashboard/leaderboard', iconName: 'Trophy', roles: ['school_admin'] },
-    {label: 'Testimonials', href: '/dashboard/testimonials', iconName: 'MessageSquare', roles: ['school_admin'] },
+    { label: 'Testimonials', href: '/dashboard/testimonials', iconName: 'MessageSquare', roles: ['school_admin'] },
 
     { label: 'Overview', href: '/dashboard/admin', iconName: 'LayoutDashboard', roles: ['super_admin'] },
     { label: 'Schools', href: '/dashboard/admin/schools', iconName: 'Building2', roles: ['super_admin'] },
     { label: 'Mock Blueprints', href: '/dashboard/admin/blueprints', iconName: 'Map', roles: ['super_admin'] },
     { label: 'Mock Tests', href: '/dashboard/admin/mocktest', iconName: 'Pen', roles: ['super_admin'] },
     { label: 'Manage Content', href: '/dashboard/admin/manage-content', iconName: 'BookOpen', roles: ['super_admin'] },
-    { label: 'Courses', href: '/dashboard/admin/courses', iconName: 'FileText', roles: ['super_admin'] },
+    { label: 'Subjects', href: '/dashboard/admin/subjects', iconName: 'Library', roles: ['super_admin'] },
+    { label: 'Courses', href: '/dashboard/admin/courses', iconName: 'Folder', roles: ['super_admin'] },
     { label: 'Question Pool', href: '/dashboard/admin/question-uploads', iconName: 'Database', roles: ['super_admin'] },
+    { label: 'Topic wise', href: '/dashboard/admin/question-portal', iconName: 'BookOpen', roles: ['super_admin'] },
     { label: 'Users', href: '/dashboard/admin/users', iconName: 'Users', roles: ['super_admin'] },
     { label: 'Tags', href: '/dashboard/admin/tags', iconName: 'TagIcon', roles: ['super_admin'] },
     { label: 'Blogs', href: '/dashboard/admin/blogs', iconName: 'Newspaper', roles: ['super_admin'] },
@@ -77,7 +79,7 @@ export default async function DashboardLayout({
 
   return (
     <div className="min-h-screen flex bg-gray-50">
-      <DashboardSidebar 
+      <DashboardSidebar
         visibleItems={visibleItems}
         schoolData={schoolData}
         basePath={basePath}

@@ -11,20 +11,16 @@ import Testimonials from "@/components/landing/testimonials";
 import Faq from "@/components/landing/faq";
 
 // Import New Section
-import CategoryGrid from "../categories/category-grid";
+import PracticeOptionsGrid from "../landing/practice-options-grid";
 
 export default async function LandingPage() {
-  const categories = await prisma.categories.findMany({
-    orderBy: { order_index: 'asc' }
-  })
-
   return (
     <main className="flex flex-col min-h-screen">
       {/* === SECTION 1: DYNAMIC HERO === */}
       <HeroMain />
 
       {/* === SECTION 2: SHARED CONTENT === */}
-      <CategoryGrid categories={categories}/>
+      <PracticeOptionsGrid />
       <Steps />
       <Features />
       <Testimonials />
