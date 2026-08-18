@@ -341,11 +341,27 @@ model questions {
   prep_modules        prep_modules?         @relation(fields: [module_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   practice_tests      practice_tests?       @relation(fields: [practice_test_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   question_banks      question_banks?       @relation(fields: [question_bank_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  subjects            subjects?             @relation(fields: [subject_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  chapters            chapters?             @relation(fields: [chapter_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  topics              topics?               @relation(fields: [topic_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  subject_id          String?
+  chapter_id          String?
+  topic_id            String?
+  difficulty          String?
+  marks               Decimal?              @db.Decimal(10, 2)
+  negative_marks      Decimal?              @db.Decimal(10, 2)
+  time_limit          Int?
+  status              String?               @default("active")
+  tags                String?               @db.Text
 
   @@index([exam_id], map: "questions_exam_id_fkey")
   @@index([module_id], map: "questions_module_id_fkey")
   @@index([practice_test_id], map: "questions_practice_test_id_fkey")
   @@index([question_bank_id], map: "questions_question_bank_id_fkey")
+  @@index([subject_id], map: "questions_subject_id_fkey")
+  @@index([chapter_id], map: "questions_chapter_id_fkey")
+  @@index([topic_id], map: "questions_topic_id_fkey")
 }
 
 model school_announcements {
@@ -391,6 +407,9 @@ model subjects {
   id                   String                 @id @default(uuid())
   course_id            String?
   title                String
+  code                 String?
+  description          String?                @db.LongText
+  status               String?                @default("active")
   created_at           DateTime?              @default(now())
   exams                exams[]
   mock_blueprint_items mock_blueprint_items[]
@@ -399,9 +418,44 @@ model subjects {
   prep_modules         prep_modules[]
   question_banks       question_banks[]
   student_enrollments  student_enrollments[]
+  chapters             chapters[]
+  questions            questions[]
   courses              courses?               @relation(fields: [course_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([course_id], map: "subjects_course_id_fkey")
+}
+
+model chapters {
+  id          String      @id @default(uuid())
+  subject_id  String
+  name        String
+  description String?     @db.LongText
+  order       Int         @default(0)
+  status      String      @default("active")
+  created_at  DateTime?   @default(now())
+  updated_at  DateTime?   @default(now()) @updatedAt
+
+  subjects    subjects    @relation(fields: [subject_id], references: [id], onDelete: Cascade)
+  topics      topics[]
+  questions   questions[]
+
+  @@index([subject_id], map: "chapters_subject_id_fkey")
+}
+
+model topics {
+  id          String      @id @default(uuid())
+  chapter_id  String
+  name        String
+  description String?     @db.LongText
+  order       Int         @default(0)
+  status      String      @default("active")
+  created_at  DateTime?   @default(now())
+  updated_at  DateTime?   @default(now()) @updatedAt
+
+  chapters    chapters    @relation(fields: [chapter_id], references: [id], onDelete: Cascade)
+  questions   questions[]
+
+  @@index([chapter_id], map: "topics_chapter_id_fkey")
 }
 
 model tags {

@@ -658,17 +658,24 @@ export default function ContentManager({ streams }: { streams: Stream[] }) {
                             {exam.subjects?.map((sub) => (
                               <div
                                 key={sub.id}
-                                className="flex items-center justify-between pl-4 pr-2 py-2 bg-white ml-8 rounded-xl border border-gray-100 shadow-sm hover:border-blue-300 transition-all"
+                                className="flex flex-col sm:flex-row sm:items-center justify-between pl-4 pr-2 py-3 bg-white ml-8 rounded-xl border border-gray-100 shadow-sm hover:border-blue-300 transition-all gap-2"
                               >
-                                <div className="flex items-center gap-3">
-                                  <div className="w-6 h-6 bg-purple-50 text-purple-600 rounded-md flex items-center justify-center shrink-0">
-                                    <BookOpen className="w-3 h-3" />
+                                <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-6 h-6 bg-purple-50 text-purple-600 rounded-md flex items-center justify-center shrink-0">
+                                      <BookOpen className="w-3 h-3" />
+                                    </div>
+                                    <span className="text-sm font-semibold text-gray-700">
+                                      {sub.title}
+                                    </span>
                                   </div>
-                                  <span className="text-sm font-semibold text-gray-700">
-                                    {sub.title}
-                                  </span>
+                                  <div className="flex items-center gap-2 ml-8 sm:ml-2">
+                                    <span className="text-[10px] font-bold px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded uppercase">{sub._count?.chapters || 0} Chapters</span>
+                                    <span className="text-[10px] font-bold px-1.5 py-0.5 bg-orange-50 text-orange-600 rounded uppercase">{sub._count?.topics || 0} Topics</span>
+                                    <span className="text-[10px] font-bold px-1.5 py-0.5 bg-green-50 text-green-600 rounded uppercase">{sub._count?.questions || 0} Questions</span>
+                                  </div>
                                 </div>
-                                <div className="flex items-center gap-1">
+                                <div className="flex items-center gap-1 self-end sm:self-center">
   {/* REVERTED TO MODAL EDITING */}
   <button
     onClick={() =>

@@ -3,7 +3,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, X, Save, Layers, BookOpen, Loader2, Pencil } from 'lucide-react'
+import { Plus, X, Save, Layers, BookOpen, Loader2, Pencil, CopyCheck } from 'lucide-react'
 import { createBlueprintAction, updateBlueprintAction } from '@/app/dashboard/admin/blueprints/actions'
 import { toast } from 'sonner'
 
@@ -46,15 +46,20 @@ export default function BlueprintModal({ courses, blueprint }: BlueprintModalPro
         res = await createBlueprintAction(formData)
       }
       
-      if (res?.error) throw new Error(res.error)
+      if (res?.error) {
+        toast.error(res.error)
+        return
+      }
       
       const count = res.generatedCount || 0
       const actionMsg = isEditMode ? "updated" : "created"
       
       if (count > 0) {
-        toast.success(`Blueprint ${actionMsg} & ${count} mock tests generated!`)
+        toast.success(`Blueprint ${actionMsg} & ${count} mock test${count > 1 ? 's' : ''} generated!`)
+      } else if (res?.warning) {
+        toast.warning(`Blueprint ${actionMsg}: ${res.warning}`)
       } else {
-        toast.error(`Blueprint ${actionMsg} (No available questions for new mocks)`)
+        toast.success(`Blueprint ${actionMsg} successfully!`)
       }
       
       setIsOpen(false)
@@ -85,7 +90,7 @@ export default function BlueprintModal({ courses, blueprint }: BlueprintModalPro
       ) : (
         <button 
           onClick={() => setIsOpen(true)}
-          className="bg-black text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 hover:bg-gray-800 transition-all shadow-lg"
+          className="bg-black text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 hover:bg-gray-800 transition-all shadow-lg cursor-pointer"
         >
           <Plus className="w-4 h-4" /> Create Blueprint
         </button>
@@ -98,7 +103,7 @@ export default function BlueprintModal({ courses, blueprint }: BlueprintModalPro
             <button 
               onClick={() => setIsOpen(false)} 
               disabled={loading} // Prevent closing while loading
-              className="absolute top-6 right-6 p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors disabled:opacity-50"
+              className="absolute top-6 right-6 p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors disabled:opacity-50 cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
@@ -144,62 +149,80 @@ export default function BlueprintModal({ courses, blueprint }: BlueprintModalPro
                       />
                     </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                      <div>
-                        <label className="block text-xs font-bold text-gray-700 mb-1">Duration (mins)</label>
-                        <input 
-                          name="duration" 
-                          type="number" 
-                          required
-                          disabled={loading}
-                          defaultValue={blueprint?.total_duration_minutes || 60}
-                          className="w-full border rounded p-2 text-sm disabled:bg-gray-50"
-                        />
-                      </div>
+                    <div>
+                      <label className="block text-sm font-bold text-gray-700 mb-1 flex items-center gap-1.5">
+                        <CopyCheck className="w-4 h-4 text-blue-600" />
+                        Sets to Generate
+                      </label>
+                      <input 
+                        name="sets_count" 
+                        type="number"
+                        min="1"
+                        max="20"
+                        defaultValue={3}
+                        required 
+                        disabled={loading}
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-black outline-none disabled:bg-gray-50 disabled:text-gray-400 font-semibold" 
+                      />
+                      <p className="text-xs text-gray-400 mt-1">Number of test sets to create (1-20).</p>
+                    </div>
+                  </div>
 
-                      <div>
-                        <label className="block text-xs font-bold text-gray-700 mb-1">Total Marks</label>
-                        <input 
-                          name="marks" 
-                          type="number" 
-                          required
-                          disabled={loading}
-                          defaultValue={blueprint?.total_marks || 100}
-                          className="w-full border rounded p-2 text-sm disabled:bg-gray-50"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-bold text-green-700 mb-1">Correct (+)</label>
-                        <input 
-                          name="marks_correct" 
-                          type="number" 
-                          step="0.25"
-                          disabled={loading}
-                          defaultValue={4}
-                          className="w-full border border-green-200 bg-green-50 rounded p-2 text-sm"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-bold text-red-700 mb-1">Incorrect (-)</label>
-                        <input 
-                          name="marks_incorrect" 
-                          type="number" 
-                          step="0.25"
-                          disabled={loading}
-                          defaultValue={-1}
-                          className="w-full border border-red-200 bg-red-50 rounded p-2 text-sm"
-                        />
-                      </div>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                    <div>
+                      <label className="block text-xs font-bold text-gray-700 mb-1">Duration (mins)</label>
+                      <input 
+                        name="duration" 
+                        type="number" 
+                        required
+                        disabled={loading}
+                        defaultValue={blueprint?.total_duration_minutes || 60}
+                        className="w-full border border-gray-200 rounded-lg p-2.5 text-sm disabled:bg-gray-50"
+                      />
                     </div>
 
-                    <input type="hidden" name="marks_unattempted" value="0" />
+                    <div>
+                      <label className="block text-xs font-bold text-gray-700 mb-1">Total Marks</label>
+                      <input 
+                        name="marks" 
+                        type="number" 
+                        required
+                        disabled={loading}
+                        defaultValue={blueprint?.total_marks || 100}
+                        className="w-full border border-gray-200 rounded-lg p-2.5 text-sm disabled:bg-gray-50"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-green-700 mb-1">Correct (+)</label>
+                      <input 
+                        name="marks_correct" 
+                        type="number" 
+                        step="0.25"
+                        disabled={loading}
+                        defaultValue={4}
+                        className="w-full border border-green-200 bg-green-50 rounded-lg p-2.5 text-sm text-green-900 font-semibold"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-red-700 mb-1">Incorrect (-)</label>
+                      <input 
+                        name="marks_incorrect" 
+                        type="number" 
+                        step="0.25"
+                        disabled={loading}
+                        defaultValue={-1}
+                        className="w-full border border-red-200 bg-red-50 rounded-lg p-2.5 text-sm text-red-900 font-semibold"
+                      />
+                    </div>
                   </div>
+
+                  <input type="hidden" name="marks_unattempted" value="0" />
 
                   <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
                     <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
-                      <BookOpen className="w-4 h-4" /> Question Distribution
+                      <BookOpen className="w-4 h-4" /> Question Distribution (Per Test)
                     </h3>
                     
                     {subjects.length === 0 ? (
@@ -230,7 +253,7 @@ export default function BlueprintModal({ courses, blueprint }: BlueprintModalPro
                   <button 
                     type="submit" 
                     disabled={loading}
-                    className="w-full py-4 bg-black text-white font-bold rounded-xl hover:bg-gray-800 transition-all flex items-center justify-center gap-2 shadow-xl disabled:opacity-70 disabled:cursor-not-allowed"
+                    className="w-full py-4 bg-black text-white font-bold rounded-xl hover:bg-gray-800 transition-all flex items-center justify-center gap-2 shadow-xl disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
                   >
                     {loading ? (
                       <>

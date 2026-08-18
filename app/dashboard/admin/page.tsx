@@ -23,7 +23,11 @@ export default async function SuperAdminDashboard() {
     blogsCount,
     unreadMessagesCount,
     recentMessages,
-    recentAttempts
+    recentAttempts,
+    subjectsCount,
+    chaptersCount,
+    topicsCount,
+    questionsCount
   ] = await Promise.all([
     prisma.organizations.count(),
     prisma.profiles.count({ where: { role: 'student' } }),
@@ -44,15 +48,20 @@ export default async function SuperAdminDashboard() {
         mock_tests: true,
         practice_tests: true
       }
-    })
+    }),
+    prisma.subjects.count(),
+    prisma.chapters.count(),
+    prisma.topics.count(),
+    prisma.questions.count()
   ])
 
   const stats = [
+    { label: 'SUBJECTS', value: subjectsCount || 0, icon: BookOpen, color: 'text-blue-600', bg: 'bg-blue-50', link: '/dashboard/admin/manage-content' },
+    { label: 'CHAPTERS', value: chaptersCount || 0, icon: Layers, color: 'text-purple-600', bg: 'bg-purple-50', link: '/dashboard/admin/question-portal/chapters' },
+    { label: 'TOPICS', value: topicsCount || 0, icon: FileText, color: 'text-orange-600', bg: 'bg-orange-50', link: '/dashboard/admin/question-portal/topics' },
+    { label: 'QUESTIONS', value: questionsCount || 0, icon: FileText, color: 'text-green-600', bg: 'bg-green-50', link: '/dashboard/admin/question-uploads' },
     { label: 'TOTAL SCHOOLS', value: schoolsCount || 0, icon: Building2, color: 'text-blue-600', bg: 'bg-blue-50', link: '/dashboard/admin/schools' },
     { label: 'TOTAL STUDENTS', value: studentsCount || 0, icon: Users, color: 'text-purple-600', bg: 'bg-purple-50', link: '/dashboard/admin/users' },
-    { label: 'TOTAL STREAMS', value: streamsCount || 0, icon: Layers, color: 'text-indigo-600', bg: 'bg-indigo-50', link: '/dashboard/admin/streams' },
-    { label: 'MOCK TESTS', value: mockTestsCount || 0, icon: BookOpen, color: 'text-green-600', bg: 'bg-green-50', link: '/dashboard/admin/mocktest' },
-    { label: 'PUBLISHED BLOGS', value: blogsCount || 0, icon: FileText, color: 'text-orange-600', bg: 'bg-orange-50', link: '/dashboard/admin/blogs' },
   ]
 
   return (
