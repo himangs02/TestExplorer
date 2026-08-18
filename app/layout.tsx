@@ -68,8 +68,8 @@ export default async function RootLayout({
   }
 
   return (
-    <html lang="en">
-      <body className="min-h-screen bg-gray-50 font-sans antialiased" suppressHydrationWarning={true}>
+    <html lang="en" suppressHydrationWarning>
+      <body className="min-h-screen bg-gray-50 font-sans antialiased" suppressHydrationWarning>
         <NextAuthProvider>
           <SiteHeader 
             school={schoolData} 
