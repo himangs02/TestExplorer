@@ -1,5 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import ChapterManager from '@/components/admin/chapter-manager'
+import Link from 'next/link'
+import { ArrowLeft } from 'lucide-react'
 
 export default async function ChaptersPage() {
   const courses = await prisma.courses.findMany({
@@ -65,6 +67,12 @@ export default async function ChaptersPage() {
   return (
     <div className="max-w-7xl mx-auto p-6 space-y-8">
       <div>
+        <Link 
+          href="/dashboard/admin/question-portal" 
+          className="inline-flex items-center gap-2 text-gray-500 font-bold hover:text-black transition-colors mb-4 text-sm"
+        >
+          <ArrowLeft className="w-4 h-4" /> Back to Question Portal
+        </Link>
         <h1 className="text-3xl font-black text-gray-900 tracking-tight">Chapter Management</h1>
         <p className="text-gray-500 font-medium">Create, edit, and organize chapters under subjects.</p>
       </div>
