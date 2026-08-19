@@ -45,7 +45,18 @@ type Stream = {
   courses: {
     id: string;
     title: string;
-    subjects: { id: string; title: string }[];
+    description?: string;
+    is_published?: boolean;
+    subjects: {
+      id: string;
+      title: string;
+      status?: string;
+      _count?: {
+        chapters?: number;
+        topics?: number;
+        questions?: number;
+      };
+    }[];
   }[];
 };
 

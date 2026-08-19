@@ -22,6 +22,39 @@ export async function createSubjectAction(formData: FormData): Promise<any> {
   redirect('/dashboard/admin/subjects')
 }
 
+// Bulk Create Subjects
+export async function bulkCreateSubjectsAction(subjects: { course_id?: string | null; title: string; code?: string; description?: string; status?: string }[]) {
+  try {
+    if (!subjects || subjects.length === 0) {
+      return { error: 'No subjects provided' }
+    }
+
+    const validSubjects = subjects.filter(s => s.title && s.title.trim() !== '')
+    if (validSubjects.length === 0) {
+      return { error: 'No valid subjects found. Every subject must have a title.' }
+    }
+
+    await prisma.subjects.createMany({
+      data: validSubjects.map(s => ({
+        title: s.title.trim(),
+        course_id: s.course_id || null,
+        code: s.code?.trim() || null,
+        description: s.description?.trim() || null,
+        status: s.status || 'active',
+      })),
+      skipDuplicates: true,
+    })
+
+    revalidatePath('/dashboard/admin/subjects')
+    revalidatePath('/dashboard/admin/manage-content')
+    revalidatePath('/dashboard/admin/question-portal')
+    return { success: true, count: validSubjects.length }
+  } catch (error: any) {
+    console.error('Error bulk creating subjects:', error)
+    return { error: error.message || 'Failed to bulk create subjects' }
+  }
+}
+
 // Update Subject
 export async function updateSubjectAction(formData: FormData): Promise<any> {
   const id = formData.get('id') as string

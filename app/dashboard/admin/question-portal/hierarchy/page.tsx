@@ -2,9 +2,9 @@ import { prisma } from '@/lib/prisma'
 import TreeView from '@/components/admin/tree-view'
 
 export default async function HierarchyPage() {
-  const subjects = await prisma.subjects.findMany({
+  const rawSubjects = await prisma.subjects.findMany({
     include: {
-      _count: { select: { chapters: true, topics: true, questions: true } },
+      _count: { select: { chapters: true, questions: true } },
       chapters: {
         include: {
           _count: { select: { topics: true, questions: true } },
@@ -21,6 +21,14 @@ export default async function HierarchyPage() {
     orderBy: { title: 'asc' }
   })
 
+  const subjects = rawSubjects.map(subject => ({
+    ...subject,
+    _count: {
+      ...subject._count,
+      topics: subject.chapters.reduce((sum, ch) => sum + (ch._count?.topics || ch.topics?.length || 0), 0)
+    }
+  }))
+
   return (
     <div className="max-w-7xl mx-auto p-6 space-y-8">
       <div>
@@ -28,7 +36,6 @@ export default async function HierarchyPage() {
         <p className="text-gray-500 font-medium">Visual representation of Subjects, Chapters, and Topics.</p>
       </div>
       
-      {/* @ts-ignore */}
       <TreeView subjects={subjects} />
     </div>
   )
