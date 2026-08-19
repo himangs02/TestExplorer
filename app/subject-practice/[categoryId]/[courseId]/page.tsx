@@ -28,9 +28,7 @@ export default async function SubjectPracticeSubjectsPage({
       _count: {
         select: {
           chapters: true,
-          questions: {
-            where: { chapter_id: { not: null } }
-          }
+          questions: true
         }
       }
     }
@@ -71,7 +69,7 @@ export default async function SubjectPracticeSubjectsPage({
             subjects.map((subject) => (
               <Link 
                 key={subject.id} 
-                href={`/subject-practice/${categoryId}/${courseId}/${subject.id}`}
+                href={`/courses/${courseId}/subjects/${subject.id}`}
                 className="group relative block"
               >
                 <div 
