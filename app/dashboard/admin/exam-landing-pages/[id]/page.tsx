@@ -7,7 +7,7 @@ import {
   Loader2, 
   Save, 
   ChevronLeft, 
-  Sparkles,
+  SlidersHorizontal,
   Layout, 
   Calendar, 
   CheckCircle, 
@@ -35,7 +35,7 @@ import { Badge } from '@/components/ui/badge'
 
 // 1. Enhanced Tab Configuration with Icons
 const TABS = [
-  { id: 'header_info', label: 'Header & Overview', icon: Sparkles },
+  { id: 'header_info', label: 'Header & Overview', icon: SlidersHorizontal },
   { id: 'overview', label: 'Highlights', icon: Layout },
   { id: 'important-dates', label: 'Important Dates', icon: Calendar },
   { id: 'updates_section', label: 'Updates & Events', icon: Calendar },
@@ -156,7 +156,7 @@ export default function ExamEditorPage() {
         return (
           <div className="space-y-8 animate-in fade-in duration-500">
             <div className="bg-blue-50/60 p-5 rounded-2xl border border-blue-100 flex items-center gap-3">
-              <Sparkles className="w-5 h-5 text-blue-600 shrink-0" />
+              <SlidersHorizontal className="w-5 h-5 text-blue-600 shrink-0" />
               <p className="text-sm text-blue-900 font-medium">
                 Customize the top header banner, badges, logo text, and main overview description of the exam landing page.
               </p>
