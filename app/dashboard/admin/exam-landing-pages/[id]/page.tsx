@@ -92,7 +92,11 @@ export default function ExamEditorPage() {
         const data = await getExamDetails(id as string)
         if (data) {
           setCourseTitle(data.title)
-          setDetails(data.details || { tabs: {} })
+          let parsed = data.details
+          if (typeof parsed === 'string') {
+            try { parsed = JSON.parse(parsed) } catch(e) {}
+          }
+          setDetails(parsed || { tabs: {} })
         }
       } catch (error) {
         console.error(error)

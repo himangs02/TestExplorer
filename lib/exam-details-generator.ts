@@ -7,8 +7,6 @@ export function generateExamDetails(courseTitle: string, slug: string, subjectNa
   const isClat = normTitle.includes('clat') || normTitle.includes('law')
   const isCuet = normTitle.includes('cuet')
   const isJee = normTitle.includes('jee') || normTitle.includes('advance') || normTitle.includes('iit')
-  const isGate = normTitle.includes('gate')
-  const isCat = normTitle.includes('cat') || normTitle.includes('mba')
 
   let examFullName = courseTitle
   let conductingBody = 'National Testing Agency (NTA)'
@@ -69,9 +67,9 @@ export function generateExamDetails(courseTitle: string, slug: string, subjectNa
   )
 
   const tagline = `${examFullName} ${year}`
-  const description = `${examFullName} (${courseTitle}) is India's premier ${examLevel.toLowerCase()} conducted annually by ${conductingBody} for admission into ${coursesOffered} across top-tier institutions including ${targetColleges}.
+  const description = `The ${examFullName}, also known as ${courseTitle}, is the premier national-level entrance examination conducted for admission into ${coursesOffered} at top institutions including ${targetColleges}.
 
-Over hundreds of thousands of aspirants appear every year. The examination evaluates conceptual understanding, application-based problem solving, and time management. TestExplorer provides comprehensive chapter-wise practice, full-length mock tests, performance analytics, and predictive score reports tailored specifically to ${courseTitle} patterns.`
+Candidates seeking admission to top institutions must first pass the ${courseTitle} examination with the required cutoff score. Check out the following table for the key highlights of ${courseTitle} ${year}.`
 
   const tableOfContents = [
     `${courseTitle} Highlights`,
@@ -90,16 +88,15 @@ Over hundreds of thousands of aspirants appear every year. The examination evalu
 
   const highlights = [
     { label: 'Exam Name', value: examFullName },
-    { label: 'Short Name', value: courseTitle },
     { label: 'Conducting Body', value: conductingBody },
     { label: 'Exam Level', value: examLevel },
     { label: 'Exam Frequency', value: 'Annual (Once / Twice a Year)' },
     { label: 'Exam Mode', value: mode },
-    { label: 'Total Duration', value: examDuration },
+    { label: 'Courses Offered', value: coursesOffered },
+    { label: 'Exam Paper Language', value: 'English, Hindi, and Regional Languages' },
+    { label: 'Exam Duration', value: examDuration },
     { label: 'Total Marks', value: totalMarks },
-    { label: 'Marking Scheme', value: '+4 for correct, -1 for incorrect, 0 for unattempted' },
-    { label: 'Official Website', value: officialWebsite },
-    { label: 'Helpdesk Email / Phone', value: `support@${officialWebsite} • 011-40759000` }
+    { label: 'Official Website', value: officialWebsite }
   ]
 
   const importantDates = [
@@ -114,6 +111,21 @@ Over hundreds of thousands of aspirants appear every year. The examination evalu
     { event: `${courseTitle} Final Result & Rank List`, date: `June ${year}` },
     { event: 'Counselling & Seat Allotment', date: `July - August ${year}` }
   ]
+
+  const updatesSection = {
+    current_title: 'Current Updates',
+    current_events: [
+      { event: `${courseTitle} Official Notification Released`, date: `November ${year - 1}`, status: 'Announced' },
+      { event: 'Online Application Form Live', date: `December ${year - 1} - February ${year}`, status: 'Live' },
+      { event: 'Correction Window Facility', date: `February ${year}`, status: 'Upcoming' },
+      { event: 'Admit Card Release Date', date: `April - May ${year}`, status: 'Upcoming' }
+    ],
+    expired_title: 'Past Events',
+    expired_events: [
+      { event: `Previous Academic Session Cutoff Declared`, date: `June ${year - 1}` },
+      { event: `Institutional Counselling Closed`, date: `August ${year - 1}` }
+    ]
+  }
 
   const eligibility = {
     title: `${courseTitle} Eligibility Criteria`,
@@ -374,11 +386,12 @@ Over hundreds of thousands of aspirants appear every year. The examination evalu
     description,
     table_of_contents: tableOfContents,
     tabs: {
-      highlights_intro: `Essential details for ${courseTitle} ${year}:`,
+      highlights_intro: `The ${examFullName}, also known as ${courseTitle}, is the exam required for admission to leading undergraduate programmes in India. Students have the option of participating in the examination based on their stream. Check out the following table for the key highlights of ${courseTitle} ${year}.`,
       whats_new: whatsNew,
       highlights,
       important_dates_intro: `Key dates and deadlines for ${courseTitle} ${year} admissions:`,
       important_dates: importantDates,
+      updates_section: updatesSection,
       eligibility,
       application_fee: applicationFee,
       application_process: applicationProcess,
