@@ -34,7 +34,7 @@ export async function getExamLandingPages() {
       try {
         await prisma.courses.update({
           where: { id: c.id },
-          data: { details: generated }
+          data: { details: JSON.stringify(generated) }
         })
       } catch (err) {
         console.error('Failed to populate details for course', c.title, err)
@@ -86,7 +86,7 @@ export async function getExamDetails(id: string) {
 
     await prisma.courses.update({
       where: { id: data.id },
-      data: { details: generated }
+      data: { details: JSON.stringify(generated) }
     })
 
     return {
@@ -107,10 +107,11 @@ export async function updateExamDetails(id: string, details: any) {
   if (!session?.user) return { success: false, message: 'Unauthorized' }
 
   try {
+    const stringified = typeof details === 'string' ? details : JSON.stringify(details)
     // We only update the 'details' json column
     await prisma.courses.update({
       where: { id },
-      data: { details }
+      data: { details: stringified }
     })
 
     revalidatePath(`/dashboard/admin/exam-landing-pages/${id}`)
