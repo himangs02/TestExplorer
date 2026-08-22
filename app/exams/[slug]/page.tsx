@@ -199,6 +199,10 @@ export default async function ExamLandingPage({ params }: PageProps) {
   // Merge so custom DB details override generated ones, but fallback fills in everything
   const details = {
     tagline: parsedDetails.tagline || generatedFallback.tagline,
+    logo_text: parsedDetails.logo_text || generatedFallback.logo_text || course.title.substring(0, 2).toUpperCase(),
+    exam_level: parsedDetails.exam_level || generatedFallback.exam_level || 'National Level',
+    coverage: parsedDetails.coverage || generatedFallback.coverage || '200+ Cities',
+    cta_label: parsedDetails.cta_label || generatedFallback.cta_label || 'Get Free Mock Tests',
     description: parsedDetails.description || generatedFallback.description,
     table_of_contents: (parsedDetails.table_of_contents && parsedDetails.table_of_contents.length > 0)
       ? parsedDetails.table_of_contents
@@ -259,7 +263,7 @@ export default async function ExamLandingPage({ params }: PageProps) {
       <div className="flex gap-4 items-start w-full md:w-auto">
         <div className="w-16 h-16 rounded-full bg-white border border-gray-200 p-1 shadow-sm flex-shrink-0">
           <div className="w-full h-full rounded-full bg-green-50 flex items-center justify-center text-green-600 font-bold text-xl uppercase">
-            {course.title.substring(0, 2)}
+            {details.logo_text}
           </div>
         </div>
         
@@ -271,11 +275,11 @@ export default async function ExamLandingPage({ params }: PageProps) {
           {/* Metadata badges - Flex wrap ensures they don't overflow on mobile */}
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-2 text-sm text-gray-600">
             <span className="flex items-center gap-1">
-              <Trophy className="w-4 h-4 text-gray-400" /> National Level
+              <Trophy className="w-4 h-4 text-gray-400" /> {details.exam_level}
             </span>
             <span className="hidden sm:inline w-1 h-1 rounded-full bg-gray-300"></span>
             <span className="flex items-center gap-1">
-              <MapPin className="w-4 h-4 text-gray-400" /> 200+ Cities
+              <MapPin className="w-4 h-4 text-gray-400" /> {details.coverage}
             </span>
           </div>
         </div>
@@ -284,7 +288,7 @@ export default async function ExamLandingPage({ params }: PageProps) {
       {/* Right Side: Action Button */}
       {/* w-full on mobile, auto on desktop. Added specific selector for the button width */}
       <div className="w-full md:w-auto [&>button]:w-full md:[&>button]:w-auto [&>button]:bg-[#1e293b] [&>button]:text-white [&>button]:rounded-lg [&>button]:px-6 [&>button]:py-2.5 [&>button]:text-sm [&>button]:font-semibold [&>button]:hover:bg-slate-800">
-        <JoinExamButton courseId={course.id} label="Get Free Mock Tests" />
+        <JoinExamButton courseId={course.id} label={details.cta_label} />
       </div>
     </div>
   </div>

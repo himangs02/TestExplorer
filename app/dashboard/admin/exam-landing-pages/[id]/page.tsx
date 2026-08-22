@@ -7,6 +7,7 @@ import {
   Loader2, 
   Save, 
   ChevronLeft, 
+  Sparkles,
   Layout, 
   Calendar, 
   CheckCircle, 
@@ -34,6 +35,7 @@ import { Badge } from '@/components/ui/badge'
 
 // 1. Enhanced Tab Configuration with Icons
 const TABS = [
+  { id: 'header_info', label: 'Header & Overview', icon: Sparkles },
   { id: 'overview', label: 'Highlights', icon: Layout },
   { id: 'important-dates', label: 'Important Dates', icon: Calendar },
   { id: 'updates_section', label: 'Updates & Events', icon: Calendar },
@@ -79,7 +81,7 @@ export default function ExamEditorPage() {
   
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const [activeTab, setActiveTab] = useState('overview')
+  const [activeTab, setActiveTab] = useState('header_info')
   
   // This state holds the entire 'details' JSON object
   const [details, setDetails] = useState<any>({ tabs: {} })
@@ -150,6 +152,100 @@ export default function ExamEditorPage() {
     const data = details.tabs || {}
 
     switch (activeTab) {
+      case 'header_info':
+        return (
+          <div className="space-y-8 animate-in fade-in duration-500">
+            <div className="bg-blue-50/60 p-5 rounded-2xl border border-blue-100 flex items-center gap-3">
+              <Sparkles className="w-5 h-5 text-blue-600 shrink-0" />
+              <p className="text-sm text-blue-900 font-medium">
+                Customize the top header banner, badges, logo text, and main overview description of the exam landing page.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white p-6 rounded-2xl border border-gray-200/80 shadow-xs">
+              {/* Full Title / Tagline */}
+              <div className="space-y-2 md:col-span-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-bold text-gray-900">Exam Full Title / Tagline</label>
+                  <Badge variant="outline" className="text-xs">Top Header</Badge>
+                </div>
+                <Input 
+                  value={details.tagline || ''} 
+                  onChange={(e) => setDetails({ ...details, tagline: e.target.value })} 
+                  placeholder="e.g. National Eligibility cum Entrance Test (UG) 2027"
+                  className="font-semibold text-base h-11"
+                />
+                <p className="text-xs text-gray-500">Main large headline displayed in the top banner.</p>
+              </div>
+
+              {/* Logo Initials */}
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-gray-900">Logo Badge Initials / Text</label>
+                <Input 
+                  value={details.logo_text || ''} 
+                  onChange={(e) => setDetails({ ...details, logo_text: e.target.value })} 
+                  placeholder="e.g. NE, JE, CLAT"
+                  className="font-bold tracking-wider uppercase h-11"
+                  maxLength={6}
+                />
+                <p className="text-xs text-gray-500">2-4 letters shown inside the green circle icon.</p>
+              </div>
+
+              {/* Exam Level Badge */}
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-gray-900">Exam Level Badge</label>
+                <Input 
+                  value={details.exam_level || ''} 
+                  onChange={(e) => setDetails({ ...details, exam_level: e.target.value })} 
+                  placeholder="e.g. National Level, State Level"
+                  className="h-11 font-medium"
+                />
+                <p className="text-xs text-gray-500">Displayed next to the 🏆 Trophy icon.</p>
+              </div>
+
+              {/* Coverage / Cities Badge */}
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-gray-900">Cities / Centres Coverage</label>
+                <Input 
+                  value={details.coverage || ''} 
+                  onChange={(e) => setDetails({ ...details, coverage: e.target.value })} 
+                  placeholder="e.g. 200+ Cities, 550+ Centres"
+                  className="h-11 font-medium"
+                />
+                <p className="text-xs text-gray-500">Displayed next to the 📍 Location pin icon.</p>
+              </div>
+
+              {/* CTA Button Label */}
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-gray-900">Header CTA Button Text</label>
+                <Input 
+                  value={details.cta_label || ''} 
+                  onChange={(e) => setDetails({ ...details, cta_label: e.target.value })} 
+                  placeholder="e.g. Get Free Mock Tests"
+                  className="h-11 font-medium"
+                />
+                <p className="text-xs text-gray-500">Action button text located in the top right.</p>
+              </div>
+            </div>
+
+            {/* Main Overview Description */}
+            <div className="space-y-3 bg-white p-6 rounded-2xl border border-gray-200/80 shadow-xs">
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-bold text-gray-900">Main Description / Overview Paragraph</label>
+                <Badge variant="outline" className="text-xs">Top Intro</Badge>
+              </div>
+              <Textarea 
+                value={details.description || ''} 
+                onChange={(e) => setDetails({ ...details, description: e.target.value })} 
+                rows={6}
+                className="leading-relaxed border-gray-200 focus:border-blue-500 transition-colors font-normal text-sm"
+                placeholder="Write the comprehensive intro and background summary displayed at the top of the exam landing page..."
+              />
+              <p className="text-xs text-gray-500">Displayed right below the header before the Table of Contents.</p>
+            </div>
+          </div>
+        )
+
       case 'overview': 
         return (
           <div className="space-y-8 animate-in fade-in duration-500">

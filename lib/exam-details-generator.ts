@@ -11,12 +11,13 @@ export function generateExamDetails(courseTitle: string, slug: string, subjectNa
   let examFullName = courseTitle
   let conductingBody = 'National Testing Agency (NTA)'
   let officialWebsite = 'exams.nta.ac.in'
-  let examLevel = 'National Level Entrance Examination'
+  let examLevel = 'National Level'
   let examDuration = '180 Minutes (3 Hours)'
   let totalMarks = '300 Marks'
   let mode = 'Computer Based Test (CBT)'
   let coursesOffered = 'Undergraduate Degree Programmes'
   let targetColleges = 'Leading Central & State Universities'
+  let coverage = '200+ Cities'
 
   if (isNeet) {
     examFullName = 'National Eligibility cum Entrance Test (UG)'
@@ -27,6 +28,7 @@ export function generateExamDetails(courseTitle: string, slug: string, subjectNa
     mode = 'Pen & Paper Mode (OMR Based)'
     coursesOffered = 'MBBS, BDS, BAMS, BHMS, BSMS, BUMS & BSc Nursing'
     targetColleges = 'AIIMS, JIPMER, Central & State Govt Medical Colleges'
+    coverage = '550+ Cities'
   } else if (isClat) {
     examFullName = 'Common Law Admission Test (CLAT)'
     conductingBody = 'Consortium of National Law Universities (NLUs)'
@@ -36,6 +38,7 @@ export function generateExamDetails(courseTitle: string, slug: string, subjectNa
     mode = 'Offline (Pen and Paper)'
     coursesOffered = '5-Year Integrated BA/BBA LLB & LLM Programmes'
     targetColleges = '24+ National Law Universities (NLSIU, NALSAR, WBNUJS, etc.)'
+    coverage = '130+ Cities'
   } else if (isCuet) {
     examFullName = 'Common University Entrance Test (CUET UG)'
     conductingBody = 'National Testing Agency (NTA)'
@@ -45,6 +48,7 @@ export function generateExamDetails(courseTitle: string, slug: string, subjectNa
     mode = 'Hybrid Mode (CBT & Pen-Paper)'
     coursesOffered = 'BA, BSc, BCom, BVoc, Integrated Programmes'
     targetColleges = 'DU, BHU, JNU, JMI, AMU & 250+ Universities'
+    coverage = '380+ Cities'
   } else if (isJee) {
     examFullName = normTitle.includes('advance') 
       ? 'Joint Entrance Examination (Advanced)' 
@@ -56,6 +60,7 @@ export function generateExamDetails(courseTitle: string, slug: string, subjectNa
     mode = 'Computer Based Test (CBT)'
     coursesOffered = 'B.Tech, B.E., B.Arch, B.Planning'
     targetColleges = normTitle.includes('advance') ? '23 IITs' : '31 NITs, 26 IIITs, 38 GFTIs'
+    coverage = '300+ Cities'
   }
 
   const defaultSubjects = subjectNames.length > 0 ? subjectNames : (
@@ -383,6 +388,10 @@ Candidates seeking admission to top institutions must first pass the ${courseTit
 
   return {
     tagline,
+    logo_text: courseTitle.substring(0, 2).toUpperCase(),
+    exam_level: examLevel,
+    coverage,
+    cta_label: 'Get Free Mock Tests',
     description,
     table_of_contents: tableOfContents,
     tabs: {
