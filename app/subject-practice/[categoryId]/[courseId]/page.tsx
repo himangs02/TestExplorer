@@ -20,17 +20,30 @@ export default async function SubjectPracticeSubjectsPage({
 
   if (!course) return notFound()
 
-  // 2. Fetch Subjects in this Course
-  const subjects = await prisma.subjects.findMany({
+  // 2. Fetch Subjects in this Course with chapter-wise question counts
+  const rawSubjects = await prisma.subjects.findMany({
     where: { course_id: courseId, status: 'active' },
     orderBy: { title: 'asc' },
     include: {
-      _count: {
+      chapters: {
+        where: { status: 'active' },
         select: {
-          chapters: true,
-          questions: true
+          id: true,
+          _count: {
+            select: { questions: true }
+          }
         }
       }
+    }
+  })
+
+  const subjects = rawSubjects.map((sub) => {
+    const chaptersCount = sub.chapters.length
+    const questionsCount = sub.chapters.reduce((sum, ch) => sum + (ch._count?.questions || 0), 0)
+    return {
+      ...sub,
+      chaptersCount,
+      questionsCount
     }
   })
 
@@ -69,7 +82,7 @@ export default async function SubjectPracticeSubjectsPage({
             subjects.map((subject) => (
               <Link 
                 key={subject.id} 
-                href={`/courses/${courseId}/subjects/${subject.id}`}
+                href={`/subject-practice/${categoryId}/${courseId}/${subject.id}`}
                 className="group relative block"
               >
                 <div 
@@ -96,10 +109,10 @@ export default async function SubjectPracticeSubjectsPage({
                     </h4>
                     <div className="flex gap-4 mt-4">
                       <span className="text-black font-bold text-sm bg-white/50 px-3 py-1 rounded-full border border-black/20">
-                        {subject._count.chapters} Chapters
+                        {subject.chaptersCount} Chapters
                       </span>
                       <span className="text-black font-bold text-sm bg-white/50 px-3 py-1 rounded-full border border-black/20">
-                        {subject._count.questions} Questions
+                        {subject.questionsCount} Questions
                       </span>
                     </div>
                   </div>

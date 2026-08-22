@@ -112,13 +112,20 @@ export async function deleteSubjectAction(formData: FormData): Promise<any> {
       await prisma.question_banks.deleteMany({ where: { id: { in: bankIds } } })
     }
 
-    // 5. DELETE SUBJECT
+    // 5. CLEANUP: Delete Related Questions directly under subject
+    await prisma.questions.deleteMany({ where: { subject_id: id } })
+
+    // 6. CLEANUP: Delete Related Chapters directly under subject
+    await prisma.chapters.deleteMany({ where: { subject_id: id } })
+
+    // 7. DELETE SUBJECT
     await prisma.subjects.delete({ where: { id } })
   } catch (error: any) {
     return { error: error.message || 'Failed to delete subject' }
   }
   revalidatePath('/dashboard/admin/subjects')
   revalidatePath('/dashboard/admin/manage-content')
+  revalidatePath('/dashboard/admin/question-portal')
   return { success: true }
 }
 

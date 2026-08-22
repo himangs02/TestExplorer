@@ -38,6 +38,40 @@ export default async function ReviewPage({
         question_options: { select: { id: true, text: true, is_correct: true } }
       }
     })
+  } else if (testType === 'chapter-practice') {
+    const chapter = await prisma.chapters.findUnique({
+      where: { id: examId },
+      select: { name: true }
+    })
+    if (chapter) {
+      examTitle = chapter.name
+      questions = await prisma.questions.findMany({
+        where: { chapter_id: examId, status: 'active' },
+        orderBy: { order_index: 'asc' },
+        select: {
+          id: true,
+          text: true,
+          explanation: true,
+          question_options: { select: { id: true, text: true, is_correct: true } }
+        }
+      })
+    } else {
+      const subject = await prisma.subjects.findUnique({
+        where: { id: examId },
+        select: { title: true }
+      })
+      if (subject) examTitle = `${subject.title} Practice`
+      questions = await prisma.questions.findMany({
+        where: { subject_id: examId, status: 'active' },
+        orderBy: { order_index: 'asc' },
+        select: {
+          id: true,
+          text: true,
+          explanation: true,
+          question_options: { select: { id: true, text: true, is_correct: true } }
+        }
+      })
+    }
   } else {
     const data = await prisma.mock_tests.findUnique({ where: { id: examId }, select: { title: true } })
     if (data) examTitle = data.title

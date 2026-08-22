@@ -60,7 +60,7 @@ export default async function DashboardLayout({
     { label: 'Subjects', href: '/dashboard/admin/subjects', iconName: 'Library', roles: ['super_admin'] },
     { label: 'Courses', href: '/dashboard/admin/courses', iconName: 'Folder', roles: ['super_admin'] },
     { label: 'Question Pool', href: '/dashboard/admin/question-uploads', iconName: 'Database', roles: ['super_admin'] },
-    { label: 'Topic wise', href: '/dashboard/admin/question-portal', iconName: 'BookOpen', roles: ['super_admin'] },
+    { label: 'Chapter Practice', href: '/dashboard/admin/question-portal', iconName: 'BookOpen', roles: ['super_admin'] },
     { label: 'Users', href: '/dashboard/admin/users', iconName: 'Users', roles: ['super_admin'] },
     { label: 'Tags', href: '/dashboard/admin/tags', iconName: 'TagIcon', roles: ['super_admin'] },
     { label: 'Blogs', href: '/dashboard/admin/blogs', iconName: 'Newspaper', roles: ['super_admin'] },

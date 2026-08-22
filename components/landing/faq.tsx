@@ -29,6 +29,7 @@ export default function FAQ() {
               className="group overflow-hidden rounded-2xl transition-all duration-300"
             >
               <button
+                suppressHydrationWarning
                 onClick={() => setOpenIndex(openIndex === i ? null : i)}
                 className={`w-full flex items-center justify-between p-6 text-left transition-all ${
                   openIndex === i 

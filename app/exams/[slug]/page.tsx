@@ -13,6 +13,7 @@ import {
 } from 'lucide-react'
 import ExamNavigationPills from '@/components/landing/ExamNavigationPills'
 import TableOfContents from '@/components/landing/TableOfContents'
+import { generateExamDetails } from '@/lib/exam-details-generator'
 
 // --- Types ---
 type ExamTab = {
@@ -135,39 +136,84 @@ interface PageProps {
   params: Promise<{ slug: string }>
 }
 
+// Force recompile cache update
+export const dynamic = 'force-dynamic'
+
 export default async function ExamLandingPage({ params }: PageProps) {
   const { slug } = await params
-  const course = await prisma.courses.findFirst({
+  const decodedSlug = decodeURIComponent(slug || '').trim()
+
+  let course = await prisma.courses.findFirst({
     where: { 
       OR: [
-        { slug: slug },
-        { id: slug }
+        { slug: decodedSlug },
+        { id: decodedSlug },
+        { title: decodedSlug }
       ]
+    },
+    include: {
+      subjects: {
+        select: { title: true }
+      }
     }
   })
+
+  if (!course) {
+    // Try matching normalized slug (e.g. "neet-ug" matches "NEET UG" or "NEET")
+    const allCourses = await prisma.courses.findMany({
+      include: {
+        subjects: {
+          select: { title: true }
+        }
+      }
+    })
+
+    course = allCourses.find(c => {
+      const cSlug = (c.slug || '').toLowerCase()
+      const cTitle = c.title.toLowerCase().replace(/[^a-z0-9]/g, '')
+      const sNorm = decodedSlug.replace(/[^a-z0-9]/g, '')
+      return cSlug === decodedSlug || cTitle === sNorm || cTitle.includes(sNorm) || sNorm.includes(cTitle)
+    }) || null
+  }
 
   if (!course) return notFound()
 
   // 2. Fetch Other Exams for Sidebar (Upcoming/Similar)
-  // Fetching 6 random exams other than current one
   const relatedExams = await prisma.courses.findMany({
     where: { NOT: { id: course.id } },
     select: { id: true, title: true, slug: true, details: true },
     take: 6
   })
 
-  let details: any = {}
+  // 3. Resolve Exam Details & Tabs (with rich auto-generation fallback for any course)
+  const subjectNames = course.subjects?.map(s => s.title) || []
+  const generatedFallback = generateExamDetails(course.title, course.slug || course.id, subjectNames)
+
+  let parsedDetails: any = {}
   try {
-    details = typeof course.details === 'string' ? JSON.parse(course.details) : (course.details || {})
+    parsedDetails = typeof course.details === 'string' ? JSON.parse(course.details) : (course.details || {})
   } catch (e) {
     console.error("Failed to parse details for course", slug)
   }
-  const tabs: ExamTab = details.tabs || {}
+
+  // Merge so custom DB details override generated ones, but fallback fills in everything
+  const details = {
+    tagline: parsedDetails.tagline || generatedFallback.tagline,
+    description: parsedDetails.description || generatedFallback.description,
+    table_of_contents: (parsedDetails.table_of_contents && parsedDetails.table_of_contents.length > 0)
+      ? parsedDetails.table_of_contents
+      : generatedFallback.table_of_contents,
+    tabs: {
+      ...generatedFallback.tabs,
+      ...(parsedDetails.tabs || {})
+    }
+  }
+
+  const tabs: ExamTab = details.tabs
 
   // Helper to extract top universities for sidebar
   const getSidebarUniversities = () => {
     if (!tabs.participating_universities?.groups) return []
-    // Flatten all university names and take top 5
     return tabs.participating_universities.groups
       .flatMap((g: { type: string; names: string[] }) => g.names)
       .slice(0, 5)
@@ -184,12 +230,12 @@ export default async function ExamLandingPage({ params }: PageProps) {
       try { parsed = JSON.parse(examDetails) } catch(e) {}
     }
     const dates = parsed?.tabs?.important_dates
-    if (dates && dates.length > 0) return dates[0].date // Return first available date
+    if (dates && dates.length > 0) return dates[0].date
     return "Date TBA"
   }
 
   return (
-    <div className="min-h-screenbg-red-500 min-w-full font-sans text-gray-900 pb-20">
+    <div className="min-h-screen min-w-full font-sans text-gray-900 pb-20 bg-gray-50/40">
       
       <div className='sticky top-16 z-50'>
       {/* ================= 1. HEADER SECTION ================= */}

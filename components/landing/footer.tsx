@@ -26,9 +26,13 @@ export default function Footer({ school }: { school?: any }) {
                 <input 
                   type="email" 
                   placeholder="Enter your email" 
+                  suppressHydrationWarning
                   className="bg-gray-900 border border-gray-800 text-white px-6 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 w-full md:w-80"
                 />
-                <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold transition-all">
+                <button 
+                  suppressHydrationWarning
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold transition-all"
+                >
                   Subscribe
                 </button>
              </div>

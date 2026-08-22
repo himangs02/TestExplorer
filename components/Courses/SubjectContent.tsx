@@ -2,8 +2,16 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { PlayCircle, FileText, Timer, Trophy, ArrowRight, Lock, HelpCircle } from 'lucide-react'
+import { PlayCircle, FileText, Timer, Trophy, ArrowRight, Lock, HelpCircle, BookOpen } from 'lucide-react'
 import { toast } from 'sonner' 
+
+type Chapter = {
+  id: string
+  name: string
+  description: string | null
+  order: number
+  question_count: number
+}
 
 type Module = { 
   id: string
@@ -22,23 +30,27 @@ type Exam = {
 }
 
 interface SubjectContentProps {
+  chapters?: Chapter[]
   modules: Module[]
   practiceTests: Exam[]
   mockTests: Exam[]
   courseId: string
   subjectId: string
+  categoryId?: string
   hasFullAccess: boolean 
 }
 
 export default function SubjectContent({ 
+  chapters = [],
   modules, 
   practiceTests, 
   mockTests,
   courseId,
   subjectId,
+  categoryId,
   hasFullAccess
 }: SubjectContentProps) {
-  const [activeTab, setActiveTab] = useState<'prep' | 'practice' | 'mock'>('practice')
+  const [activeTab, setActiveTab] = useState<'chapters' | 'practice' | 'mock' | 'prep'>('chapters')
 
   const isLocked = (index: number) => false
 
@@ -67,6 +79,7 @@ export default function SubjectContent({
   return (
     <div>
       <div className="flex flex-wrap gap-4 mb-10">
+        <TabButton id="chapters" label="Chapter Wise Practice" icon={BookOpen} />
         <TabButton id="practice" label="Practice Tests" icon={FileText} />
         <TabButton id="mock" label="Mock Tests" icon={Trophy} />
         <TabButton id="prep" label="Prep Modules" icon={PlayCircle} />
@@ -74,6 +87,64 @@ export default function SubjectContent({
 
       <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
         
+        {/* --- Chapter Wise Practice Tab --- */}
+        {activeTab === 'chapters' && (
+          <div className="grid gap-4">
+            {(!chapters || chapters.length === 0) ? (
+              <EmptyState label="No chapters available for this subject yet." />
+            ) : (
+              chapters.map((chapter, index) => {
+                const hasQuestions = chapter.question_count > 0
+                const practiceUrl = `/subject-practice/${categoryId || 'general'}/${courseId}/${subjectId}/practice?chapterId=${chapter.id}`
+
+                  const chapterDuration = Math.max(4, Math.ceil((chapter.question_count || 1) * 1.5))
+
+                  return (
+                    <div
+                      key={chapter.id}
+                      className="group flex flex-col md:flex-row md:items-center justify-between p-6 rounded-3xl border-2 transition-all bg-[#EDE9FE] border-transparent hover:border-black"
+                    >
+                      <div className="flex gap-5 items-center">
+                        <div className="w-12 h-12 rounded-2xl flex items-center justify-center border-2 border-black/10 shrink-0 bg-white font-black text-purple-700 text-lg shadow-xs">
+                          {String(index + 1).padStart(2, '0')}
+                        </div>
+                        <div>
+                          <h3 className="text-xl font-black text-gray-900">{chapter.name}</h3>
+                          
+                          <div className="flex items-center gap-3 text-sm font-bold text-gray-600 mt-1">
+                            <span className="flex items-center gap-1">
+                              <Timer className="w-4 h-4 text-purple-600" /> {chapterDuration} mins
+                            </span>
+                            <span>•</span>
+                            <span className="flex items-center gap-1">
+                              <HelpCircle className="w-4 h-4 text-purple-600" /> {chapter.question_count || 0} Questions
+                            </span>
+                          </div>
+
+                          {chapter.description ? (
+                            <p className="text-gray-600 font-medium text-sm leading-snug max-w-lg mt-1">
+                              {chapter.description}
+                            </p>
+                          ) : null}
+                        </div>
+                      </div>
+
+                      <div className="mt-4 md:mt-0 flex items-center shrink-0">
+                        <Link
+                          href={practiceUrl}
+                          className="px-6 py-3 bg-purple-600 text-white font-bold rounded-xl hover:bg-purple-700 transition-all shadow-md shadow-purple-200 flex items-center gap-2"
+                        >
+                          Attempt Now <ArrowRight className="w-4 h-4" />
+                        </Link>
+                      </div>
+                    </div>
+                  )
+              })
+            )}
+          </div>
+        )}
+
+        {/* --- Prep Modules Tab --- */}
         {activeTab === 'prep' && (
           <div className="grid gap-4">
             {modules.length === 0 ? <EmptyState label="No modules available yet." /> : 
@@ -122,6 +193,7 @@ export default function SubjectContent({
             }
           </div>
         )}
+
 
         {activeTab === 'practice' && (
           <div className="grid gap-4">

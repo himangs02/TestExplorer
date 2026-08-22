@@ -1,9 +1,11 @@
 'use client'
 
 import { useState, useMemo, useRef } from 'react'
-import { Plus, Search, Filter, Trash2, Upload, FileText, Download, CheckCircle2, AlertCircle, Loader2, Layers } from 'lucide-react'
+import { Plus, Search, Filter, Trash2, Upload, UploadCloud, FileText, Download, CheckCircle2, AlertCircle, Loader2, Layers, Sparkles } from 'lucide-react'
 import { toast } from 'sonner'
 import { createQuestionAction, deleteQuestionAction, bulkUploadQuestionsAction } from '@/app/dashboard/admin/question-portal/questions/actions'
+import UniversalBulkUploadModal from '@/components/admin/universal-bulk-upload-modal'
+import { useRouter } from 'next/navigation'
 
 export default function QuestionListClient({ 
   initialQuestions, 
@@ -16,9 +18,11 @@ export default function QuestionListClient({
   chapters: any[],
   topics: any[]
 }) {
+  const router = useRouter()
   const [questions, setQuestions] = useState(initialQuestions)
   const [search, setSearch] = useState('')
   const [modalOpen, setModalOpen] = useState(false)
+  const [universalModalOpen, setUniversalModalOpen] = useState(false)
   const [activeTab, setActiveTab] = useState<'single' | 'bulk'>('single')
 
   // Filters
@@ -160,16 +164,22 @@ export default function QuestionListClient({
             />
           </div>
           
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <button 
+              onClick={() => setUniversalModalOpen(true)}
+              className="bg-white hover:bg-gray-50 text-gray-800 border border-gray-200 hover:border-black px-4 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-xs shrink-0 cursor-pointer"
+            >
+              <UploadCloud className="w-4 h-4 text-gray-600" /> Universal Bulk Upload
+            </button>
             <button 
               onClick={() => openModal('bulk')}
-              className="bg-blue-50 text-blue-700 border border-blue-200 px-4 py-2.5 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-blue-100 transition-all shadow-sm shrink-0 cursor-pointer"
+              className="bg-gray-50 text-gray-700 border border-gray-200 px-4 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-2 hover:bg-gray-100 transition-all shadow-xs shrink-0 cursor-pointer"
             >
-              <Upload className="w-4 h-4" /> Bulk Upload
+              <Upload className="w-4 h-4" /> Single Subject Bulk
             </button>
             <button 
               onClick={() => openModal('single')}
-              className="bg-green-600 text-white px-5 py-2.5 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-green-700 transition-all shadow-md shrink-0 cursor-pointer"
+              className="bg-black text-white hover:bg-gray-800 px-5 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-xs shrink-0 cursor-pointer"
             >
               <Plus className="w-4 h-4" /> Add Question
             </button>
@@ -609,6 +619,16 @@ export default function QuestionListClient({
         </div>
       )}
 
+      {/* Universal Bulk Upload Modal */}
+      <UniversalBulkUploadModal
+        isOpen={universalModalOpen}
+        onClose={() => setUniversalModalOpen(false)}
+        onSuccess={() => {
+          router.refresh()
+        }}
+      />
+
     </div>
   )
 }
+

@@ -9,18 +9,20 @@ import Features from "@/components/landing/features";
 import Steps from "@/components/landing/steps";
 import Testimonials from "@/components/landing/testimonials";
 import Faq from "@/components/landing/faq";
-
-// Import New Section
-import PracticeOptionsGrid from "../landing/practice-options-grid";
+import PracticeOptionsGrid from "@/components/landing/practice-options-grid";
 
 export default async function LandingPage() {
+  const categories = await prisma.categories.findMany({
+    orderBy: { order_index: 'asc' }
+  });
+
   return (
     <main className="flex flex-col min-h-screen">
       {/* === SECTION 1: DYNAMIC HERO === */}
       <HeroMain />
 
-      {/* === SECTION 2: SHARED CONTENT === */}
-      <PracticeOptionsGrid />
+      {/* === SECTION 2: STREAM / COURSE CARDS === */}
+      <PracticeOptionsGrid categories={categories} />
       <Steps />
       <Features />
       <Testimonials />
@@ -31,3 +33,5 @@ export default async function LandingPage() {
     </main>
   );
 }
+
+

@@ -13,14 +13,39 @@ export default async function CourseSubjectsPage({
 
   // 1. Fetch Course Details
   const course = await prisma.courses.findUnique({
-    where: { id: courseId }
+    where: { id: courseId },
+    include: { categories: true }
   })
 
   if (!course) return notFound()
 
-  // 2. Fetch Subjects for this Course
+  // Ensure JEE courses do not contain Biology
+  if (course.title.toLowerCase().includes('jee')) {
+    const bioSubjects = await prisma.subjects.findMany({
+      where: {
+        course_id: courseId,
+        title: { contains: 'Biology' }
+      },
+      select: { id: true }
+    })
+
+    if (bioSubjects.length > 0) {
+      const bioIds = bioSubjects.map(b => b.id)
+      await prisma.questions.deleteMany({ where: { subject_id: { in: bioIds } } })
+      await prisma.chapters.deleteMany({ where: { subject_id: { in: bioIds } } })
+      await prisma.mock_tests.deleteMany({ where: { subject_id: { in: bioIds } } })
+      await prisma.practice_tests.deleteMany({ where: { subject_id: { in: bioIds } } })
+      await prisma.prep_modules.deleteMany({ where: { subject_id: { in: bioIds } } })
+      await prisma.subjects.deleteMany({ where: { id: { in: bioIds } } })
+    }
+  }
+
+  // 2. Fetch Subjects for this Course (Excluding any Biology for JEE)
   const subjects = await prisma.subjects.findMany({
-    where: { course_id: courseId },
+    where: { 
+      course_id: courseId,
+      ...(course.title.toLowerCase().includes('jee') ? { NOT: { title: { contains: 'Biology' } } } : {})
+    },
     orderBy: { title: 'asc' }
   })
 
@@ -36,11 +61,11 @@ export default async function CourseSubjectsPage({
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
         <div className="container mx-auto px-6 h-16 flex items-center gap-4">
           <Link 
-            href="/courses" 
+            href={course.categories ? `/categories/${course.categories.id}` : "/categories"} 
             className="flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-black transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to Courses
+            Back to Streams
           </Link>
         </div>
       </header>

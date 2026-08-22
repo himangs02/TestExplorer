@@ -25,10 +25,19 @@ export default async function SubjectDetailsPage({
   // 2. Fetch Subject & Course Info
   const subject = await prisma.subjects.findUnique({
     where: { id: subjectId },
-    include: { courses: { select: { title: true } } }
+    include: { 
+      courses: { 
+        select: { 
+          title: true,
+          category_id: true
+        } 
+      } 
+    }
   })
 
   if (!subject) return notFound()
+
+  const categoryId = subject.courses?.category_id || ''
 
   // 3. CHECK ENROLLMENT STATUS
   const enrollment = await prisma.student_enrollments.findFirst({
@@ -50,21 +59,31 @@ export default async function SubjectDetailsPage({
 
   // 6. Fetch Page Content (Fetching ALL content + Question Counts)
   
-  // A. Prep Modules
+  // A. Chapters (with Question counts for chapter-wise practice)
+  const chaptersRes = await prisma.chapters.findMany({
+    where: { 
+      subject_id: subjectId, 
+      status: 'active'
+    },
+    orderBy: { order: 'asc' },
+    include: { _count: { select: { questions: true } } }
+  })
+
+  // B. Prep Modules
   const modulesRes = await prisma.prep_modules.findMany({
     where: { subject_id: subjectId, is_published: true },
     orderBy: { created_at: 'asc' },
     include: { _count: { select: { questions: true } } }
   })
   
-  // B. Practice Tests
+  // C. Practice Tests
   const practiceRes = await prisma.practice_tests.findMany({
     where: { subject_id: subjectId, is_published: true },
     orderBy: { created_at: 'desc' },
     include: { _count: { select: { questions: true } } }
   })
   
-  // C. Mock Tests
+  // D. Mock Tests
   const mockRes = await prisma.mock_tests.findMany({
     where: { subject_id: subjectId, is_active: true },
     orderBy: { created_at: 'desc' },
@@ -80,6 +99,16 @@ export default async function SubjectDetailsPage({
       difficulty: item.difficulty || null,
       duration_minutes: item.duration_minutes || null,
       question_count: item._count?.questions || item._count?.mock_test_questions || 0
+    }))
+  }
+
+  const formatChapters = (data: any[]) => {
+    return data.map((item) => ({
+      id: item.id,
+      name: item.name,
+      description: item.description || null,
+      order: item.order,
+      question_count: item._count?.questions || 0
     }))
   }
 
@@ -127,11 +156,13 @@ export default async function SubjectDetailsPage({
         </div>
 
         <SubjectContent 
+          chapters={formatChapters(chaptersRes)}
           modules={formatData(modulesRes)}
           practiceTests={formatData(practiceRes)}
           mockTests={formatData(mockRes)}
           courseId={courseId}
           subjectId={subjectId}
+          categoryId={categoryId}
           hasFullAccess={hasFullAccess} 
         />
       </main>
