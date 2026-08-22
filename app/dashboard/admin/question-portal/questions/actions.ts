@@ -227,7 +227,7 @@ export async function universalBulkUploadQuestionsAction(formData: FormData) {
     })
 
     // In-memory caches to avoid duplicate DB lookups / creations during bulk loops
-    const subjectCache = new Map<string, { id: string; title: string; course_id: string; chapters: { id: string; name: string }[] }>()
+    const subjectCache = new Map<string, { id: string; title: string; course_id: string | null; chapters: { id: string; name: string }[] }>()
     const chapterCache = new Map<string, { id: string; name: string; subject_id: string }>()
 
     for (const c of courses) {
@@ -236,7 +236,7 @@ export async function universalBulkUploadQuestionsAction(formData: FormData) {
         subjectCache.set(sKey, {
           id: s.id,
           title: s.title,
-          course_id: s.course_id,
+          course_id: s.course_id || c.id,
           chapters: s.chapters.map(ch => ({ id: ch.id, name: ch.name }))
         })
         for (const ch of s.chapters) {
