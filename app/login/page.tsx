@@ -1,9 +1,9 @@
 'use client'
+
 import Link from 'next/link'
 import { signIn } from 'next-auth/react'
 import { useState } from 'react'
-import { Eye, EyeOff, Loader2 } from 'lucide-react'
-import Image from 'next/image'
+import { Eye, EyeOff, Loader2, Trophy, Zap, CheckCircle2, ArrowRight, ShieldCheck } from 'lucide-react'
 import { toast } from 'sonner'
 
 export default function LoginPage() {
@@ -29,144 +29,211 @@ export default function LoginPage() {
     
     toast.dismiss(toastId)
     if (result?.error) {
-      setError(result.error)
+      setError(result.error === 'CredentialsSignin' ? 'Invalid email or password' : result.error)
       setLoading(false)
       toast.error(result.error === 'CredentialsSignin' ? 'Invalid email or password' : result.error)
     } else {
       toast.success('Signed in successfully!')
-      // successful login, redirect to dashboard
       window.location.href = '/dashboard'
     }
   }
 
   return (
-    <div className="min-h-screen bg-white relative overflow-hidden flex flex-col lg:flex-row">
-      {/* --- Left Side: Visuals (The Orange Blob) --- */}
-      <div className="hidden lg:flex lg:w-1/2 relative items-center justify-center">
-        {/* The Big Orange Circle Background */}
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 sm:p-6 lg:p-8 font-sans">
+      <div className="w-full max-w-5xl bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden grid lg:grid-cols-12 min-h-[640px]">
         
-        <div className="absolute left-[-10%] w-[120%] h-[140%] bg-linear-to-br from-[#F4A261] to-[#E76F51] rounded-full -z-10 opacity-90 scale-90 translate-y-10" />
-        
-        
-        <div className="relative z-10 w-[450px] mt-20">
-          {/* Illustration: Person sitting on stool */}
-          {/* You should replace this src with your actual uploaded image asset */}
-          <Image 
-            src="https://illustrations.popsy.co/amber/working-vacation.svg" 
-            alt="Login Illustration" 
-            width={500} 
-            height={500}
-            className="object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-500"
-            priority
-          />
+        {/* --- Left Column: Rich Gradient Hero Banner & Visual --- */}
+        <div className="hidden lg:flex lg:col-span-6 bg-linear-to-br from-orange-500 via-[#FF6B35] to-[#E76F51] p-10 text-white flex-col justify-between relative overflow-hidden">
           
-          {/* Decorative Floating UI Elements (Optional - Mimics the screenshot) */}
-          <div className="absolute top-10 right-10 bg-white p-3 rounded-lg shadow-lg rotate-6 animate-pulse">
-            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-               <div className="w-4 h-5 bg-blue-500 rounded-sm" />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* --- Right Side: Login Form --- */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center px-8 py-20 lg:py-0 mt-16 lg:mt-0">
-        <div className="w-full max-w-md">
+          {/* Ambient Background Circles */}
+          <div className="absolute -top-20 -left-20 w-72 h-72 bg-white/10 rounded-full blur-2xl pointer-events-none" />
+          <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-black/10 rounded-full blur-2xl pointer-events-none" />
           
-          <div className="mb-10">
-            <h1 className="text-5xl font-extrabold text-orange-600 mb-3 tracking-tight">Login</h1>
-            <p className="text-gray-500 text-lg">Welcome back to you account.</p>
+          {/* Top Branding */}
+          <div className="relative z-10">
+            <Link href="/" className="inline-flex items-center gap-2.5">
+              <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center font-black text-xl shadow-inner border border-white/20">
+                TE
+              </div>
+              <span className="font-extrabold text-2xl tracking-tight">TestExplorer</span>
+            </Link>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Email Field */}
-            <div>
-              <label className="block text-base font-bold text-gray-900 mb-2">
-                Enter your Email
-              </label>
-              <input 
-                name="email" 
-                type="email" 
-                required 
-                className="w-full px-6 py-4 rounded-xl bg-[#C4C4C4] bg-opacity-40 text-gray-800 placeholder-gray-500 font-medium focus:bg-white focus:ring-2 focus:ring-orange-500 outline-none transition-all"
-                placeholder="Enter your Email"
-              />
-            </div>
-
-            {/* Password Field */}
-            <div>
-              <label className="block text-base font-bold text-gray-900 mb-2">
-                Password
-              </label>
-              <div className="relative">
-                <input 
-                  name="password" 
-                  type={showPassword ? "text" : "password"} 
-                  required 
-                  className="w-full px-6 py-4 rounded-xl bg-[#C4C4C4] bg-opacity-40 text-gray-800 placeholder-gray-500 font-medium focus:bg-white focus:ring-2 focus:ring-orange-500 outline-none transition-all"
-                  placeholder="Password"
-                />
-                <button 
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-5 top-[18px] text-gray-500 hover:text-gray-700 transition-colors"
-                >
-                  {showPassword ? <EyeOff size={22} /> : <Eye size={22} />}
-                </button>
-              </div>
-            </div>
-
-            {/* Forgot Password Link */}
-            <div>
-              <Link 
-                href="/forgot-password" 
-                className="text-blue-600 font-bold hover:underline text-sm"
-              >
-                Forgot Password?
-              </Link>
-            </div>
-
-            {/* Error Message */}
-            {error && (
-              <div className="p-4 bg-red-50 text-red-600 text-sm font-medium rounded-xl border border-red-100">
-                {error}
-              </div>
-            )}
-
-            {/* Submit Button */}
-            <button 
-              type="submit" 
-              disabled={loading}
-              className="w-full bg-black text-white font-bold text-lg py-4 rounded-full hover:bg-gray-900 transition-transform active:scale-[0.99] flex items-center justify-center shadow-lg mt-4"
-            >
-              {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : "Log In"}
-            </button>
-
-            {/* Google Button */}
-            {/* <button 
-              type="button"
-              className="w-full bg-white border border-gray-200 text-gray-600 font-bold py-3.5 rounded-full hover:bg-gray-50 transition-colors flex items-center justify-center gap-3 mt-4 shadow-sm"
-            >
-              <svg className="w-5 h-5" viewBox="0 0 24 24">
-                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+          {/* Center Graphic & Highlights */}
+          <div className="relative z-10 my-auto py-6 space-y-6">
+            
+            {/* Embedded Clean Study SVG Illustration */}
+            <div className="w-full max-w-[340px] mx-auto flex items-center justify-center">
+              <svg viewBox="0 0 400 320" className="w-full h-auto drop-shadow-xl" fill="none" xmlns="http://www.w3.org/2000/svg">
+                {/* Desk Surface */}
+                <path d="M40 250H360C365.5 250 370 254.5 370 260C370 265.5 365.5 270 360 270H40C34.5 270 30 265.5 30 260C30 254.5 34.5 250 40 250Z" fill="white" fillOpacity="0.3"/>
+                <rect x="70" y="270" width="16" height="40" rx="4" fill="white" fillOpacity="0.2"/>
+                <rect x="314" y="270" width="16" height="40" rx="4" fill="white" fillOpacity="0.2"/>
+                
+                {/* Laptop Screen */}
+                <rect x="130" y="110" width="140" height="95" rx="8" fill="#1E293B"/>
+                <rect x="136" y="116" width="128" height="83" rx="4" fill="#0F172A"/>
+                {/* Code/Graph lines inside screen */}
+                <circle cx="152" cy="130" r="4" fill="#38BDF8"/>
+                <circle cx="164" cy="130" r="4" fill="#34D399"/>
+                <circle cx="176" cy="130" r="4" fill="#F472B6"/>
+                <path d="M148 175L175 152L200 162L230 138L250 148" stroke="#38BDF8" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M148 185H252" stroke="white" strokeOpacity="0.2" strokeWidth="2" strokeLinecap="round"/>
+                
+                {/* Laptop Base */}
+                <path d="M110 205H290L275 220H125L110 205Z" fill="#CBD5E1"/>
+                <rect x="180" y="208" width="40" height="4" rx="2" fill="#94A3B8"/>
+                
+                {/* Coffee Mug */}
+                <rect x="80" y="210" width="28" height="36" rx="4" fill="#FEF08A"/>
+                <path d="M108 218C114 218 116 224 116 228C116 232 114 238 108 238" stroke="#FEF08A" strokeWidth="4" strokeLinecap="round"/>
+                
+                {/* Books Stack */}
+                <rect x="290" y="235" width="60" height="15" rx="3" fill="#38BDF8"/>
+                <rect x="295" y="220" width="50" height="15" rx="3" fill="#F43F5E"/>
+                <rect x="300" y="205" width="42" height="15" rx="3" fill="#10B981"/>
+                
+                {/* Floating Success Pill */}
+                <g className="animate-bounce" style={{ animationDuration: '3s' }}>
+                  <rect x="230" y="50" width="130" height="42" rx="21" fill="white" filter="drop-shadow(0px 8px 16px rgba(0,0,0,0.15))"/>
+                  <circle cx="252" cy="71" r="13" fill="#10B981"/>
+                  <path d="M246 71L250 75L258 67" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <text x="272" y="70" fill="#0F172A" fontSize="10" fontWeight="bold">Score: 99.8%</text>
+                  <text x="272" y="82" fill="#64748B" fontSize="8" fontWeight="600">All India Rank 1</text>
+                </g>
+                
+                {/* Floating Clock */}
+                <g>
+                  <rect x="40" y="70" width="105" height="38" rx="19" fill="white" fillOpacity="0.95" filter="drop-shadow(0px 8px 16px rgba(0,0,0,0.12))"/>
+                  <circle cx="60" cy="89" r="11" fill="#FFEDD5"/>
+                  <path d="M60 84V89L63 92" stroke="#EA580C" strokeWidth="2" strokeLinecap="round"/>
+                  <text x="78" y="87" fill="#0F172A" fontSize="9" fontWeight="bold">Timed Practice</text>
+                  <text x="78" y="98" fill="#EA580C" fontSize="8" fontWeight="600">Live Mock Tests</text>
+                </g>
               </svg>
-              Sign in with Google
-            </button> */}
-            <div className="flex items-center gap-3 justify-center">
-          <span className="text-sm font-semibold text-gray-700 hidden sm:block">Don't have an account?</span>
-          <Link 
+            </div>
+
+            {/* Feature Highlights */}
+            <div className="grid grid-cols-2 gap-3 pt-2">
+              <div className="flex items-center gap-2.5 bg-white/10 backdrop-blur-xs px-3.5 py-2.5 rounded-xl border border-white/15">
+                <Trophy className="w-4 h-4 text-amber-200 shrink-0" />
+                <span className="text-xs font-bold leading-tight">National Level Mocks</span>
+              </div>
+              <div className="flex items-center gap-2.5 bg-white/10 backdrop-blur-xs px-3.5 py-2.5 rounded-xl border border-white/15">
+                <Zap className="w-4 h-4 text-amber-200 shrink-0" />
+                <span className="text-xs font-bold leading-tight">Instant Score Analytics</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Security Note */}
+          <div className="relative z-10 flex items-center gap-2 text-xs text-white/80 font-medium">
+            <ShieldCheck className="w-4 h-4" />
+            <span>Secure exam portal with real-time test evaluation</span>
+          </div>
+        </div>
+
+        {/* --- Right Column: Login Form --- */}
+        <div className="lg:col-span-6 flex flex-col justify-center px-8 sm:px-12 py-12">
+          <div className="w-full max-w-md mx-auto">
+            
+            {/* Header */}
+            <div className="mb-8">
+              <h1 className="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight">
+                Log In
+              </h1>
+              <p className="text-gray-500 text-sm mt-1.5 font-medium">
+                Welcome back! Enter your credentials to access your dashboard.
+              </p>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="space-y-5">
+              
+              {/* Email */}
+              <div className="space-y-1.5">
+                <label className="block text-sm font-bold text-gray-800">
+                  Email Address
+                </label>
+                <input 
+                  name="email" 
+                  type="email" 
+                  required 
+                  className="w-full px-4 py-3.5 rounded-xl bg-gray-50 border-2 border-gray-200 text-gray-900 placeholder-gray-400 font-medium focus:bg-white focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 outline-none transition-all text-sm"
+                  placeholder="name@example.com"
+                />
+              </div>
+
+              {/* Password */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="block text-sm font-bold text-gray-800">
+                    Password
+                  </label>
+                  <Link 
+                    href="/forgot-password" 
+                    className="text-xs font-bold text-orange-600 hover:text-orange-700 hover:underline"
+                  >
+                    Forgot Password?
+                  </Link>
+                </div>
+                <div className="relative">
+                  <input 
+                    name="password" 
+                    type={showPassword ? "text" : "password"} 
+                    required 
+                    className="w-full px-4 py-3.5 pr-12 rounded-xl bg-gray-50 border-2 border-gray-200 text-gray-900 placeholder-gray-400 font-medium focus:bg-white focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 outline-none transition-all text-sm"
+                    placeholder="Enter your password"
+                  />
+                  <button 
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors p-1"
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Error Alert */}
+              {error && (
+                <div className="p-3.5 bg-red-50 text-red-700 text-xs font-semibold rounded-xl border border-red-200 flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-600 shrink-0" />
+                  {error}
+                </div>
+              )}
+
+              {/* Submit Button */}
+              <button 
+                type="submit" 
+                disabled={loading}
+                className="w-full bg-gray-900 hover:bg-black text-white font-bold text-base py-3.5 rounded-xl shadow-lg shadow-gray-900/15 hover:shadow-gray-900/25 transition-all active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed mt-2"
+              >
+                {loading ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  <>
+                    <span>Log In</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
+              </button>
+
+              {/* Signup Link */}
+              <div className="pt-4 text-center text-sm font-medium text-gray-600 border-t border-gray-100">
+                Don&apos;t have an account?{' '}
+                <Link 
                   href="/signup" 
-                  className="inline-block ml-2 text-orange-600 hover:text-orange-700 font-bold transition-colors"
+                  className="font-bold text-orange-600 hover:text-orange-700 hover:underline inline-flex items-center gap-1"
                 >
-                  Sign Up →
+                  Create an account
                 </Link>
+              </div>
+            </form>
+
+          </div>
         </div>
-          </form>
-          
-        </div>
+
       </div>
     </div>
   )

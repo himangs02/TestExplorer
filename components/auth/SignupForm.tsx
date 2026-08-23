@@ -266,15 +266,45 @@ export default function SignupForm({ school, redirectTo, prefilledEmail }: Signu
               </p>
            </div>
 
-           <div className="relative z-10 w-[500px] mt-20">
-             <Image 
-               src="https://illustrations.popsy.co/amber/creative-work.svg" 
-               alt="Signup Illustration" 
-               width={500} 
-               height={500}
-               className="object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-500"
-               priority
-             />
+           <div className="relative z-10 w-full max-w-[420px] mx-auto">
+             <div className="bg-linear-to-br from-orange-500 via-[#FF6B35] to-[#E76F51] rounded-3xl p-8 text-white shadow-2xl relative overflow-hidden">
+               <div className="absolute -top-12 -right-12 w-48 h-48 bg-white/10 rounded-full blur-xl pointer-events-none" />
+               <div className="relative z-10 space-y-6">
+                 <div className="flex items-center gap-3">
+                   <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center font-black text-xl border border-white/20">
+                     TE
+                   </div>
+                   <div>
+                     <h3 className="font-bold text-lg leading-tight">Join TestExplorer</h3>
+                     <p className="text-white/80 text-xs font-medium">India's Premier Exam Prep Network</p>
+                   </div>
+                 </div>
+
+                 <div className="py-4">
+                   <svg viewBox="0 0 340 200" className="w-full h-auto drop-shadow-md" fill="none" xmlns="http://www.w3.org/2000/svg">
+                     <rect x="20" y="20" width="300" height="160" rx="16" fill="white" fillOpacity="0.15" stroke="white" strokeOpacity="0.3" strokeWidth="2"/>
+                     <rect x="40" y="45" width="48" height="48" rx="12" fill="white" fillOpacity="0.25"/>
+                     <circle cx="64" cy="69" r="12" fill="#FDE047"/>
+                     <path d="M60 69L63 72L69 66" stroke="#854D0E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                     <rect x="104" y="48" width="140" height="14" rx="4" fill="white" fillOpacity="0.9"/>
+                     <rect x="104" y="70" width="90" height="10" rx="3" fill="white" fillOpacity="0.6"/>
+                     <path d="M40 120L110 95L180 130L250 80L300 100" stroke="#38BDF8" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
+                     <circle cx="250" cy="80" r="6" fill="#38BDF8" stroke="white" strokeWidth="2"/>
+                   </svg>
+                 </div>
+
+                 <div className="space-y-2.5 pt-2 border-t border-white/20">
+                   <div className="flex items-center gap-2 text-xs font-semibold">
+                     <span className="w-2 h-2 rounded-full bg-emerald-300"></span>
+                     <span>Full Chapter-Wise Practice & Mock Tests</span>
+                   </div>
+                   <div className="flex items-center gap-2 text-xs font-semibold">
+                     <span className="w-2 h-2 rounded-full bg-amber-300"></span>
+                     <span>National Ranking & Real-time Percentile</span>
+                   </div>
+                 </div>
+               </div>
+             </div>
            </div>
         </div>
       </div>
