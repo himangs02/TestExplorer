@@ -96,20 +96,22 @@ export default async function SuperAdminDashboard() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         {stats.map((stat, i) => (
           <Link key={i} href={stat.link} className="group block">
-            <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm hover:border-black transition-all relative overflow-hidden h-full">
-              <div className="flex items-start justify-between mb-4">
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${stat.bg} ${stat.color}`}>
-                  <stat.icon className="w-6 h-6" />
+            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-gray-200 shadow-xs hover:border-black transition-all relative overflow-hidden h-full flex flex-col justify-between">
+              <div className="flex items-start justify-between mb-3">
+                <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${stat.bg} ${stat.color}`}>
+                  <stat.icon className="w-4.5 h-4.5" />
                 </div>
-                <div className="w-8 h-8 rounded-full border border-gray-100 flex items-center justify-center group-hover:bg-black group-hover:text-white transition-colors">
-                  <ArrowUpRight className="w-4 h-4" />
+                <div className="w-7 h-7 rounded-full border border-gray-100 flex items-center justify-center text-gray-400 group-hover:bg-black group-hover:text-white transition-colors">
+                  <ArrowUpRight className="w-3.5 h-3.5" />
                 </div>
               </div>
-              <div className="text-4xl font-black text-gray-900 mb-1">{stat.value}</div>
-              <div className="text-xs font-bold text-gray-400 tracking-wider">{stat.label}</div>
+              <div>
+                <div className="text-2xl xl:text-3xl font-black text-gray-900 mb-0.5 tracking-tight">{stat.value}</div>
+                <div className="text-[10px] font-bold text-gray-400 tracking-wider uppercase truncate">{stat.label}</div>
+              </div>
             </div>
           </Link>
         ))}
