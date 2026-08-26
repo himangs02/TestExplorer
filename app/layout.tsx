@@ -1,4 +1,4 @@
-import { headers } from "next/headers";
+import { headers, cookies } from "next/headers";
 import { getSchoolBySubdomain } from "@/lib/db/school"; 
 import { SiteHeader } from "@/components/layout/site-header";
 import "./globals.css";
@@ -36,12 +36,14 @@ export default async function RootLayout({
 
   const headersList = await headers();
   const currentPath = headersList.get("x-current-path") || "";
+  const cookieStore = await cookies();
+  const cookieSlug = cookieStore.get("school_slug")?.value;
   
   let schoolData = null;
   let schoolSlug = null;
 
   // Reserved paths that are NOT school slugs
-  const reservedPaths = ['about', 'contact', 'login', 'signup', 'dashboard', 'api', 'categories', 'courses', 'exams', 'mocktest', 'forgot-password', 'reset-password', 'auth', 'streams', 'blogs', 'complete-profile', 'cookie-policy', 'faqs', 'getting-started', 'library', 'privacy', 'profile', 'security', 'terms', 'update-password'];
+  const reservedPaths = ['about', 'contact', 'login', 'signup', 'dashboard', 'api', 'categories', 'courses', 'exams', 'mocktest', 'forgot-password', 'reset-password', 'auth', 'streams', 'blogs', 'complete-profile', 'cookie-policy', 'faqs', 'getting-started', 'library', 'privacy', 'profile', 'security', 'terms', 'update-password', '_next', 'subject-practice'];
 
   // First check if user is logged in and has an organization
   if (profile?.organization_id) {
@@ -63,6 +65,13 @@ export default async function RootLayout({
         if (schoolData) schoolSlug = potentialSlug;
       } catch (err) {
         console.error("Failed to fetch school data from path in RootLayout:", err);
+      }
+    } else if (cookieSlug && !reservedPaths.includes(cookieSlug)) {
+      try {
+        schoolData = await prisma.organizations.findUnique({ where: { slug: cookieSlug } });
+        if (schoolData) schoolSlug = cookieSlug;
+      } catch (err) {
+        console.error("Failed to fetch school data from cookie in RootLayout:", err);
       }
     }
   }

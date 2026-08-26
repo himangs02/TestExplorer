@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { headers } from "next/headers";
+import { headers, cookies } from "next/headers";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
@@ -42,7 +42,7 @@ export async function getCurrentSchool() {
       'courses', 'exams', 'mocktest', 'forgot-password', 'reset-password', 'auth', 
       'streams', 'blogs', 'complete-profile', 'cookie-policy', 'faqs', 
       'getting-started', 'library', 'privacy', 'profile', 'security', 'terms', 
-      'update-password'
+      'update-password', '_next', 'subject-practice'
     ];
 
     const segments = currentPath.split('/').filter(Boolean);
@@ -64,6 +64,14 @@ export async function getCurrentSchool() {
           if (school) return school;
         }
       }
+    }
+
+    // 3. Check cookie fallback
+    const cookieStore = await cookies();
+    const cookieSlug = cookieStore.get("school_slug")?.value;
+    if (cookieSlug && !reservedPaths.includes(cookieSlug)) {
+      const school = await getSchoolBySubdomain(cookieSlug);
+      if (school) return school;
     }
 
     return null;
