@@ -60,12 +60,13 @@ export default function SchoolPromo({ schoolName }: { schoolName: string }) {
               </div>
             </div>
 
-            <Link href="/exams/cuet" className="block mt-8 w-full">
-  <button className="w-full bg-gray-900 hover:bg-blue-600 text-white font-bold py-4 rounded-2xl transition-all duration-300 shadow-xl hover:shadow-blue-200 flex items-center justify-center gap-3 group active:scale-95">
-    Get Started Now
-    <Gift className="w-4 h-4 md:w-5 md:h-5 group-hover:rotate-12 transition-transform" />
-  </button>
-</Link>
+            <Link 
+              href="/exams/cuet" 
+              className="block mt-8 w-full bg-gray-900 hover:bg-blue-600 text-white font-bold py-4 rounded-2xl transition-all duration-300 shadow-xl hover:shadow-blue-200 flex items-center justify-center gap-3 group active:scale-95 text-center"
+            >
+              Get Started Now
+              <Gift className="w-4 h-4 md:w-5 md:h-5 group-hover:rotate-12 transition-transform" />
+            </Link>
           </div>
 
         </div>

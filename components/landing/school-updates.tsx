@@ -99,10 +99,10 @@ export default async function SchoolUpdates({ school }: { school: any }) {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                <button className="px-8 py-4 bg-gray-900 text-white rounded-xl font-bold hover:bg-gray-800 transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2">
+                <button type="button" className="px-8 py-4 bg-gray-900 text-white rounded-xl font-bold hover:bg-gray-800 transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2">
                   About Our School <ArrowRight className="w-4 h-4" />
                 </button>
-                <button className="px-8 py-4 bg-white text-gray-900 border border-gray-200 rounded-xl font-bold hover:bg-gray-50 transition-all shadow-sm flex items-center justify-center gap-2">
+                <button type="button" className="px-8 py-4 bg-white text-gray-900 border border-gray-200 rounded-xl font-bold hover:bg-gray-50 transition-all shadow-sm flex items-center justify-center gap-2">
                   Admissions
                 </button>
               </div>
@@ -165,7 +165,7 @@ export default async function SchoolUpdates({ school }: { school: any }) {
                               <span className="px-2.5 py-1 bg-gray-100 rounded-md text-[10px] font-bold text-gray-600 uppercase tracking-wider">
                                 {item.tag || "NOTICE"}
                               </span>
-                              <div className="flex items-center gap-1 text-[11px] font-semibold text-gray-400 bg-gray-50 px-2 py-1 rounded-full">
+                              <div className="flex items-center gap-1 text-[11px] font-semibold text-gray-400 bg-gray-50 px-2 py-1 rounded-full" suppressHydrationWarning>
                                 <Calendar className="w-3 h-3" />
                                 {new Date(item.created_at).toLocaleDateString()}
                               </div>
