@@ -1,15 +1,16 @@
-import { headers } from "next/headers";
-import { getSchoolBySubdomain } from "@/lib/db/school";
+import { getCurrentSchool } from "@/lib/db/school";
 import { Mail, MapPin, Phone, Building2 } from "lucide-react";
 
 export default async function ContactPage() {
-  // 1. Define Display Constants (Default to Test Explorer)
+  const school = await getCurrentSchool();
+
+  // Define Display Constants (Default to Test Explorer if no school)
   const contactInfo = {
     title: "Let's Talk",
     description: "Have a question about our pricing, features, or just want to say hi? Drop us a line.",
-    email: "hello@testexplorer.com",
-    phone: "+91 98765 43210",
-    companyName: "Test Explorer Inc."
+    email: school?.email || "hello@testexplorer.com",
+    phone: school?.phone || "+91 98765 43210",
+    companyName: school?.name || "Test Explorer Inc."
   };
 
   return (

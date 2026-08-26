@@ -1,5 +1,4 @@
-import { headers } from "next/headers";
-import { getSchoolBySubdomain } from "@/lib/db/school";
+import { getCurrentSchool } from "@/lib/db/school";
 import { Target, Zap, ShieldCheck, Heart, ArrowRight, Sparkles, Globe, Award } from "lucide-react";
 import Link from "next/link";
 
@@ -12,7 +11,8 @@ export default async function AboutPage({
   const params = await searchParams;
   const isSuccess = params.success === "true";
   
-  const schoolName = "Test Explorer";
+  const school = await getCurrentSchool();
+  const schoolName = school?.name || "Test Explorer";
 
   const values = [
     { title: "Student-First", desc: "Every feature we build starts with the question: 'How does this help a student learn?'", icon: <Heart className="w-6 h-6" />, color: "text-rose-500 bg-rose-50" },
