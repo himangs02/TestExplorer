@@ -53,6 +53,21 @@ export async function signup(formData: FormData) {
       }
     })
 
+    // Grant access to all available subjects/courses by default
+    const allSubjects = await prisma.subjects.findMany({
+      select: { id: true }
+    })
+
+    if (allSubjects.length > 0) {
+      await prisma.student_enrollments.createMany({
+        data: allSubjects.map((subject) => ({
+          user_id: user.id,
+          subject_id: subject.id,
+        })),
+        skipDuplicates: true,
+      })
+    }
+
     return { success: true }
   } catch (error: any) {
     console.error("Signup error:", error)
