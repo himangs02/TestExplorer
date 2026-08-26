@@ -25,6 +25,7 @@ export default function ExportStudentsBtn({ data }: { data: any[] }) {
       "Address",
       "Stream",
       "School/Organization",
+      "Joined Date & Time",
     ];
 
     // 2. Map Data to Rows
@@ -35,6 +36,7 @@ export default function ExportStudentsBtn({ data }: { data: any[] }) {
       student.address || "",
       student.stream || "N/A",
       student.organizations?.name || "Individual",
+      student.created_at ? new Date(student.created_at).toLocaleString() : "",
     ]);
 
     // 3. Convert to CSV Format
