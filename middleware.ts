@@ -49,24 +49,8 @@ export async function middleware(request: NextRequest) {
     return rewriteResponse;
   }
 
-  const response = NextResponse.next({
-    request: { headers: requestHeaders },
-  });
-
-  // Track school slug in cookie if visiting /:slug
-  if (potentialSlug && !reservedPaths.includes(potentialSlug)) {
-    response.cookies.set('school_slug', potentialSlug, { path: '/' });
-  }
-
-  // Get NextAuth user session token
-  const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET || 'fallback-secret-for-dev' })
-  const user = token // if token exists, user is logged in
-
-  const authRoutes = ['/login', '/signup', '/forgot-password', '/update-password']
-  if (user && authRoutes.some(route => path.startsWith(route))) {
-    return NextResponse.redirect(new URL('/categories', request.url))
-  }
-
+  // Public routes check
+  const isSchoolLanding = potentialSlug && !reservedPaths.includes(potentialSlug);
   const isPublicPath = 
     path === '/' ||                       
     path.startsWith('/login') ||          
@@ -81,12 +65,34 @@ export async function middleware(request: NextRequest) {
     path.startsWith('/auth') ||           
     path.startsWith('/api/auth') ||       
     path.includes('.') ||
-    (potentialSlug && !reservedPaths.includes(potentialSlug));
+    Boolean(isSchoolLanding);
 
-  if (!user && !isPublicPath) {
-    const loginUrl = new URL('/login', request.url)
-    return NextResponse.redirect(loginUrl)
+  const authRoutes = ['/login', '/signup', '/forgot-password', '/update-password'];
+  const isAuthRoute = authRoutes.some(route => path.startsWith(route));
+
+  // Only decode JWT if necessary (e.g. visiting protected page or auth page)
+  let user = null;
+  if (!isPublicPath || isAuthRoute) {
+    user = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET || 'fallback-secret-for-dev' });
   }
 
-  return response
+  if (user && isAuthRoute) {
+    return NextResponse.redirect(new URL('/categories', request.url));
+  }
+
+  if (!user && !isPublicPath) {
+    const loginUrl = new URL('/login', request.url);
+    return NextResponse.redirect(loginUrl);
+  }
+
+  const response = NextResponse.next({
+    request: { headers: requestHeaders },
+  });
+
+  // Track school slug in cookie if visiting /:slug
+  if (isSchoolLanding) {
+    response.cookies.set('school_slug', potentialSlug, { path: '/' });
+  }
+
+  return response;
 }

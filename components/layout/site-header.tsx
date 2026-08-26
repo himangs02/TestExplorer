@@ -91,20 +91,19 @@ export function SiteHeader({ school, user, profile, schoolSlug }: SiteHeaderProp
 
         {/* ================= CENTER: NAVIGATION ================= */}
         <nav className="hidden md:flex gap-8 items-center text-sm font-medium text-gray-600">
-          <Link href={`${basePath}/`} className="hover:text-blue-600 transition-colors">
+          <Link href={`${basePath}/`} prefetch={true} className="hover:text-blue-600 transition-colors">
             Home
           </Link>
-          <Link href={`${basePath}/categories`} className="hover:text-blue-600 transition-colors">
+          <Link href={`${basePath}/categories`} prefetch={true} className="hover:text-blue-600 transition-colors">
             Streams
           </Link>
-          {/* Keep these global unless you have school-specific About pages */}
-          <Link href={`${basePath}/about`} className="hover:text-blue-600 transition-colors">
+          <Link href={`${basePath}/about`} prefetch={true} className="hover:text-blue-600 transition-colors">
             About
           </Link>
-          <Link href={`${basePath}/blogs`} className="hover:text-blue-600 transition-colors">
+          <Link href={`${basePath}/blogs`} prefetch={true} className="hover:text-blue-600 transition-colors">
             Blogs
           </Link>
-          <Link href={`${basePath}/contact`} className="hover:text-blue-600 transition-colors">
+          <Link href={`${basePath}/contact`} prefetch={true} className="hover:text-blue-600 transition-colors">
             Contact
           </Link>
         </nav>
@@ -113,14 +112,13 @@ export function SiteHeader({ school, user, profile, schoolSlug }: SiteHeaderProp
         <div className="flex items-center gap-4">
           {user && profile ? (
             // --- LOGGED IN: UserNav ---
-            // Note: You might need to update UserNav internally to handle links too, 
-            // or we pass the base path if UserNav accepts it.
             <UserNav profile={profile} email={user.email} />
           ) : (
             // --- GUEST VIEW ---
             <>
               <Link
                 href={`${basePath}/login`}
+                prefetch={true}
                 className="hidden sm:block text-sm font-medium text-gray-700 hover:text-blue-600"
               >
                 Log in
@@ -128,6 +126,7 @@ export function SiteHeader({ school, user, profile, schoolSlug }: SiteHeaderProp
               
               <Link
                 href={`${basePath}/signup`}
+                prefetch={true}
                 className={`px-5 py-2 rounded-full text-sm font-medium transition-all shadow-md hover:shadow-lg text-white ${
                   school 
                     ? "bg-black hover:bg-gray-800 shadow-gray-200" // School Style

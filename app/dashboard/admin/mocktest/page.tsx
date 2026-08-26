@@ -2,28 +2,28 @@ import { prisma } from '@/lib/prisma'
 import CategoryAccordion from '@/components/admin/CategoryAccordion'
 
 export default async function AdminMockTestsPage() {
-  // 1. Fetch Categories
-  const categories = await prisma.categories.findMany({
-    orderBy: { title: 'asc' }
-  })
-
-  // 2. Fetch Mocks
-  const mockTests = await prisma.mock_tests.findMany({
-    where: { subject_id: null },
-    orderBy: { created_at: 'desc' },
-    include: {
-      mock_test_questions: {
-        select: { id: true }
-      },
-      courses: {
-        select: {
-          id: true,
-          title: true,
-          category_id: true
+  // Fetch Categories & Mocks in parallel
+  const [categories, mockTests] = await Promise.all([
+    prisma.categories.findMany({
+      orderBy: { title: 'asc' }
+    }),
+    prisma.mock_tests.findMany({
+      where: { subject_id: null },
+      orderBy: { created_at: 'desc' },
+      include: {
+        mock_test_questions: {
+          select: { id: true }
+        },
+        courses: {
+          select: {
+            id: true,
+            title: true,
+            category_id: true
+          }
         }
       }
-    }
-  })
+    })
+  ])
 
   // Map to the shape expected by CategoryAccordion
   const formattedMocks = mockTests.map(mock => ({
