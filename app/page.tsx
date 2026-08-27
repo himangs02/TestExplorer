@@ -1,35 +1,8 @@
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/app/api/auth/[...nextauth]/route'
-import { prisma } from '@/lib/prisma'
 import LandingPage from '@/components/Home/LandingPage';
 
-export const dynamic = 'force-dynamic';
+// Cache homepage for 5 minutes (ISR) for instant rendering
+export const revalidate = 300;
 
 export default async function Home() {
-  const session = await getServerSession(authOptions)
-  const user = session?.user
-
-  let profile = null;
-
-  if (user) {
-    let data = null;
-    try {
-      data = await prisma.profiles.findUnique({
-        where: { id: user.id }
-      })
-    } catch (err) {
-      console.error("Failed to fetch profile in Home page:", err);
-    }
-    
-    // If profile exists, use it. 
-    // Fallback only if data is null (shouldn't happen now)
-    profile = data || { 
-      full_name: user.email?.split('@')[0] || 'Student', 
-      role: 'student', 
-      organization_id: null // Updated from school_id to match DB
-    };
-  }
-
-  // Pass user.email explicitly so UserNav can display it
   return <LandingPage />;
 }

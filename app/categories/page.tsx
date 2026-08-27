@@ -1,7 +1,10 @@
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
-import { ArrowUpRight, Sparkles, Layers } from 'lucide-react'
-import * as LucideIcons from 'lucide-react' // <--- 1. Import all icons
+import { ArrowUpRight, Sparkles } from 'lucide-react'
+import { getCategoryIcon } from '@/lib/icons'
+
+// Cache categories for 5 minutes (ISR)
+export const revalidate = 300;
 
 export default async function CategoriesPage() {
   // 1. Fetch Categories
@@ -29,9 +32,7 @@ export default async function CategoriesPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {categories?.map((cat) => {
-            // --- 2. DYNAMIC ICON LOGIC ---
-            // @ts-ignore
-            const Icon = LucideIcons[cat.icon_key] || Layers
+            const Icon = getCategoryIcon(cat.icon_key)
 
             // --- 3. DYNAMIC COLOR LOGIC ---
             const rawBg = cat.bg_color || 'bg-gray-50'

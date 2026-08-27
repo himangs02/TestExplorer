@@ -1,6 +1,6 @@
 import Link from 'next/link'
-import { ArrowRight, Layers } from 'lucide-react'
-import * as LucideIcons from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
+import { getCategoryIcon } from '@/lib/icons'
 import { Button } from "@/components/ui/button"
 
 interface Category {
@@ -19,9 +19,7 @@ export default function CategoryGrid({ categories }: { categories: Category[] | 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6 container mx-auto py-4">
       {categories.map((cat) => {
-        // Dynamic Icon Logic
-        // @ts-ignore
-        const Icon = LucideIcons[cat.icon_key] || Layers
+        const Icon = getCategoryIcon(cat.icon_key)
 
         // Dynamic Color Logic
         const rawBg = cat.bg_color || 'bg-gray-50'

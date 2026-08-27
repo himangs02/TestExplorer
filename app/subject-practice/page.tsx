@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
-import { ArrowUpRight, BookOpen, Layers } from 'lucide-react'
-import * as LucideIcons from 'lucide-react'
+import { ArrowUpRight, BookOpen } from 'lucide-react'
+import { getCategoryIcon } from '@/lib/icons'
 
 export default async function SubjectPracticePage() {
   // Fetch all categories (streams)
@@ -28,8 +28,7 @@ export default async function SubjectPracticePage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {categories?.map((cat) => {
-            // @ts-ignore
-            const Icon = LucideIcons[cat.icon_key] || Layers
+            const Icon = getCategoryIcon(cat.icon_key)
 
             const rawBg = cat.bg_color || 'bg-gray-50'
             const isArbitrary = rawBg.startsWith('bg-[#') && rawBg.endsWith(']')
