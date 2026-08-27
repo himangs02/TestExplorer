@@ -19,7 +19,7 @@ export default async function CategoriesPage() {
             <Sparkles className="w-3 h-3 text-yellow-400" />
             Select Your Stream
           </div>
-          <h1 className="text-5xl md:text-7xl font-black text-gray-900 tracking-tighter mb-6 leading-[0.9]">
+          <h1 className="text-4xl md:text-6xl font-black text-gray-900 tracking-tighter mb-6 leading-[0.95]">
             What are you <br/><span className="text-blue-600">aiming</span> for?
           </h1>
           <p className="text-xl text-gray-500 font-medium max-w-xl">

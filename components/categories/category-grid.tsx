@@ -39,9 +39,9 @@ export default function CategoryGrid({ categories }: { categories: Category[] | 
           >
             <div 
               className={`
-                relative z-10 h-full px-2 py-6 rounded-[2.5rem] border-2 border-black flex items-center flex-col space-y-6 justify-center
+                relative z-10 h-full px-3 py-5 rounded-2xl md:rounded-3xl border-2 border-black flex items-center flex-col space-y-4 justify-center
                 transition-all duration-300 ease-out
-                group-hover:-translate-y-2 group-hover:translate-x-1 group-hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]
+                group-hover:-translate-y-1.5 group-hover:translate-x-1 group-hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
                 ${finalClass} 
               `}
               style={finalStyle}

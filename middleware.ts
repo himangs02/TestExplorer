@@ -92,6 +92,8 @@ export async function middleware(request: NextRequest) {
   // Track school slug in cookie if visiting /:slug
   if (isSchoolLanding) {
     response.cookies.set('school_slug', potentialSlug, { path: '/' });
+  } else if (path === '/') {
+    response.cookies.delete('school_slug');
   }
 
   return response;

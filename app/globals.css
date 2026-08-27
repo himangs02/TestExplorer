@@ -125,3 +125,12 @@
     @apply bg-background text-foreground;
   }
 }
+
+.container {
+  width: 100%;
+  max-width: 1280px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}

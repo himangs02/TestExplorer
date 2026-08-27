@@ -43,36 +43,34 @@ export default async function RootLayout({
   let schoolSlug = null;
 
   // Reserved paths that are NOT school slugs
-  const reservedPaths = ['about', 'contact', 'login', 'signup', 'dashboard', 'api', 'categories', 'courses', 'exams', 'mocktest', 'forgot-password', 'reset-password', 'auth', 'streams', 'blogs', 'complete-profile', 'cookie-policy', 'faqs', 'getting-started', 'library', 'privacy', 'profile', 'security', 'terms', 'update-password', '_next', 'subject-practice'];
+  const reservedPaths = [
+    'about', 'contact', 'login', 'signup', 'dashboard', 'api', 'categories', 
+    'courses', 'exams', 'mocktest', 'forgot-password', 'reset-password', 'auth', 
+    'streams', 'blogs', 'complete-profile', 'cookie-policy', 'faqs', 
+    'getting-started', 'library', 'privacy', 'profile', 'security', 'terms', 
+    'update-password', '_next', 'subject-practice'
+  ];
 
-  // First check if user is logged in and has an organization
-  if (profile?.organization_id) {
+  const segments = currentPath.split('/').filter(Boolean);
+  const potentialSlug = segments.length > 0 ? segments[0] : null;
+  const isSchoolSlugInPath = potentialSlug && !reservedPaths.includes(potentialSlug);
+
+  // 1. Check if explicitly visiting a school slug in URL path (e.g. /gvmps or /gvmps/about)
+  if (isSchoolSlugInPath) {
+    try {
+      schoolData = await prisma.organizations.findUnique({ where: { slug: potentialSlug } });
+      if (schoolData) schoolSlug = potentialSlug;
+    } catch (err) {
+      console.error("Failed to fetch school data from path in RootLayout:", err);
+    }
+  } 
+  // 2. If user is logged in and belongs to an organization (only for students, teachers, school admins - NOT super_admin)
+  else if (profile?.organization_id && profile?.role !== 'super_admin') {
     try {
       schoolData = await prisma.organizations.findUnique({ where: { id: profile.organization_id } });
       if (schoolData) schoolSlug = schoolData.slug;
     } catch (err) {
       console.error("Failed to fetch school data from profile in RootLayout:", err);
-    }
-  } 
-  // If not logged in, try to get school from the URL path slug
-  else {
-    const segments = currentPath.split('/').filter(Boolean);
-    const potentialSlug = segments.length > 0 ? segments[0] : null;
-    
-    if (potentialSlug && !reservedPaths.includes(potentialSlug)) {
-      try {
-        schoolData = await prisma.organizations.findUnique({ where: { slug: potentialSlug } });
-        if (schoolData) schoolSlug = potentialSlug;
-      } catch (err) {
-        console.error("Failed to fetch school data from path in RootLayout:", err);
-      }
-    } else if (cookieSlug && !reservedPaths.includes(cookieSlug)) {
-      try {
-        schoolData = await prisma.organizations.findUnique({ where: { slug: cookieSlug } });
-        if (schoolData) schoolSlug = cookieSlug;
-      } catch (err) {
-        console.error("Failed to fetch school data from cookie in RootLayout:", err);
-      }
     }
   }
 

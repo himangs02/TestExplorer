@@ -30,7 +30,7 @@ export default async function DashboardLayout({
 
   let schoolData = null;
 
-  if (profile?.organization_id) {
+  if (profile?.organization_id && profile?.role !== 'super_admin') {
     try {
       schoolData = await prisma.organizations.findUnique({ where: { id: profile.organization_id } });
     } catch (err) {

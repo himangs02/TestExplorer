@@ -17,22 +17,16 @@ export async function getSchoolBySubdomain(slug: string) {
 
 export async function getCurrentSchool() {
   try {
-    // 1. Check logged-in user profile
     const session = await getServerSession(authOptions);
+    let profile = null;
     if (session?.user?.id) {
-      const profile = await prisma.profiles.findUnique({
+      profile = await prisma.profiles.findUnique({
         where: { id: session.user.id },
-        select: { organization_id: true }
+        select: { organization_id: true, role: true }
       });
-      if (profile?.organization_id) {
-        const school = await prisma.organizations.findUnique({
-          where: { id: profile.organization_id }
-        });
-        if (school) return school;
-      }
     }
 
-    // 2. Check headers (path or subdomain)
+    // 1. Check path slug first (highest priority, e.g. /gvmps or /gvmps/about)
     const headersList = await headers();
     const currentPath = headersList.get("x-current-path") || "";
     const host = headersList.get("x-current-domain") || headersList.get("host") || "";
@@ -53,6 +47,7 @@ export async function getCurrentSchool() {
       if (school) return school;
     }
 
+    // 2. Check subdomain (e.g. gvmps.testexplorer.in)
     if (host) {
       const hostname = host.split(':')[0];
       const mainDomains = ['localhost', 'testexplorer.in', 'testexplorer.com', 'test-explorer1.vercel.app'];
@@ -66,11 +61,11 @@ export async function getCurrentSchool() {
       }
     }
 
-    // 3. Check cookie fallback
-    const cookieStore = await cookies();
-    const cookieSlug = cookieStore.get("school_slug")?.value;
-    if (cookieSlug && !reservedPaths.includes(cookieSlug)) {
-      const school = await getSchoolBySubdomain(cookieSlug);
+    // 3. If user is logged in as a school student/admin (non-super_admin) with an assigned organization
+    if (profile?.role !== 'super_admin' && profile?.organization_id) {
+      const school = await prisma.organizations.findUnique({
+        where: { id: profile.organization_id }
+      });
       if (school) return school;
     }
 
