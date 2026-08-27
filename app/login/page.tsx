@@ -97,7 +97,7 @@ export default function LoginPage() {
                 <rect x="300" y="205" width="42" height="15" rx="3" fill="#10B981"/>
                 
                 {/* Floating Success Pill */}
-                <g className="animate-bounce" style={{ animationDuration: '3s' }}>
+                <g className="animate-float-slow" style={{ transformBox: 'fill-box', transformOrigin: 'center' }}>
                   <rect x="230" y="50" width="130" height="42" rx="21" fill="white" filter="drop-shadow(0px 8px 16px rgba(0,0,0,0.15))"/>
                   <circle cx="252" cy="71" r="13" fill="#10B981"/>
                   <path d="M246 71L250 75L258 67" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -106,7 +106,7 @@ export default function LoginPage() {
                 </g>
                 
                 {/* Floating Clock */}
-                <g>
+                <g className="animate-float-reverse" style={{ transformBox: 'fill-box', transformOrigin: 'center' }}>
                   <rect x="40" y="70" width="105" height="38" rx="19" fill="white" fillOpacity="0.95" filter="drop-shadow(0px 8px 16px rgba(0,0,0,0.12))"/>
                   <circle cx="60" cy="89" r="11" fill="#FFEDD5"/>
                   <path d="M60 84V89L63 92" stroke="#EA580C" strokeWidth="2" strokeLinecap="round"/>
