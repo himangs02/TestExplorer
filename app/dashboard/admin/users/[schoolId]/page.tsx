@@ -6,6 +6,8 @@ import ExportStudentsBtn from '@/components/admin/export-students-btn' // Import
 import StudentSearch from '@/components/admin/student-search' // Import Search Component
 import StudentSort from '@/components/admin/student-sort'
 
+export const dynamic = 'force-dynamic'
+
 export default async function SchoolStudentsPage({
   params,
   searchParams,
@@ -22,7 +24,10 @@ export default async function SchoolStudentsPage({
   let whereClause: any = { role: 'student' }
 
   if (schoolId === 'public') {
-    whereClause.organization_id = null
+    whereClause.OR = [
+      { organization_id: null },
+      { organization_id: '' }
+    ]
   } else {
     whereClause.organization_id = schoolId
   }

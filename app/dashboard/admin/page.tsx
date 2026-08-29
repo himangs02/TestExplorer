@@ -18,9 +18,6 @@ export default async function SuperAdminDashboard() {
   const [
     schoolsCount, 
     studentsCount, 
-    streamsCount, 
-    mockTestsCount, 
-    blogsCount,
     unreadMessagesCount,
     recentMessages,
     recentAttempts,
@@ -31,22 +28,48 @@ export default async function SuperAdminDashboard() {
   ] = await Promise.all([
     prisma.organizations.count(),
     prisma.profiles.count({ where: { role: 'student' } }),
-    prisma.categories.count(),
-    prisma.mock_tests.count(),
-    prisma.blogs.count(),
     prisma.contact_messages.count({ where: { status: 'unread' } }),
     prisma.contact_messages.findMany({
+      select: {
+        id: true,
+        name: true,
+        message: true,
+        created_at: true,
+      },
       orderBy: { created_at: 'desc' },
       take: 2
     }),
     prisma.exam_attempts.findMany({
       orderBy: { started_at: 'desc' },
       take: 3,
-      include: {
-        users: true,
-        exams: true,
-        mock_tests: true,
-        practice_tests: true
+      select: {
+        id: true,
+        status: true,
+        score: true,
+        total_marks: true,
+        percentage: true,
+        completed_at: true,
+        users: {
+          select: {
+            name: true,
+            email: true,
+          }
+        },
+        exams: {
+          select: {
+            title: true,
+          }
+        },
+        mock_tests: {
+          select: {
+            title: true,
+          }
+        },
+        practice_tests: {
+          select: {
+            title: true,
+          }
+        }
       }
     }),
     prisma.subjects.count(),

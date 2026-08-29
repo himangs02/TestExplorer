@@ -1,16 +1,10 @@
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
-import { Plus, Pencil, Trash2, Layers } from 'lucide-react'
+import { Plus, Pencil, Trash2 } from 'lucide-react'
 import { deleteStreamAction } from './actions'
-import * as LucideIcons from 'lucide-react' // Import icons for preview
+import { getCategoryIcon } from '@/lib/icons'
 
-// Helper to render icon
-const DynamicIcon = ({ name, className }: { name: string, className?: string }) => {
-  // @ts-ignore
-  const IconComponent = LucideIcons[name]
-  if (!IconComponent) return <Layers className={className} />
-  return <IconComponent className={className} />
-}
+export const dynamic = 'force-dynamic'
 
 export default async function StreamsAdminPage() {
   const streams = await prisma.categories.findMany({
@@ -51,6 +45,8 @@ export default async function StreamsAdminPage() {
             const finalStyle = hexColor ? { backgroundColor: hexColor } : undefined
             // -----------------------
 
+            const Icon = getCategoryIcon(stream.icon_key)
+
             return (
               <div key={stream.id} className="bg-white p-6 rounded-2xl border border-gray-200 flex justify-between items-center group hover:border-blue-400 transition-all shadow-sm">
                 <div className="flex items-center gap-4">
@@ -60,8 +56,7 @@ export default async function StreamsAdminPage() {
                     className={`w-12 h-12 rounded-xl flex items-center justify-center border-2 border-black/10 ${finalClass}`}
                     style={finalStyle}
                   >
-                     {/* Show the actual icon instead of just the number */}
-                     <DynamicIcon name={stream.icon_key ?? 'GraduationCap'} className="w-5 h-5 text-gray-900 opacity-70" />
+                     <Icon className="w-5 h-5 text-gray-900 opacity-70" />
                   </div>
                   
                   <div>

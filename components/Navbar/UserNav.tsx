@@ -86,7 +86,14 @@ export default function UserNav({ profile, email }: UserNavProps) {
         {/* The 3 Main Options */}
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
-            <Link href={getDashboardLink()} className="cursor-pointer w-full flex items-center py-2.5">
+            <Link 
+              href={getDashboardLink()} 
+              prefetch={true}
+              onClick={() => {
+                toast.loading('Navigating to Dashboard...', { duration: 2000 })
+              }}
+              className="cursor-pointer w-full flex items-center py-2.5"
+            >
               <LayoutDashboard className="mr-3 h-4 w-4 text-gray-500" />
               <span className="font-medium">Dashboard</span>
             </Link>

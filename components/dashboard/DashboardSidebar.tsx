@@ -1,5 +1,7 @@
 'use client'
 
+import { useEffect } from 'react'
+import { toast } from 'sonner'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { 
@@ -46,6 +48,10 @@ export default function DashboardSidebar({
   profile 
 }: SidebarProps) {
   const pathname = usePathname()
+
+  useEffect(() => {
+    toast.dismiss()
+  }, [pathname])
 
   return (
     <aside className="w-64 bg-white border-r border-gray-200 hidden md:flex flex-col fixed inset-y-0 left-0 z-50">
