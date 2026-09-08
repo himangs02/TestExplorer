@@ -27,7 +27,7 @@ export default function TermsPage() {
 
       <div className="max-w-6xl mx-auto px-6 py-16">
         <div className="flex flex-col md:flex-row gap-12">
-          
+
           {/* Sidebar Navigation */}
           <aside className="md:w-1/4">
             <div className="sticky top-32 space-y-2">
@@ -52,21 +52,21 @@ export default function TermsPage() {
 
           {/* Content Area */}
           <main className="md:w-3/4 space-y-12">
-            
+
             {/* Quick Summary Card */}
             <div className="bg-emerald-900 rounded-[2.5rem] p-8 md:p-12 text-white shadow-xl shadow-emerald-900/10 relative overflow-hidden">
-               <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full -mr-32 -mt-32 blur-3xl" />
-               <h2 className="text-2xl font-black mb-6 relative z-10">Quick Summary</h2>
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
-                  <div className="space-y-2">
-                    <p className="text-emerald-300 font-black text-xs uppercase tracking-wider">The "Free" Promise</p>
-                    <p className="text-emerald-50/80 text-sm">Our core features for schools and students remain free to use without hidden charges.</p>
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-emerald-300 font-black text-xs uppercase tracking-wider">Your Responsibility</p>
-                    <p className="text-emerald-50/80 text-sm">You are responsible for keeping your account secure and using the platform ethically.</p>
-                  </div>
-               </div>
+              <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full -mr-32 -mt-32 blur-3xl" />
+              <h2 className="text-2xl font-black mb-6 relative z-10">Quick Summary</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
+                <div className="space-y-2">
+                  <p className="text-emerald-300 font-black text-xs uppercase tracking-wider">The "Free" Promise</p>
+                  <p className="text-emerald-50/80 text-sm">Our core features for schools and students remain free to use without hidden charges.</p>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-emerald-300 font-black text-xs uppercase tracking-wider">Your Responsibility</p>
+                  <p className="text-emerald-50/80 text-sm">You are responsible for keeping your account secure and using the platform ethically.</p>
+                </div>
+              </div>
             </div>
 
             {/* Section: Acceptance */}
@@ -137,7 +137,7 @@ export default function TermsPage() {
 
             <footer className="pt-8 border-t border-slate-200 text-center md:text-left">
               <p className="text-slate-400 text-sm italic">
-                By using Test Explorer, you acknowledge that you have read and understood these Terms. Last updated: February 21, 2026.
+                By using Test Explorer, you acknowledge that you have read and understood these Terms. Last updated: February 21, 2027.
               </p>
             </footer>
           </main>

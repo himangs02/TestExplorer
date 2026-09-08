@@ -48,7 +48,9 @@ export default async function RootLayout({
     'courses', 'exams', 'mocktest', 'forgot-password', 'reset-password', 'auth', 
     'streams', 'blogs', 'complete-profile', 'cookie-policy', 'faqs', 
     'getting-started', 'library', 'privacy', 'profile', 'security', 'terms', 
-    'update-password', '_next', 'subject-practice'
+    'update-password', '_next', 'subject-practice', 'predictor',
+    'jee-main-college-predictor', 'jee-advanced-college-predictor',
+    'neet-college-predictor', 'cuet-college-predictor', 'clat-college-predictor'
   ];
 
   const segments = currentPath.split('/').filter(Boolean);

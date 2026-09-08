@@ -26,7 +26,9 @@ export async function middleware(request: NextRequest) {
     'courses', 'exams', 'mocktest', 'forgot-password', 'reset-password', 'auth', 
     'streams', 'blogs', 'complete-profile', 'cookie-policy', 'faqs', 
     'getting-started', 'library', 'privacy', 'profile', 'security', 'terms', 
-    'update-password', '_next', 'subject-practice'
+    'update-password', '_next', 'subject-practice', 'predictor',
+    'jee-main-college-predictor', 'jee-advanced-college-predictor',
+    'neet-college-predictor', 'cuet-college-predictor', 'clat-college-predictor'
   ];
 
   const allowedSubroutes = [
@@ -60,10 +62,17 @@ export async function middleware(request: NextRequest) {
     path.startsWith('/streams') ||    
     path.startsWith('/categories') ||        
     path.startsWith('/blogs') ||         
+    path.startsWith('/predictor') ||
+    path.startsWith('/jee-main-college-predictor') ||
+    path.startsWith('/jee-advanced-college-predictor') ||
+    path.startsWith('/neet-college-predictor') ||
+    path.startsWith('/cuet-college-predictor') ||
+    path.startsWith('/clat-college-predictor') ||
     path.startsWith('/forgot-password') ||
     path.startsWith('/reset-password') ||
     path.startsWith('/auth') ||           
     path.startsWith('/api/auth') ||       
+    path.startsWith('/api/predictor') ||
     path.includes('.') ||
     Boolean(isSchoolLanding);
 

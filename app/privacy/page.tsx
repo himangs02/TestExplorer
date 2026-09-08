@@ -27,7 +27,7 @@ export default function PrivacyPage() {
 
       <div className="max-w-6xl mx-auto px-6 py-16">
         <div className="flex flex-col md:flex-row gap-12">
-          
+
           {/* Sidebar Navigation - Sticky */}
           <aside className="md:w-1/4">
             <div className="sticky top-32 space-y-2">
@@ -52,7 +52,7 @@ export default function PrivacyPage() {
 
           {/* Content Area */}
           <main className="md:w-3/4 space-y-12">
-            
+
             {/* Introduction Card */}
             <div className="bg-white rounded-[2.5rem] p-8 md:p-12 border border-slate-100 shadow-sm leading-relaxed text-slate-600">
               <h2 className="text-2xl font-black text-slate-900 mb-6">Introduction</h2>
@@ -120,7 +120,7 @@ export default function PrivacyPage() {
 
             <footer className="pt-8 border-t border-slate-200 text-center md:text-left">
               <p className="text-slate-400 text-sm italic">
-                Last updated: February 21, 2026. For questions, contact us at <span className="text-blue-600 font-bold">privacy@testexplorer.in</span>
+                Last updated: February 21, 2027. For questions, contact us at <span className="text-blue-600 font-bold">privacy@testexplorer.in</span>
               </p>
             </footer>
           </main>

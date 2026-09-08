@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 
 // Import your Hero variations
 import HeroMain from "@/components/landing/hero-main";
+import PredictorHeroSection from "@/components/landing/predictor-hero-section";
 
 // Import Shared Content Sections
 import Footer from "@/components/landing/footer";
@@ -23,12 +24,16 @@ export default async function LandingPage() {
 
       {/* === SECTION 2: STREAM / COURSE CARDS === */}
       <PracticeOptionsGrid categories={categories} />
+
+      {/* === SECTION 3: EXAM RANK & COLLEGE PREDICTOR === */}
+      <PredictorHeroSection />
+
       <Steps />
       <Features />
       <Testimonials />
       <Faq />
 
-      {/* === SECTION 3: FOOTER === */}
+      {/* === SECTION 4: FOOTER === */}
       <Footer school={null} /> 
     </main>
   );

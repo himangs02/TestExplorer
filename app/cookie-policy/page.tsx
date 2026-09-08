@@ -32,7 +32,7 @@ export default function CookiePolicy() {
 
       <div className="max-w-6xl mx-auto px-6 py-16">
         <div className="flex flex-col md:flex-row gap-12">
-          
+
           {/* Sidebar Navigation */}
           <aside className="md:w-1/4">
             <div className="sticky top-32 space-y-2">
@@ -57,7 +57,7 @@ export default function CookiePolicy() {
 
           {/* Content Area */}
           <main className="md:w-3/4 space-y-12">
-            
+
             {/* Section: What are Cookies */}
             <section id="what-are-cookies" className="scroll-mt-32">
               <div className="bg-white rounded-[2.5rem] p-8 md:p-12 border border-slate-100 shadow-sm">
@@ -66,10 +66,10 @@ export default function CookiePolicy() {
                   Cookies are small text files that are stored on your device when you visit a website. They help us recognize your device and store some information about your preferences or past actions.
                 </p>
                 <div className="p-6 bg-amber-50 rounded-3xl border border-amber-100 flex gap-4">
-                    <Info className="w-6 h-6 text-amber-600 shrink-0" />
-                    <p className="text-sm text-amber-900 font-medium">
-                        At Test Explorer, we primarily use "First-Party" cookies which are set directly by us to make the platform work.
-                    </p>
+                  <Info className="w-6 h-6 text-amber-600 shrink-0" />
+                  <p className="text-sm text-amber-900 font-medium">
+                    At Test Explorer, we primarily use "First-Party" cookies which are set directly by us to make the platform work.
+                  </p>
                 </div>
               </div>
             </section>
@@ -109,24 +109,24 @@ export default function CookiePolicy() {
               <div className="bg-white rounded-[2.5rem] p-8 md:p-12 border border-slate-100 shadow-sm">
                 <h2 className="text-3xl font-black text-slate-900 mb-6 tracking-tight">3. Your Choices</h2>
                 <div className="space-y-4 text-slate-600">
-                    <p>
-                        Most web browsers allow you to control cookies through their settings. You can:
-                    </p>
-                    <ul className="list-disc pl-6 space-y-2">
-                        <li>Delete all cookies from your browser.</li>
-                        <li>Block all cookies from being set.</li>
-                        <li>Set your browser to notify you when a cookie is issued.</li>
-                    </ul>
-                    <p className="p-6 bg-red-50 text-red-700 text-sm rounded-3xl border border-red-100 font-medium mt-4">
-                        Note: If you block essential cookies, you will not be able to log in or access your school subdomain dashboard.
-                    </p>
+                  <p>
+                    Most web browsers allow you to control cookies through their settings. You can:
+                  </p>
+                  <ul className="list-disc pl-6 space-y-2">
+                    <li>Delete all cookies from your browser.</li>
+                    <li>Block all cookies from being set.</li>
+                    <li>Set your browser to notify you when a cookie is issued.</li>
+                  </ul>
+                  <p className="p-6 bg-red-50 text-red-700 text-sm rounded-3xl border border-red-100 font-medium mt-4">
+                    Note: If you block essential cookies, you will not be able to log in or access your school subdomain dashboard.
+                  </p>
                 </div>
               </div>
             </section>
 
             <footer className="pt-8 border-t border-slate-200 text-center md:text-left">
               <p className="text-slate-400 text-sm italic">
-                This policy was last updated on February 21, 2026.
+                This policy was last updated on February 21, 2027.
               </p>
             </footer>
           </main>

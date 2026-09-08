@@ -23,7 +23,7 @@ export function SiteHeader({ school, user, profile, schoolSlug }: SiteHeaderProp
   // 1. Hide Navbar on Test/Practice Pages
   // We strip the schoolSlug from the pathname to check against prefixes reliably
   const cleanPath = schoolSlug && pathname.startsWith(`/${schoolSlug}`)
-    ? pathname.replace(`/${schoolSlug}`, "") || "/" 
+    ? pathname.replace(`/${schoolSlug}`, "") || "/"
     : pathname;
 
   const hiddenPrefixes = [
@@ -37,14 +37,14 @@ export function SiteHeader({ school, user, profile, schoolSlug }: SiteHeaderProp
 
   const hiddenKeywords = [
     "/attempt",
-    "/result", 
-    "/practice", 
-    "/mock", 
-    "/review" 
+    "/result",
+    "/practice",
+    "/mock",
+    "/review"
   ];
 
-  const isHidden = 
-    hiddenPrefixes.some((prefix) => cleanPath.startsWith(prefix)) || 
+  const isHidden =
+    hiddenPrefixes.some((prefix) => cleanPath.startsWith(prefix)) ||
     hiddenKeywords.some((keyword) => cleanPath.includes(keyword));
 
   if (isHidden) return null;
@@ -52,7 +52,7 @@ export function SiteHeader({ school, user, profile, schoolSlug }: SiteHeaderProp
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur shadow-sm supports-backdrop-filter:bg-white/60">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        
+
         {/* ================= LEFT SIDE: BRANDING ================= */}
         <div className="flex items-center gap-2">
           {school ? (
@@ -94,6 +94,16 @@ export function SiteHeader({ school, user, profile, schoolSlug }: SiteHeaderProp
           <Link href={`${basePath}/`} prefetch={true} className="hover:text-blue-600 transition-colors">
             Home
           </Link>
+          <Link
+            href="/predictor"
+            prefetch={true}
+            className="hover:text-blue-600 transition-colors flex items-center gap-1.5 font-medium"
+          >
+            <span>Rank Predictor</span>
+            <span className="px-1.5 py-0.5 text-[9px] font-bold bg-blue-100 text-blue-700 rounded-full leading-none">
+              2027
+            </span>
+          </Link>
           <Link href={`${basePath}/categories`} prefetch={true} className="hover:text-blue-600 transition-colors">
             Streams
           </Link>
@@ -123,15 +133,14 @@ export function SiteHeader({ school, user, profile, schoolSlug }: SiteHeaderProp
               >
                 Log in
               </Link>
-              
+
               <Link
                 href={`${basePath}/signup`}
                 prefetch={true}
-                className={`px-5 py-2 rounded-full text-sm font-medium transition-all shadow-md hover:shadow-lg text-white ${
-                  school 
+                className={`px-5 py-2 rounded-full text-sm font-medium transition-all shadow-md hover:shadow-lg text-white ${school
                     ? "bg-black hover:bg-gray-800 shadow-gray-200" // School Style
                     : "bg-blue-600 hover:bg-blue-700"              // TE Style
-                }`}
+                  }`}
               >
                 Get Started
               </Link>

@@ -28,7 +28,7 @@ export default function SecurityPage() {
 
       <div className="max-w-6xl mx-auto px-6 py-16">
         <div className="flex flex-col md:flex-row gap-12">
-          
+
           {/* Sidebar Navigation */}
           <aside className="md:w-1/4">
             <div className="sticky top-32 space-y-2">
@@ -53,7 +53,7 @@ export default function SecurityPage() {
 
           {/* Content Area */}
           <main className="md:w-3/4 space-y-12">
-            
+
             {/* Encryption Section */}
             <section id="encryption" className="scroll-mt-32">
               <div className="bg-white rounded-[2.5rem] p-8 md:p-12 border border-slate-100 shadow-sm">
@@ -91,7 +91,7 @@ export default function SecurityPage() {
                 </div>
                 <h2 className="text-3xl font-black text-slate-900 mb-6 tracking-tight">Cloud Infrastructure</h2>
                 <p className="text-slate-600 mb-8">
-                  Test Explorer is powered by **MySQL** and hosted on highly secure AWS data centers. 
+                  Test Explorer is powered by **MySQL** and hosted on highly secure AWS data centers.
                 </p>
                 <ul className="space-y-4">
                   {[
@@ -135,8 +135,8 @@ export default function SecurityPage() {
                 <p className="text-slate-600 mb-8 max-w-lg mx-auto">
                   We take security seriously. If you've discovered a bug or security flaw, please report it to our team immediately.
                 </p>
-                <a 
-                  href="mailto:security@testexplorer.in" 
+                <a
+                  href="mailto:security@testexplorer.in"
                   className="inline-flex items-center px-8 py-4 bg-slate-900 text-white font-black rounded-2xl hover:bg-slate-800 transition-all"
                 >
                   Contact Security Team
@@ -146,7 +146,7 @@ export default function SecurityPage() {
 
             <footer className="pt-8 border-t border-slate-200 text-center md:text-left">
               <p className="text-slate-400 text-sm italic">
-                Our security protocols are reviewed monthly. Last review: February 2026.
+                Our security protocols are reviewed monthly. Last review: February 2027.
               </p>
             </footer>
           </main>
