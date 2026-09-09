@@ -107,20 +107,17 @@ async function parseXlsxWithImages(
     }
   }
 
-  // 4. Save extracted images to public folder
-  const uploadDir = path.resolve(process.cwd(), 'public', 'uploads', 'questions', 'extracted')
-  await fs.mkdir(uploadDir, { recursive: true })
-
+  // 4. Extract images to Data URIs (Serverless / Vercel friendly with 0 filesystem dependencies)
   const rowSavedImageUrlMap = new Map<number, string>()
   for (const [rowNum, mediaPath] of rowImageMap.entries()) {
     const mediaFile = zip.file(mediaPath)
     if (mediaFile) {
       const imgBuffer = await mediaFile.async('nodebuffer')
-      const ext = path.extname(mediaPath) || '.png'
-      const uniqueName = `img_${randomUUID().substring(0, 8)}_${rowNum}${ext}`
-      const targetFilePath = path.join(uploadDir, uniqueName)
-      await fs.writeFile(targetFilePath, imgBuffer)
-      rowSavedImageUrlMap.set(rowNum, `/uploads/questions/extracted/${uniqueName}`)
+      const ext = (path.extname(mediaPath) || '.png').replace('.', '').toLowerCase()
+      const mimeType = ext === 'jpg' || ext === 'jpeg' ? 'image/jpeg' : ext === 'svg' ? 'image/svg+xml' : ext === 'webp' ? 'image/webp' : 'image/png'
+      const base64Str = imgBuffer.toString('base64')
+      const dataUri = `data:${mimeType};base64,${base64Str}`
+      rowSavedImageUrlMap.set(rowNum, dataUri)
     }
   }
 
