@@ -169,7 +169,7 @@ export default function UniversalBulkUploadModal({
               Universal Bulk Upload
             </h2>
             <p className="text-xs text-gray-500 mt-0.5">
-              Upload mixed questions across courses and subjects in one CSV.
+              Upload mixed questions across courses and subjects in Excel (.xlsx, .xls) or CSV.
             </p>
           </div>
 
@@ -192,7 +192,7 @@ export default function UniversalBulkUploadModal({
               className="font-bold text-gray-900 hover:text-black flex items-center gap-1.5 transition-colors"
             >
               <Download className="w-3.5 h-3.5" />
-              <span>Download CSV Template</span>
+              <span>Download CSV/Excel Template</span>
             </button>
           </div>
 
@@ -215,14 +215,14 @@ export default function UniversalBulkUploadModal({
                   </div>
                 ) : (
                   <div className="text-center space-y-0.5">
-                    <p className="font-semibold text-xs text-gray-700">Choose CSV file or drag & drop</p>
-                    <p className="text-[11px] text-gray-400">Supports .csv with auto-deduplication</p>
+                    <p className="font-semibold text-xs text-gray-700">Choose Excel (.xlsx, .xls) or CSV file</p>
+                    <p className="text-[11px] text-gray-400">Auto-extracts embedded diagram images & dedupes</p>
                   </div>
                 )}
                 <input
                   id="universal_bulk_file"
                   type="file"
-                  accept=".csv"
+                  accept=".csv, .xlsx, .xls, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
                   className="hidden"
                   onChange={(e) => setFile(e.target.files?.[0] || null)}
                 />

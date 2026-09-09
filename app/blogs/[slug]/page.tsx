@@ -71,7 +71,6 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           <ArrowLeft className="w-4 h-4" /> Back to all articles
         </Link>
       </div>
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 grid lg:grid-cols-12 gap-10">
         
         {/* --- MAIN CONTENT COLUMN (Left) --- */}

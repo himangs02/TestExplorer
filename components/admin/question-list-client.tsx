@@ -5,6 +5,7 @@ import { Plus, Search, Filter, Trash2, Upload, UploadCloud, FileText, Download, 
 import { toast } from 'sonner'
 import { createQuestionAction, deleteQuestionAction, bulkUploadQuestionsAction } from '@/app/dashboard/admin/question-portal/questions/actions'
 import UniversalBulkUploadModal from '@/components/admin/universal-bulk-upload-modal'
+import { FormattedContent } from '@/components/ui/formatted-content'
 import { useRouter } from 'next/navigation'
 
 export default function QuestionListClient({ 
@@ -264,7 +265,9 @@ export default function QuestionListClient({
                         {q.marks ? `${q.marks} Mark${Number(q.marks) > 1 ? 's' : ''}` : '1 Mark'}
                       </span>
                     </div>
-                    <p className="text-gray-900 font-medium">{q.text}</p>
+                    <div className="text-gray-900 font-medium">
+                      <FormattedContent content={q.text} />
+                    </div>
                   </div>
                   <button onClick={() => handleDelete(q.id)} className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg opacity-0 group-hover:opacity-100 transition-all shrink-0 self-start cursor-pointer">
                     <Trash2 className="w-4 h-4" />
@@ -510,9 +513,9 @@ export default function QuestionListClient({
                   </div>
                 </div>
 
-                {/* CSV File Dropzone */}
+                {/* CSV / Excel File Dropzone */}
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Upload CSV File *</label>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Upload File (Excel .xlsx / CSV) *</label>
                   <div 
                     onClick={() => fileInputRef.current?.click()}
                     className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all ${
@@ -524,7 +527,7 @@ export default function QuestionListClient({
                     <input 
                       ref={fileInputRef}
                       type="file" 
-                      accept=".csv"
+                      accept=".csv, .xlsx, .xls, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
                       onChange={e => {
                         const file = e.target.files?.[0]
                         if (file) setBulkFile(file)
@@ -542,8 +545,8 @@ export default function QuestionListClient({
                     ) : (
                       <div className="flex flex-col items-center">
                         <Upload className="w-10 h-10 text-gray-400 mb-2" />
-                        <span className="font-bold text-gray-800 text-sm">Click to choose or drag CSV file here</span>
-                        <span className="text-xs text-gray-400 mt-1">Supports UTF-8 encoded .csv files</span>
+                        <span className="font-bold text-gray-800 text-sm">Click to choose or drag Excel (.xlsx) / CSV file here</span>
+                        <span className="text-xs text-gray-400 mt-1">Supports Excel (.xlsx, .xls) and UTF-8 .csv files</span>
                       </div>
                     )}
                   </div>

@@ -1,0 +1,46 @@
+course,subject,chapter,question,option_a,option_b,option_c,option_d,correct_option,explanation,difficulty,marks
+JEE Main,Physics,Friction,"Consider the situation shown in figure. The wall is smooth but the surfaces of A and B in contact are rough. The friction on B due to A in equilibrium
+
+![Figure](/uploads/questions/friction/friction_q1.png)",is upward F A B,is downward,is zero,the system can not remain in equilibrium,C,Refer to the friction laws and equilibrium equations shown in the diagram.,Medium,4
+JEE Main,Physics,Friction,"In the figure, the block A and B are of masses 3 kg and 2 kg. The coefficient of friction between the two blocks A and B is 0.3. The surface of the table is smooth. Then -
+
+![Figure](/uploads/questions/friction/friction_q2.png)",the coefficient of friction is more in pushing than that in pulling,the friction force is more in pushing than that in pulling,the body does not move forward when pushed,None of these Motion of Block on the Horizontal Plane,A,Refer to the friction laws and equilibrium equations shown in the diagram.,Medium,4
+JEE Main,Physics,Friction,"A block of mass M rests on a rough horizontal surface as shown. Coefficient of friction between the block and the surface is μ. A force F = Mg acting at angle θ with the vertical side of the block pulls it in which of the following cases the block can be pulled along the surface ? θ F=Mg )
+
+![Figure](/uploads/questions/friction/friction_q3.png)",tan θ ≥ μ,tan (θ/2) ≥ μ M μ,cot θ ≥ μ,cot (θ/2) ≥ μ Motion of the block on the inclined Plane,A,Refer to the friction laws and equilibrium equations shown in the diagram.,Medium,4
+JEE Main,Physics,Friction,"The coefficient of friction between car C and the inclined plane is 0.8. The maximum acceleration of the car, so that it may move up the plane inclined at an angle θ without slipping will be -
+
+![Figure](/uploads/questions/friction/friction_q4.png)",2.67 m/s2 C,3.02 m/s2 30°,1.88 m/s2,4.32 m/s2,A,Refer to the friction laws and equilibrium equations shown in the diagram.,Medium,4
+JEE Main,Physics,Friction,"An inclined plane is inclined at an angle θ with the horizontal. A body of mass m rests on it, if the coefficient of friction is μ, then the minimum force that has to be applied to the inclined plane to make the body just move up the inclined plane is -
+
+![Figure](/uploads/questions/friction/friction_q5.png)",mg sin θ,μ mg cos θ,μmg cos θ - mg sin θ,μ mg cos θ + mg sin θ 100N No friction 10kg 40kg,A,Refer to the friction laws and equilibrium equations shown in the diagram.,Medium,4
+JEE Main,Physics,Friction,"With reference to the fig. shown, if the coefficient of friction at all the surfaces is 0.42, then the force required to pull out the 6.0 kg block with an acceleration of
+
+![Figure](/uploads/questions/friction/friction_q6.png)",50 m/s2 will be - 2kg 6kg F,24 N,84 N,51 N,A,Refer to the friction laws and equilibrium equations shown in the diagram.,Medium,4
+JEE Main,Physics,Friction,"Two blocks connected by a massless string slide down an inclined plane having angle of inclination 37º. The masses of the two blocks are M1 = 4 kg and M2 = 2 kg respectively and the coefficients of friction 0.75 and 0.25 respectively-
+
+![Figure](/uploads/questions/friction/friction_q7.png)",The common acceleration of the two masses is,The tension in the string is 14.7 N,The common acceleration of the two masses is,The tension in the string is 5.29 N,A,Refer to the friction laws and equilibrium equations shown in the diagram.,Medium,4
+JEE Main,Physics,Friction,"The coefficient of static friction between the two blocks is 0.363. What is the minimum acceleration of block 1 so that block 2 does not fall ? a → 1 2
+
+![Figure](/uploads/questions/friction/friction_q8.png)",6 ms-2,12 ms-2,18 ms-2,27 ms-2,A,Refer to the friction laws and equilibrium equations shown in the diagram.,Medium,4
+JEE Main,Physics,Friction,"Block A of mass 35 kg is resting on a frictionless floor. Another block B of mass 7 kg is resting on it as shown in the figure. The coefficient of friction between the blocks is 0.5 while kinetic friction is 0.4. If a force of 100 N is applied to block B, the acceleration of the block A will be (g = 10 m s-2) :
+
+![Figure](/uploads/questions/friction/friction_q9.png)",0.8 m s-2,2.4 m s-2,0.4 m s-2,4.4 m s-2,B,Refer to the friction laws and equilibrium equations shown in the diagram.,Medium,4
+JEE Main,Physics,Friction,"In the given figure the wedge is fixed, pulley is frictionless and string is light. Surface AB is frictionless whereas AC is rough. If the block of mass 3m slides down with constant velocity, then the coefficient of friction between surface AC and the block is - 1
+
+![Figure](/uploads/questions/friction/friction_q10.png)",3,3 2,2 1,3,A,Refer to the friction laws and equilibrium equations shown in the diagram.,Medium,4
+JEE Main,Physics,Friction,"Mass of upper block and lower block kept over the table is 2 kg and 1 kg respectively and coefficient of friction between the blocks is 0.1. Table surface is smooth. The maximum mass M for which all the three blocks move with same acceleration is (g = 10 m/s2) -
+
+![Figure](/uploads/questions/friction/friction_q11.png)",1 kg,2/3 kg,1/3 kg,3/4 kg,A,Refer to the friction laws and equilibrium equations shown in the diagram.,Medium,4
+JEE Main,Physics,Friction,"A block of mass m lying on a rough horizontal plane is acted upon by a horizontal force P and another force Q inclined at an angle θ to the vertical. The block will remain in equilibrium if the coefficient of friction between it and the surface is - θ + + θ sin Q P Q cos P
+
+![Figure](/uploads/questions/friction/friction_q12.png)",θ +,θ - cos Q mg sin Q mg θ + - θ cos Q P Q sin P,θ +,θ - sin Q mg cos Q mg,A,Refer to the friction laws and equilibrium equations shown in the diagram.,Medium,4
+JEE Main,Physics,Friction,"Figure shows two blocks in contact sliding down an inclined surface of inclination 30º. The friction coefficient between the block of mass
+
+![Figure](/uploads/questions/friction/friction_q13.png)",2 m/s2,"0 kg and the incline is µ1, and that between the block of mass",4 m/s2,0 kg and the incline is µ2. Calculate the acceleration of the,A,Refer to the friction laws and equilibrium equations shown in the diagram.,Medium,4
+JEE Main,Physics,Friction,"A cubical block of side L rests on a rough horizontal surface with coefficient of friction μ. A horizontal force F is applied on the block as shown. If the coefficient of friction is sufficiently high so that the block does not slide before toppling , the minimum force required to topple the block is [IIT - 2000] F L
+
+![Figure](/uploads/questions/friction/friction_q14.png)",infinitesimal,mg/4,mg/2,mg (1 - μ),A,Refer to the friction laws and equilibrium equations shown in the diagram.,Medium,4
+JEE Main,Physics,Friction,"A force F is applied on the square block of edge length 2a such that block remains stationary on the vertical wall. Then false statement is [IIT - 2005] a a F
+
+![Figure](/uploads/questions/friction/friction_q15.png)","f = mg, where f is frictional force","F = N, where N is normal reaction",F does not produce any torque,N does not produce any torque,A,Refer to the friction laws and equilibrium equations shown in the diagram.,Medium,4

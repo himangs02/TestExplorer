@@ -1,5 +1,6 @@
 import { X } from 'lucide-react'
 import { Question } from '../types'
+import { FormattedContent } from '@/components/ui/formatted-content'
 
 export const QuestionPaperModal = ({ questions, onClose }: { questions: Question[], onClose: () => void }) => {
   return (
@@ -19,7 +20,7 @@ export const QuestionPaperModal = ({ questions, onClose }: { questions: Question
              <div key={q.id} className="border-b border-gray-300 py-6 last:border-0 first:pt-0">
                 <div className="flex gap-3 text-black text-sm leading-relaxed">
                    <span className="font-bold whitespace-nowrap pt-0.5">Q.{idx + 1}:</span>
-                   <div className="font-medium">
+                   <div className="font-medium flex-1">
                      {/* Render direction if present */}
                      {q.direction && (
                        <div className="mb-2 italic text-gray-700 bg-gray-50 p-2 border-l-2 border-gray-300">
@@ -27,7 +28,7 @@ export const QuestionPaperModal = ({ questions, onClose }: { questions: Question
                          {q.direction}
                        </div>
                      )}
-                     {q.text}
+                     <FormattedContent content={q.text} />
                    </div>
                 </div>
              </div>

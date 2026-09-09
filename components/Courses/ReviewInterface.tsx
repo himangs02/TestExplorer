@@ -11,6 +11,7 @@ import {
   ArrowLeft
 } from 'lucide-react'
 import Link from 'next/link'
+import { FormattedContent } from '@/components/ui/formatted-content'
 
 type Option = { id: string; text: string; is_correct: boolean }
 type Question = { id: string; text: string; explanation: string | null; options: Option[] }
@@ -110,9 +111,9 @@ export default function ReviewInterface({
                 <div className="shrink-0 w-10 h-10 bg-black text-white rounded-xl flex items-center justify-center font-bold text-lg">
                   {currentQIndex + 1}
                 </div>
-                <h2 className="text-xl md:text-2xl font-bold text-gray-900 leading-snug mt-1">
-                  {currentQ.text}
-                </h2>
+                <div className="text-xl md:text-2xl font-bold text-gray-900 leading-snug mt-1 flex-1">
+                  <FormattedContent content={currentQ.text} />
+                </div>
               </div>
 
               {/* Options */}
@@ -146,7 +147,9 @@ export default function ReviewInterface({
                       `}
                     >
                       <div className="shrink-0">{icon}</div>
-                      <span className="font-medium text-lg">{opt.text}</span>
+                      <span className="font-medium text-lg flex-1">
+                        <FormattedContent content={opt.text} />
+                      </span>
                       {isSelected && !isCorrect && (
                         <span className="ml-auto text-xs font-bold uppercase text-red-500 tracking-wider">Your Answer</span>
                       )}
@@ -166,7 +169,7 @@ export default function ReviewInterface({
                   </div>
                   <div className="text-gray-700 leading-relaxed text-sm">
                     {currentQ.explanation ? (
-                      currentQ.explanation
+                      <FormattedContent content={currentQ.explanation} />
                     ) : (
                       <span className="italic text-gray-400">No detailed explanation available for this question.</span>
                     )}

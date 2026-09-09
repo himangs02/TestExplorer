@@ -13,6 +13,7 @@ import {
   ListTodo
 } from 'lucide-react'
 import { toast } from 'sonner'
+import { FormattedContent } from '@/components/ui/formatted-content'
 
 type Option = { id: string; text: string }
 type Question = { id: string; text: string; options: Option[] }
@@ -184,9 +185,9 @@ export default function TestInterface({
               </button>
 
               <div className="mb-10 pr-16">
-                <h2 className="text-2xl md:text-3xl font-bold text-gray-900 leading-snug">
-                  {currentQ.text}
-                </h2>
+                <div className="text-2xl md:text-3xl font-bold text-gray-900 leading-snug">
+                  <FormattedContent content={currentQ.text} />
+                </div>
               </div>
 
               {/* Options */}
@@ -214,8 +215,8 @@ export default function TestInterface({
                       `}>
                         {labels[idx] || idx + 1}
                       </div>
-                      <span className="text-lg font-medium">
-                        {opt.text}
+                      <span className="text-lg font-medium flex-1">
+                        <FormattedContent content={opt.text} />
                       </span>
                     </button>
                   )

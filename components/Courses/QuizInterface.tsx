@@ -11,6 +11,7 @@ import {
   PaginationPrevious,
   PaginationEllipsis,
 } from "@/components/ui/pagination"
+import { FormattedContent } from '@/components/ui/formatted-content'
 
 type Option = { id: string; text: string; is_correct: boolean }
 type Question = { id: string; text: string; explanation: string | null; options: Option[] }
@@ -69,9 +70,9 @@ export default function QuizInterface({ questions }: { questions: Question[] }) 
                 <div className="shrink-0 w-10 h-10 bg-blue-600 text-white rounded-xl flex items-center justify-center font-bold text-lg shadow-blue-200 shadow-lg">
                   {actualQuestionNumber}
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 leading-relaxed pt-1">
-                  {q.text}
-                </h3>
+                <div className="text-xl font-bold text-gray-900 leading-relaxed pt-1 flex-1">
+                  <FormattedContent content={q.text} />
+                </div>
               </div>
 
               {/* Options Grid */}
@@ -108,8 +109,8 @@ export default function QuizInterface({ questions }: { questions: Question[] }) 
                       `}
                     >
                       <div className="shrink-0">{icon}</div>
-                      <span className={`font-medium ${isSelected ? 'text-black' : 'text-gray-600'}`}>
-                        {opt.text}
+                      <span className={`font-medium flex-1 ${isSelected ? 'text-black' : 'text-gray-600'}`}>
+                        <FormattedContent content={opt.text} />
                       </span>
                     </button>
                   )
@@ -128,10 +129,14 @@ export default function QuizInterface({ questions }: { questions: Question[] }) 
 
                 {explanationsOpen[q.id] && (
                   <div className="mt-4 p-5 bg-gray-50 rounded-2xl border border-gray-200 text-gray-700 text-sm leading-relaxed animate-in fade-in slide-in-from-top-2">
-                    <div className="flex items-center gap-2 mb-2 text-blue-600 font-bold uppercase tracking-wider text-xs">
-                      <HelpCircle className="w-4 h-4" /> Explanation
+                    <div className="font-bold text-gray-900 mb-1 flex items-center gap-1.5">
+                      <HelpCircle className="w-4 h-4 text-blue-600" /> Explanation:
                     </div>
-                    {q.explanation || "No explanation provided for this question."}
+                    {q.explanation ? (
+                      <FormattedContent content={q.explanation} />
+                    ) : (
+                      "No explanation provided for this question."
+                    )}
                   </div>
                 )}
               </div>

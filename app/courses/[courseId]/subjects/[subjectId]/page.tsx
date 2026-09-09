@@ -15,7 +15,8 @@ export default async function SubjectDetailsPage({
 }) {
   // 1. Resolve Params & Authenticate User
   const { courseId, subjectId } = await params
-  const { from } = await searchParams
+  const { from } = await searchParams 
+  
 
   const session = await getServerSession(authOptions)
   const user = session?.user

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import Image from 'next/image'
 import { Info, Calculator, ChevronRight, ChevronLeft } from 'lucide-react'
 import { Question, ExamData, UserData } from '../types'
+import { FormattedContent } from '@/components/ui/formatted-content'
 import { ExamCalculator } from '../modals/ExamCalculator'
 import { QuestionPaperModal } from '../modals/QuestionPaperModal'
 import { InstructionModal } from '../modals/InstructionModal'
@@ -161,7 +162,7 @@ export const TestStage = ({
                   
                   <div className={`space-y-4 h-full ${currentQ.direction ? 'w-1/2 pl-4' : 'w-full'}`}>
                     <div className="text-black font-medium">
-                      {currentQ.text}
+                      <FormattedContent content={currentQ.text} />
                     </div>
                     {currentQ.options.map((option) => (
                       <div key={option.id} className='flex items-center gap-2'>
@@ -173,7 +174,9 @@ export const TestStage = ({
                           onChange={() => onAnswer(currentQ.id, option.id)}
                           className="w-4 h-4 accent-[#337AB7]"
                         />
-                        <span className='text-black'>{option.text}</span>
+                        <span className='text-black flex-1'>
+                          <FormattedContent content={option.text} />
+                        </span>
                       </div>
                     ))}
                   </div>

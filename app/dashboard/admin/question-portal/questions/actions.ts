@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { parse } from 'csv-parse/sync'
 import { randomUUID } from 'crypto'
+import { parseQuestionsFile } from '@/lib/excel-parser'
 
 export async function createQuestionAction(formData: FormData) {
   try {
@@ -62,35 +63,19 @@ export async function bulkUploadQuestionsAction(formData: FormData) {
     const defaultDifficulty = (formData.get('difficulty') as string) || 'Medium'
 
     if (!file || file.size === 0) {
-      return { error: 'Please select a valid CSV file to upload.' }
+      return { error: 'Please select a valid CSV or Excel file to upload.' }
     }
 
     if (!subject_id) {
       return { error: 'Please select a Subject for the uploaded questions.' }
     }
 
-    const fileContent = await file.text()
-    if (!fileContent.trim()) {
-      return { error: 'The uploaded CSV file is empty.' }
-    }
-
-    // Parse CSV with robust header normalization
-    const records = parse(fileContent, {
-      columns: (headers: string[]) => 
-        headers.map(h => 
-          h.trim()
-           .toLowerCase()
-           .replace(/^[^a-z0-9]+|[^a-z0-9]+$/g, '')
-           .replace(/\s+/g, '_')
-        ),
-      skip_empty_lines: true,
-      trim: true,
-      relax_quotes: true,
-      bom: true
-    }) as Record<string, string>[]
+    const arrayBuffer = await file.arrayBuffer()
+    const fileBuffer = Buffer.from(arrayBuffer)
+    const records = await parseQuestionsFile(fileBuffer, file.name)
 
     if (!records || records.length === 0) {
-      return { error: 'No question records found in CSV.' }
+      return { error: 'No question records found in the uploaded file.' }
     }
 
     let insertedCount = 0
@@ -188,31 +173,15 @@ export async function universalBulkUploadQuestionsAction(formData: FormData) {
   try {
     const file = formData.get('file') as File
     if (!file || file.size === 0) {
-      return { error: 'Please select a valid CSV file to upload.' }
+      return { error: 'Please select a valid CSV or Excel file to upload.' }
     }
 
-    const fileContent = await file.text()
-    if (!fileContent.trim()) {
-      return { error: 'The uploaded CSV file is empty.' }
-    }
-
-    // Parse CSV with robust header normalization
-    const records = parse(fileContent, {
-      columns: (headers: string[]) => 
-        headers.map(h => 
-          h.trim()
-           .toLowerCase()
-           .replace(/^[^a-z0-9]+|[^a-z0-9]+$/g, '')
-           .replace(/\s+/g, '_')
-        ),
-      skip_empty_lines: true,
-      trim: true,
-      relax_quotes: true,
-      bom: true
-    }) as Record<string, string>[]
+    const arrayBuffer = await file.arrayBuffer()
+    const fileBuffer = Buffer.from(arrayBuffer)
+    const records = await parseQuestionsFile(fileBuffer, file.name)
 
     if (!records || records.length === 0) {
-      return { error: 'No question records found in CSV.' }
+      return { error: 'No question records found in the uploaded file.' }
     }
 
     // Pre-fetch all courses with their subjects and chapters

@@ -316,9 +316,9 @@ model question_banks {
 model question_options {
   id          String     @id @default(uuid())
   question_id String?
-  text        String
+  text        String     @db.LongText
   is_correct  Boolean?   @default(false)
-  explanation String?
+  explanation String?    @db.LongText
   questions   questions? @relation(fields: [question_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([question_id], map: "question_options_question_id_fkey")
@@ -327,13 +327,13 @@ model question_options {
 model questions {
   id                  String                @id @default(uuid())
   module_id           String?
-  text                String
-  explanation         String?
+  text                String                @db.LongText
+  explanation         String?               @db.LongText
   order_index         Int?                  @default(0)
   created_at          DateTime?             @default(now())
   practice_test_id    String?
   exam_id             String?
-  direction           String?
+  direction           String?               @db.LongText
   question_bank_id    String?
   mock_test_questions mock_test_questions[]
   question_options    question_options[]
