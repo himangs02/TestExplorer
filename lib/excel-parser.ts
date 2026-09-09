@@ -17,6 +17,7 @@ export interface ParsedQuestionRow {
   explanation?: string
   difficulty?: string
   marks?: number
+  [key: string]: any
 }
 
 /**

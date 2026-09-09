@@ -83,17 +83,17 @@ export async function bulkUploadQuestionsAction(formData: FormData) {
 
     for (const [index, row] of records.entries()) {
       try {
-        const qText = row.question || row.text || row.question_text || row.q || row.question_name
-        const qExp = row.explanation || row.solution || row.rationale || row.exp || ''
-        const qDiff = row.difficulty || row.level || defaultDifficulty
-        const qMarks = parseInt(row.marks || row.mark || row.score || row.points || `${defaultMarks}`) || defaultMarks
+        const qText = (row.question || row.text || '').toString().trim()
+        const qExp = (row.explanation || '').toString().trim()
+        const qDiff = (row.difficulty || defaultDifficulty).toString().trim()
+        const qMarks = typeof row.marks === 'number' ? row.marks : (parseInt(String(row.marks || '')) || defaultMarks)
         
-        const optA = row.option_a || row.a || row.opt_a || row.option1 || row.opt1 || ''
-        const optB = row.option_b || row.b || row.opt_b || row.option2 || row.opt2 || ''
-        const optC = row.option_c || row.c || row.opt_c || row.option3 || row.opt3 || ''
-        const optD = row.option_d || row.d || row.opt_d || row.option4 || row.opt4 || ''
+        const optA = (row.option_a || '').toString().trim()
+        const optB = (row.option_b || '').toString().trim()
+        const optC = (row.option_c || '').toString().trim()
+        const optD = (row.option_d || '').toString().trim()
         
-        const correctVal = (row.correct_option || row.answer || row.correct || row.ans || row.correct_answer || row.right_answer || row.answer_key || '').toString().trim()
+        const correctVal = (row.correct_option || '').toString().trim()
 
         if (!qText || !optA || !optB || !correctVal) {
           console.warn(`[Bulk Upload] Skipping Row ${index + 1}: Missing question text, options, or correct answer.`)
