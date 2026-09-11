@@ -14,45 +14,58 @@ export default function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <section className="py-12 sm:py-16 px-6 bg-gray-50">
-      <div className="container mx-auto max-w-xl px-2 sm:px-4">
-        <div className="text-center mb-7">
-          <h2 className="text-base sm:text-lg font-black bg-black text-white inline-block px-3 py-1 rounded-lg transform -rotate-1">
+    <section className="py-24 px-4 bg-gray-50">
+      <div className="w-full max-w-3xl mx-auto">
+        
+        {/* Header Badge */}
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-black bg-black text-white inline-block px-4 py-2 rounded-lg transform -rotate-1">
             Frequently Asked Questions
           </h2>
         </div>
 
-        <div className="space-y-2.5">
-          {faqs.map((item, i) => (
-            <div 
-              key={i}
-              className="group overflow-hidden rounded-xl transition-all duration-300"
-            >
-              <button
-                suppressHydrationWarning
-                onClick={() => setOpenIndex(openIndex === i ? null : i)}
-                className={`w-full flex items-center justify-between p-3.5 sm:p-4 text-left transition-all ${
-                  openIndex === i 
-                    ? "bg-linear-to-r from-orange-400 to-orange-300 text-white" 
-                    : "bg-linear-to-r from-orange-100 to-gray-200 text-gray-800 hover:from-orange-200"
-                }`}
-              >
-                <span className="font-bold text-xs sm:text-sm">{item.q}</span>
-                {openIndex === i ? <Minus className="w-4 h-4 shrink-0 ml-2" /> : <Plus className="w-4 h-4 shrink-0 ml-2" />}
-              </button>
-              
+        {/* Accordion List */}
+        <div className="space-y-4">
+          {faqs.map((item, i) => {
+            const isOpen = openIndex === i;
+            return (
               <div 
-                className={`bg-white px-4 sm:px-5 overflow-hidden transition-all duration-300 ease-in-out ${
-                  openIndex === i ? "max-h-40 py-3.5 sm:py-4 opacity-100" : "max-h-0 py-0 opacity-0"
-                }`}
+                key={i}
+                className="group overflow-hidden rounded-2xl transition-all duration-300"
               >
-                <p className="text-gray-600 font-medium text-xs sm:text-sm leading-relaxed">{item.a}</p>
+                <button
+                  type="button"
+                  suppressHydrationWarning
+                  onClick={() => setOpenIndex(isOpen ? null : i)}
+                  className={`w-full flex items-center justify-between p-6 text-left transition-all cursor-pointer ${
+                    isOpen 
+                      ? "bg-linear-to-r from-orange-400 to-orange-300 text-white" 
+                      : "bg-linear-to-r from-orange-100 to-gray-200 text-gray-800 hover:from-orange-200"
+                  }`}
+                >
+                  <span className="font-bold text-lg pr-4">{item.q}</span>
+                  {isOpen ? (
+                    <Minus className="w-5 h-5 shrink-0" />
+                  ) : (
+                    <Plus className="w-5 h-5 shrink-0" />
+                  )}
+                </button>
+                
+                <div 
+                  className={`bg-white px-6 overflow-hidden transition-all duration-300 ease-in-out ${
+                    isOpen ? "max-h-40 py-6 opacity-100" : "max-h-0 py-0 opacity-0"
+                  }`}
+                >
+                  <p className="text-gray-600 font-medium leading-relaxed">
+                    {item.a}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
       </div>
     </section>
   );
-}
+}

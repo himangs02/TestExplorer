@@ -88,13 +88,13 @@ export default function Testimonials({ data }: { data?: any[] }) {
             <div
               key={i}
               className={`
-                relative shrink-0 w-[350px] md:w-[400px] rounded-[2.5rem] p-8 text-white 
+                relative shrink-0 w-[350px] md:w-[400px] h-[340px] rounded-[2.5rem] p-8 text-white 
                 bg-gradient-to-br ${t.gradient} shadow-xl 
-                hover:scale-[1.02] transition-transform duration-300
+                hover:scale-[1.02] transition-transform duration-300 flex flex-col justify-between
               `}
             >
               <div className="flex flex-col items-center text-center">
-                <div className="w-16 h-16 rounded-full border-4 border-white/30 mb-4 overflow-hidden bg-white/10 flex items-center justify-center">
+                <div className="w-16 h-16 rounded-full border-4 border-white/30 mb-4 overflow-hidden bg-white/10 flex items-center justify-center shrink-0">
                   <img
                     src={t.image}
                     alt={t.name || 'Student'}
@@ -106,15 +106,17 @@ export default function Testimonials({ data }: { data?: any[] }) {
                 </div>
 
                 <h3 className="text-xl font-bold mb-1">{t.name}</h3>
-                <p className="text-[10px] font-bold uppercase tracking-wider mb-6 opacity-80 bg-black/10 px-3 py-1 rounded-full">
+                <p className="text-[10px] font-bold uppercase tracking-wider mb-5 opacity-80 bg-black/10 px-3 py-1 rounded-full">
                   {t.role}
                 </p>
 
                 <p className="text-sm font-medium leading-relaxed opacity-95 line-clamp-4">
                   "{t.text}"
                 </p>
+              </div>
 
-                <div className="mt-6 w-12 h-1 bg-white/30 rounded-full" />
+              <div className="flex justify-center mt-4">
+                <div className="w-12 h-1 bg-white/30 rounded-full" />
               </div>
             </div>
           ))}
