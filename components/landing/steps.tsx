@@ -71,10 +71,10 @@ export default function Steps() {
       <div className="container mx-auto">
 
         {/* Header */}
-        <div className="text-center mb-16 md:mb-20">
-          <span className="text-orange-500 font-bold tracking-wider uppercase text-sm">Simple Process</span>
-          <h2 className="text-3xl sm:text-3xl md:text-6xl font-black text-gray-900 mt-2 tracking-tight">
-            How You Practice on <span className="bg-black text-white px-3 py-1 rounded-xl transform -rotate-1 inline-block">This Platform</span>
+        <div className="text-center mb-12 md:mb-16">
+          <span className="text-orange-500 font-bold tracking-wider uppercase text-xs">Simple Process</span>
+          <h2 className="text-2xl sm:text-3xl font-black text-gray-900 mt-1 tracking-tight">
+            How You Practice on <span className="bg-black text-white px-2.5 py-0.5 rounded-lg transform -rotate-1 inline-block">This Platform</span>
           </h2>
         </div>
 

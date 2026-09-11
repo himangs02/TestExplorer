@@ -31,11 +31,11 @@ export default function Features() {
   return (
     <section className="py-20 md:py-28 px-4 bg-white">
       <div className="container mx-auto">
-        <div className="text-center mb-12 max-w-2xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 mb-2 tracking-tight">
+        <div className="text-center mb-10 max-w-2xl mx-auto">
+          <h2 className="text-xl sm:text-2xl md:text-[28px] font-black text-gray-900 mb-1.5 tracking-tight">
             Why students <span className="text-blue-600">love us</span>
           </h2>
-          <p className="text-sm sm:text-base text-gray-500 font-medium">
+          <p className="text-[13px] sm:text-sm text-gray-500 font-medium">
             We don't just give you questions. We give you a roadmap to success.
           </p>
         </div>
