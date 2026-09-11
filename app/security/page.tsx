@@ -11,16 +11,16 @@ export default function SecurityPage() {
   return (
     <div className="min-h-screen bg-slate-50/50">
       {/* Hero Header */}
-      <div className="bg-[#0f172a] pt-32 pb-20 px-6 relative overflow-hidden">
+      <div className="bg-[#0f172a] pt-20 pb-14 px-6 relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20" />
-        <div className="max-w-6xl mx-auto text-center relative z-10">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-black uppercase tracking-widest mb-6">
-            <ShieldAlert className="w-4 h-4" /> Secure Infrastructure
+        <div className="max-w-5xl mx-auto text-center relative z-10">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-black uppercase tracking-widest mb-4">
+            <ShieldAlert className="w-3.5 h-3.5" /> Secure Infrastructure
           </div>
-          <h1 className="text-4xl md:text-6xl font-black text-white mb-6 tracking-tight">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-white mb-3 tracking-tight">
             Security at Test Explorer
           </h1>
-          <p className="text-slate-400 max-w-2xl mx-auto text-lg leading-relaxed">
+          <p className="text-slate-400 max-w-2xl mx-auto text-xs sm:text-sm leading-relaxed">
             We employ industry-leading security protocols to ensure that every student's progress and every school's data remains private and protected.
           </p>
         </div>

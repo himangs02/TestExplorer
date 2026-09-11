@@ -151,7 +151,7 @@ export default async function SubjectDetailsPage({
               </div>
             )}
           </div>
-          <h1 className="text-4xl md:text-6xl font-black text-gray-900 tracking-tight">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 tracking-tight">
             {subject.title}
           </h1>
         </div>

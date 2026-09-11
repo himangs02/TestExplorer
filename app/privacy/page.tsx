@@ -11,15 +11,15 @@ export default function PrivacyPage() {
   return (
     <div className="min-h-screen bg-slate-50/50">
       {/* Hero Header */}
-      <div className="bg-slate-900 pt-32 pb-20 px-6">
-        <div className="max-w-6xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-black uppercase tracking-widest mb-6">
-            <ShieldCheck className="w-4 h-4" /> Trusted Education
+      <div className="bg-slate-900 pt-20 pb-14 px-6">
+        <div className="max-w-5xl mx-auto text-center">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-black uppercase tracking-widest mb-4">
+            <ShieldCheck className="w-3.5 h-3.5" /> Trusted Education
           </div>
-          <h1 className="text-4xl md:text-6xl font-black text-white mb-6 tracking-tight">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-white mb-3 tracking-tight">
             Privacy Policy
           </h1>
-          <p className="text-slate-400 max-w-2xl mx-auto text-lg leading-relaxed">
+          <p className="text-slate-400 max-w-2xl mx-auto text-xs sm:text-sm leading-relaxed">
             At Test Explorer, your privacy is our priority. We are committed to protecting the data of students, teachers, and educational institutions.
           </p>
         </div>

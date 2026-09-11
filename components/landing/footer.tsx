@@ -6,16 +6,16 @@ export default function Footer({ school }: { school?: any }) {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-gray-950 text-white pt-20 pb-10 rounded-t-[3rem] mt-10">
+    <footer className="bg-gray-950 text-white pt-12 sm:pt-16 pb-8 rounded-t-[2.5rem] mt-8">
       <div className="container mx-auto px-4">
         
         {/* Top Section: CTA & Newsletter */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-10 border-b border-gray-800 pb-16">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 border-b border-gray-800 pb-10">
           <div className="max-w-md">
-            <h2 className="text-3xl font-bold mb-4">
+            <h2 className="text-xl sm:text-2xl font-bold mb-2">
               Ready to <span className="text-blue-500">level up?</span>
             </h2>
-            <p className="text-gray-400">
+            <p className="text-gray-400 text-xs sm:text-sm">
               Join thousands of students acing their exams with {brandName}. 
               Start your free practice session today.
             </p>
@@ -27,21 +27,21 @@ export default function Footer({ school }: { school?: any }) {
                   type="email" 
                   placeholder="Enter your email" 
                   suppressHydrationWarning
-                  className="bg-gray-900 border border-gray-800 text-white px-6 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 w-full md:w-80"
+                  className="bg-gray-900 border border-gray-800 text-white px-4 py-2.5 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 w-full md:w-72"
                 />
                 <button 
                   suppressHydrationWarning
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold transition-all"
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all shrink-0"
                 >
                   Subscribe
                 </button>
              </div>
-             <p className="text-xs text-gray-500 mt-3">We care about your data in our privacy policy.</p>
+             <p className="text-[11px] text-gray-500 mt-2">We care about your data in our privacy policy.</p>
           </div>
         </div>
 
         {/* Middle Section: Links */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-10 py-16">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 py-10">
           
           {/* Column 1: Brand & Logo */}
           <div className="col-span-2 md:col-span-1">

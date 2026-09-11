@@ -11,15 +11,15 @@ export default function TermsPage() {
   return (
     <div className="min-h-screen bg-slate-50/50">
       {/* Hero Header */}
-      <div className="bg-slate-900 pt-32 pb-20 px-6">
-        <div className="max-w-6xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-black uppercase tracking-widest mb-6">
-            <FileText className="w-4 h-4" /> Usage Agreement
+      <div className="bg-slate-900 pt-20 pb-14 px-6">
+        <div className="max-w-5xl mx-auto text-center">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-black uppercase tracking-widest mb-4">
+            <FileText className="w-3.5 h-3.5" /> Usage Agreement
           </div>
-          <h1 className="text-4xl md:text-6xl font-black text-white mb-6 tracking-tight">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-white mb-3 tracking-tight">
             Terms of Service
           </h1>
-          <p className="text-slate-400 max-w-2xl mx-auto text-lg leading-relaxed">
+          <p className="text-slate-400 max-w-2xl mx-auto text-xs sm:text-sm leading-relaxed">
             These terms govern your use of the Test Explorer platform. By using our services, you agree to these rules.
           </p>
         </div>

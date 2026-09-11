@@ -11,17 +11,17 @@ export default async function SubjectPracticePage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <main className="container mx-auto px-6 py-16">
+      <main className="container mx-auto px-6 py-10">
         
-        <div className="max-w-3xl mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black text-white text-xs font-bold uppercase tracking-wider mb-6">
+        <div className="max-w-3xl mb-10">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black text-white text-[11px] font-bold uppercase tracking-wider mb-4">
             <BookOpen className="w-3 h-3 text-green-400" />
             Subject-Wise Practice
           </div>
-          <h1 className="text-5xl md:text-7xl font-black text-gray-900 tracking-tighter mb-6 leading-[0.9]">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 tracking-tight mb-3 leading-tight">
             Master every <br/><span className="text-green-600">concept.</span>
           </h1>
-          <p className="text-xl text-gray-500 font-medium max-w-xl">
+          <p className="text-xs sm:text-sm text-gray-500 font-medium max-w-xl">
             First, select your stream to find the perfect practice material tailored for you.
           </p>
         </div>

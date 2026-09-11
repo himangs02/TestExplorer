@@ -62,12 +62,12 @@ export default function Testimonials({ data }: { data?: any[] }) {
   const scrollList = shouldScroll ? [...testimonialsToShow, ...testimonialsToShow] : testimonialsToShow;
 
   return (
-    <section className="py-24 bg-white overflow-hidden">
-      <div className="container mx-auto px-4 mb-16 text-center">
-        <span className="bg-black text-white px-4 py-1 rounded-full text-sm font-bold uppercase tracking-wider">
+    <section className="py-12 sm:py-16 bg-white overflow-hidden">
+      <div className="container mx-auto px-4 mb-10 sm:mb-12 text-center">
+        <span className="bg-black text-white px-3 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider">
           Testimonials
         </span>
-        <h2 className="text-3xl md:text-5xl font-black mt-4 tracking-tight">
+        <h2 className="text-2xl sm:text-3xl font-black mt-3 tracking-tight">
           Don't just take our word for it.
         </h2>
       </div>
@@ -76,25 +76,25 @@ export default function Testimonials({ data }: { data?: any[] }) {
         {/* Only show side fade gradients if scrolling */}
         {shouldScroll && (
           <>
-            <div className="absolute top-0 bottom-0 left-0 w-32 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
-            <div className="absolute top-0 bottom-0 right-0 w-32 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
+            <div className="absolute top-0 bottom-0 left-0 w-24 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+            <div className="absolute top-0 bottom-0 right-0 w-24 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
           </>
         )}
         
         {/* If shouldScroll is true, we use the track animation class. 
             Otherwise, we use a simple flexbox with centering. */}
-        <div className={shouldScroll ? styles.track : "flex flex-wrap justify-center gap-8 px-4"}>
+        <div className={shouldScroll ? styles.track : "flex flex-wrap justify-center gap-6 px-4"}>
           {scrollList.map((t, i) => (
             <div 
               key={i} 
               className={`
-                relative shrink-0 w-[350px] md:w-[400px] rounded-[2.5rem] p-8 text-white 
-                bg-gradient-to-br ${t.gradient} shadow-xl 
+                relative shrink-0 w-[280px] sm:w-[320px] rounded-3xl p-6 text-white 
+                bg-gradient-to-br ${t.gradient} shadow-lg 
                 hover:scale-[1.02] transition-transform duration-300
               `}
             >
               <div className="flex flex-col items-center text-center">
-                <div className="w-16 h-16 rounded-full border-4 border-white/30 mb-4 overflow-hidden bg-white/10 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-full border-2 border-white/30 mb-3 overflow-hidden bg-white/10 flex items-center justify-center">
                   <img 
                     src={t.image} 
                     alt={t.name || 'Student'} 
@@ -105,16 +105,16 @@ export default function Testimonials({ data }: { data?: any[] }) {
                   />
                 </div>
                 
-                <h3 className="text-xl font-bold mb-1">{t.name}</h3>
-                <p className="text-[10px] font-bold uppercase tracking-wider mb-6 opacity-80 bg-black/10 px-3 py-1 rounded-full">
+                <h3 className="text-base font-bold mb-0.5">{t.name}</h3>
+                <p className="text-[9px] font-bold uppercase tracking-wider mb-4 opacity-80 bg-black/10 px-2.5 py-0.5 rounded-full">
                   {t.role}
                 </p>
                 
-                <p className="text-sm font-medium leading-relaxed opacity-95 line-clamp-4">
+                <p className="text-xs sm:text-sm font-medium leading-relaxed opacity-95 line-clamp-4">
                   "{t.text}"
                 </p>
 
-                <div className="mt-6 w-12 h-1 bg-white/30 rounded-full" />
+                <div className="mt-4 w-10 h-0.5 bg-white/30 rounded-full" />
               </div>
             </div>
           ))}
