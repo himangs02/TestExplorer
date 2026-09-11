@@ -107,10 +107,10 @@ export default function EnrollmentManager({
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="inline-flex items-center gap-2 px-4 py-2 bg-black text-white text-xs font-bold rounded-lg hover:bg-gray-800 transition-all shadow-md"
+        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-black text-white text-xs font-bold rounded-lg hover:bg-gray-800 transition-all shadow-sm shrink-0 whitespace-nowrap"
       >
-        <BookOpen className="w-3 h-3" />
-        Manage Access
+        <BookOpen className="w-3.5 h-3.5 shrink-0" />
+        <span>Manage Access</span>
       </button>
 
       {isOpen && (

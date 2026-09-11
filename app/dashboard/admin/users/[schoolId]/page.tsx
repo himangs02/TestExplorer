@@ -1,10 +1,10 @@
 import { prisma } from '@/lib/prisma'
-import { Phone, MapPin, ArrowLeft, User, GraduationCap, Calendar, Clock } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
-import EnrollmentManager from '@/components/admin/enrollment-manager'
 import ExportStudentsBtn from '@/components/admin/export-students-btn' // Import Export Btn
 import StudentSearch from '@/components/admin/student-search' // Import Search Component
 import StudentSort from '@/components/admin/student-sort'
+import StudentInteractiveList from '@/components/admin/StudentInteractiveList'
 
 export const dynamic = 'force-dynamic'
 
@@ -72,7 +72,7 @@ export default async function SchoolStudentsPage({
     : students[0]?.organizations?.name || 'School Students'
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8">
+    <div className="max-w-7xl mx-auto space-y-6">
       
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -81,132 +81,32 @@ export default async function SchoolStudentsPage({
             <ArrowLeft className="w-5 h-5 text-gray-600" />
           </Link>
           <div>
-            <h1 className="text-3xl font-black text-gray-900 tracking-tight">{currentSchoolName}</h1>
-            <p className="text-gray-500 font-medium">Total Students: {students.length}</p>
+            <h1 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">{currentSchoolName}</h1>
+            <p className="text-gray-500 font-medium text-sm sm:text-base">Total Students: {students.length}</p>
           </div>
         </div>
       </div>
 
       {/* Toolbar: Search & Export */}
-      <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm flex flex-col md:flex-row gap-4">
-        
+      <div className="bg-white p-3.5 sm:p-4 rounded-2xl border border-gray-200 shadow-sm flex flex-col sm:flex-row gap-3">
         {/* Search Component */}
         <StudentSearch placeholder="Search students by name..." />
 
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2 shrink-0">
            {/* Sort Button */}
            <StudentSort />
            
            {/* Export Button */}
            <ExportStudentsBtn data={students} />
         </div>
-        
       </div>
 
-      {/* Table Container */}
-      <div className="bg-white border border-gray-200 rounded-3xl overflow-hidden shadow-2xs">
-        <div className="overflow-x-auto">
-          <table className="min-w-[900px] w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-gray-50/70 border-b border-gray-200">
-                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Student Name</th>
-                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Stream</th>
-                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Phone Number</th>
-                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Address</th>
-                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Joined Date & Time</th>
-                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">Access Control</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {students.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-gray-400 font-medium">
-                    No students found matching your filters.
-                  </td>
-                </tr>
-              ) : (
-                students.map((student) => (
-                  <tr key={student.id} className="hover:bg-gray-50/80 transition-colors group">
-                    
-                    {/* NAME */}
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3.5">
-                        <div className="w-10 h-10 bg-linear-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center text-gray-700 font-bold border border-gray-200 shadow-2xs shrink-0">
-                          {student.full_name?.charAt(0).toUpperCase() || <User className="w-5 h-5" />}
-                        </div>
-                        <div className="min-w-0">
-                           <div className="font-bold text-gray-900 truncate max-w-[200px]">{student.full_name}</div>
-                           <div className="text-xs text-gray-400 truncate max-w-[200px]">{student.email}</div>
-                        </div>
-                      </div>
-                    </td>
-
-                    <td className="px-6 py-4 whitespace-nowrap">
-                       <div className="flex items-center gap-1.5 text-xs font-semibold text-blue-700 bg-blue-50 px-3 py-1 rounded-full w-fit border border-blue-100">
-                         <GraduationCap className="w-3.5 h-3.5 text-blue-500" />
-                         {/* @ts-ignore */}
-                         {student.stream || <span className="text-gray-400 font-normal">N/A</span>}
-                       </div>
-                    </td>
-                    
-                    {/* PHONE */}
-                    <td className="px-6 py-4 whitespace-nowrap">
-                       <div className="flex items-center gap-2 text-sm font-medium text-gray-600">
-                         <Phone className="w-3.5 h-3.5 text-gray-400" />
-                         {student.phone || student.phone_no || <span className="text-gray-300 italic">--</span>}
-                       </div>
-                    </td>
-
-                    {/* ADDRESS */}
-                    <td className="px-6 py-4">
-                       <div className="flex items-center gap-2 text-sm font-medium text-gray-600 max-w-[220px]">
-                         <MapPin className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-                         {/* @ts-ignore */}
-                         <span className="truncate">{student.address || <span className="text-gray-300 italic">No address</span>}</span>
-                       </div>
-                    </td>
-
-                    {/* JOINED DATE & TIME */}
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {student.created_at ? (
-                        <div className="flex flex-col text-xs" suppressHydrationWarning>
-                          <span className="font-semibold text-gray-800 flex items-center gap-1.5">
-                            <Calendar className="w-3.5 h-3.5 text-blue-500" />
-                            {new Date(student.created_at).toLocaleDateString('en-GB', {
-                              day: '2-digit',
-                              month: 'short',
-                              year: 'numeric'
-                            })}
-                          </span>
-                          <span className="text-[11px] text-gray-400 flex items-center gap-1.5 mt-0.5 pl-5 font-medium">
-                            <Clock className="w-3 h-3 text-gray-400" />
-                            {new Date(student.created_at).toLocaleTimeString('en-US', {
-                              hour: '2-digit',
-                              minute: '2-digit',
-                              hour12: true
-                            })}
-                          </span>
-                        </div>
-                      ) : (
-                        <span className="text-gray-300 italic text-xs">--</span>
-                      )}
-                    </td>
-
-                    {/* MANAGE ACCESS BUTTON */}
-                    <td className="px-6 py-4 text-right whitespace-nowrap">
-                      <EnrollmentManager 
-                        studentId={student.id}
-                        studentName={student.full_name ?? 'Unknown'}
-                        allSubjects={allSubjects || []} 
-                      />
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      {/* Responsive Table & Collapsible Dropdown Card View */}
+      <StudentInteractiveList
+        students={students}
+        allSubjects={allSubjects || []}
+        showEnrollment={true}
+      />
     </div>
   )
 }

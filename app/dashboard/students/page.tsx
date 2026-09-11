@@ -2,8 +2,8 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 import { prisma } from '@/lib/prisma'
 import { redirect } from 'next/navigation'
-import { Phone, Calendar, User, GraduationCap } from 'lucide-react'
 import SchoolStudentsFilter from './school-students-filter'
+import StudentInteractiveList from '@/components/admin/StudentInteractiveList'
 
 export default async function SchoolStudentsPage({
   searchParams,
@@ -29,7 +29,7 @@ export default async function SchoolStudentsPage({
   
   // If not school admin, kick them out
   if (profile?.role !== 'school_admin' || !profile.organization_id) {
-    return redirect('/dashboard')
+    redirect('/dashboard')
   }
 
   // 2. Prepare Query for School Students
@@ -69,76 +69,23 @@ export default async function SchoolStudentsPage({
   }
 
   return (
-    <div className="max-w-5xl mx-auto">
-      <div className="flex items-center justify-between mb-8">
+    <div className="max-w-5xl mx-auto space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">My Students</h1>
-          <p className="text-gray-500">Manage students registered under your school.</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">My Students</h1>
+          <p className="text-gray-500 text-sm sm:text-base">Manage students registered under your school.</p>
         </div>
-        <div className="bg-blue-50 text-blue-700 px-4 py-1.5 rounded-full text-sm font-bold border border-blue-100">
+        <div className="bg-blue-50 text-blue-700 px-4 py-1.5 rounded-full text-sm font-bold border border-blue-100 w-fit">
           Total: {students.length}
         </div>
       </div>
 
       <SchoolStudentsFilter />
 
-      <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-2xs">
-        <div className="overflow-x-auto">
-          <table className="min-w-[700px] w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-gray-50/70 border-b border-gray-200">
-                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Student Name</th>
-                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Stream</th>
-                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Phone Number</th>
-                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">Joined Date</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {students.length === 0 ? (
-                <tr>
-                  <td colSpan={4} className="px-6 py-12 text-center text-gray-400 font-medium">
-                    No students found.
-                  </td>
-                </tr>
-              ) : (
-                students.map((student) => (
-                  <tr key={student.id} className="hover:bg-gray-50/50 transition-colors">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 font-bold border border-gray-200 shrink-0">
-                          {(student.full_name || '?').charAt(0).toUpperCase()}
-                        </div>
-                        <span className="font-bold text-gray-900">{student.full_name || 'Unknown'}</span>
-                      </div>
-                    </td>
-
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2 text-sm text-gray-600 font-medium">
-                        <GraduationCap className="w-4 h-4 text-gray-400" />
-                        {student.stream || <span className="text-gray-400">N/A</span>}
-                      </div>
-                    </td>
-                    
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2 text-sm text-gray-600 font-medium">
-                        <Phone className="w-4 h-4 text-gray-400" />
-                        {student.phone || <span className="text-gray-300 italic">Not Provided</span>}
-                      </div>
-                    </td>
-
-                    <td className="px-6 py-4 text-right">
-                      <div className="inline-flex items-center gap-2 text-sm text-gray-500">
-                        <Calendar className="w-3.5 h-3.5" />
-                        {new Date(student.created_at || Date.now()).toLocaleDateString()}
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <StudentInteractiveList
+        students={students}
+        showEnrollment={false}
+      />
     </div>
   )
 }
