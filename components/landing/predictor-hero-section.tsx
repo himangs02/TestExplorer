@@ -94,7 +94,7 @@ export default function PredictorHeroSection() {
   };
 
   return (
-    <section className="py-12 sm:py-16 bg-linear-to-b from-gray-50 via-blue-50/30 to-white relative overflow-hidden border-t border-b border-gray-100">
+    <section className="py-8 sm:py-12 bg-linear-to-b from-gray-50 via-blue-50/30 to-white relative overflow-hidden border-t border-b border-gray-100">
       {/* Ambient background blur */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-7xl h-full opacity-30 pointer-events-none">
         <div className="absolute top-10 left-1/4 w-80 h-80 bg-blue-200/40 rounded-full blur-3xl" />

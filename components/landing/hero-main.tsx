@@ -3,7 +3,7 @@ import { ArrowRight } from "lucide-react";
 
 export default async function HeroMain() {
   return (
-    <section className="relative pt-12 md:pt-20 pb-16 overflow-hidden bg-white">
+    <section className="relative pt-12 md:pt-16 pb-6 md:pb-8 overflow-hidden bg-white">
       {/* Background Blobs */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-7xl opacity-30 pointer-events-none">
         <div className="absolute top-20 left-10 w-96 h-96 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl animate-blob" />
@@ -13,7 +13,7 @@ export default async function HeroMain() {
       <div className="container mx-auto px-4 relative z-10">
 
         {/* --- Hero Content --- */}
-        <div className="text-center mb-16">
+        <div className="text-center">
           {/* Badge */}
           <div className="inline-flex items-center gap-2.5 bg-white border border-gray-200 rounded-full px-5 py-2 shadow-xs mb-8 hover:scale-105 transition-transform cursor-default">
             <span className="flex h-2.5 w-2.5 rounded-full bg-blue-600 animate-pulse"></span>
@@ -33,7 +33,7 @@ export default async function HeroMain() {
           </p>
 
           {/* Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-5 mb-14">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-5 mb-8 sm:mb-10">
             <Link
               href="/signup"
               className="w-full sm:w-auto px-9 py-4.5 bg-gray-900 text-white rounded-full font-bold text-lg sm:text-xl hover:bg-gray-800 transition-all hover:scale-105 shadow-xl shadow-gray-200 flex items-center justify-center gap-2.5"

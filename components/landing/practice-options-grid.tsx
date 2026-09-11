@@ -14,7 +14,7 @@ export default function PracticeOptionsGrid({ categories }: { categories?: Categ
   }
 
   return (
-    <section className="container mx-auto py-10 sm:py-14 px-4">
+    <section className="container mx-auto py-6 sm:py-8 px-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
         {categories.map((cat) => {
           const rawBg = cat.bg_color || 'bg-[#e8ec13]'
