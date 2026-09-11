@@ -67,14 +67,14 @@ export default function Steps() {
   ];
 
   return (
-    <section className="py-24 px-4 bg-gray-50/50">
+    <section className="py-20 md:py-28 px-4 bg-gray-50/50">
       <div className="container mx-auto">
         
         {/* Header */}
-        <div className="text-center mb-20">
+        <div className="text-center mb-16 md:mb-20">
           <span className="text-orange-500 font-bold tracking-wider uppercase text-sm">Simple Process</span>
-          <h2 className="text-3xl md:text-5xl font-black text-gray-900 mt-2 tracking-tight">
-            How You Practice on <span className="bg-black text-white px-2 rounded-lg transform -rotate-1 inline-block">This Platform</span>
+          <h2 className="text-3xl sm:text-5xl md:text-6xl font-black text-gray-900 mt-2 tracking-tight">
+            How You Practice on <span className="bg-black text-white px-3 py-1 rounded-xl transform -rotate-1 inline-block">This Platform</span>
           </h2>
         </div>
 

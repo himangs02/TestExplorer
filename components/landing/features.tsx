@@ -29,13 +29,13 @@ const features = [
 
 export default function Features() {
   return (
-    <section className="py-24 px-4 bg-white">
+    <section className="py-20 md:py-28 px-4 bg-white">
       <div className="container mx-auto">
-        <div className="text-center mb-16 max-w-2xl mx-auto">
-          <h2 className="text-4xl font-black text-gray-900 mb-4 tracking-tight">
+        <div className="text-center mb-16 max-w-3xl mx-auto">
+          <h2 className="text-3xl sm:text-5xl md:text-6xl font-black text-gray-900 mb-4 tracking-tight">
             Why students <span className="text-blue-600">love us</span>
           </h2>
-          <p className="text-lg text-gray-500 font-medium">
+          <p className="text-lg sm:text-xl text-gray-500 font-medium">
             We don't just give you questions. We give you a roadmap to success.
           </p>
         </div>
