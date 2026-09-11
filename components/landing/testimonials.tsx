@@ -62,12 +62,12 @@ export default function Testimonials({ data }: { data?: any[] }) {
   const scrollList = shouldScroll ? [...testimonialsToShow, ...testimonialsToShow] : testimonialsToShow;
 
   return (
-    <section className="py-24 bg-white overflow-hidden">
-      <div className="container mx-auto px-4 mb-16 text-center">
-        <span className="bg-black text-white px-4 py-1 rounded-full text-sm font-bold uppercase tracking-wider">
+    <section className="pt-6 sm:pt-8 pb-16 sm:pb-20 bg-white overflow-hidden">
+      <div className="container mx-auto px-4 mb-10 sm:mb-12 text-center">
+        <span className="bg-black text-white px-4 py-1 rounded-full text-xs sm:text-sm font-bold uppercase tracking-wider">
           Testimonials
         </span>
-        <h2 className="text-3xl md:text-5xl font-black mt-4 tracking-tight">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-black mt-2.5 tracking-tight">
           Don't just take our word for it.
         </h2>
       </div>
