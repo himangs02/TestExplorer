@@ -75,9 +75,9 @@ export default function StudentInteractiveList({
     "hidden xl:block";
 
   const showCardsClass = 
-    viewMode === "cards" ? "block space-y-3" : 
+    viewMode === "cards" ? "block space-y-3 max-h-[calc(100vh-300px)] min-h-[320px] overflow-y-auto pr-1" : 
     viewMode === "table" ? "hidden" : 
-    "xl:hidden space-y-3";
+    "xl:hidden space-y-3 max-h-[calc(100vh-300px)] min-h-[320px] overflow-y-auto pr-1";
 
   return (
     <div className="space-y-4">
@@ -138,16 +138,16 @@ export default function StudentInteractiveList({
 
       {/* --- STREAMLINED DESKTOP TABLE VIEW --- */}
       <div className={`${showTableClass} bg-white border border-gray-200 rounded-3xl overflow-hidden shadow-2xs`}>
-        <div className="w-full overflow-x-auto">
-          <table className="w-full text-left border-collapse table-auto">
-            <thead>
-              <tr className="bg-gray-50/80 border-b border-gray-200 text-xs font-bold text-gray-500 uppercase tracking-wider">
-                <th className="px-4 py-3.5">Student Name</th>
-                <th className="px-3 py-3.5 whitespace-nowrap">Stream</th>
-                <th className="px-3 py-3.5 whitespace-nowrap">Phone Number</th>
-                {showEnrollment && <th className="px-3 py-3.5 hidden 2xl:table-cell">Address</th>}
-                <th className="px-3 py-3.5 whitespace-nowrap">Joined Date & Time</th>
-                {showEnrollment && <th className="px-4 py-3.5 text-right whitespace-nowrap">Access Control</th>}
+        <div className="w-full overflow-x-auto max-h-[calc(100vh-300px)] min-h-[320px] overflow-y-auto">
+          <table className="w-full text-left border-collapse table-auto relative">
+            <thead className="sticky top-0 z-10 bg-gray-50/95 backdrop-blur-xs shadow-xs">
+              <tr className="border-b border-gray-200 text-xs font-bold text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3.5 bg-gray-50/95">Student Name</th>
+                <th className="px-3 py-3.5 whitespace-nowrap bg-gray-50/95">Stream</th>
+                <th className="px-3 py-3.5 whitespace-nowrap bg-gray-50/95">Phone Number</th>
+                {showEnrollment && <th className="px-3 py-3.5 hidden 2xl:table-cell bg-gray-50/95">Address</th>}
+                <th className="px-3 py-3.5 whitespace-nowrap bg-gray-50/95">Joined Date & Time</th>
+                {showEnrollment && <th className="px-4 py-3.5 text-right whitespace-nowrap bg-gray-50/95">Access Control</th>}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
