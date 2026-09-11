@@ -159,11 +159,11 @@ export default function UniversalBulkUploadModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-      <div className="bg-white w-full max-w-lg rounded-2xl border border-gray-200 shadow-xl overflow-hidden my-8 animate-in fade-in zoom-in-95 duration-150">
+    <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-3.5 sm:p-4 overflow-y-auto">
+      <div className="bg-white w-full max-w-lg max-h-[90dvh] overflow-y-auto rounded-2xl sm:rounded-3xl border border-gray-200 shadow-xl my-4 sm:my-8 animate-in fade-in zoom-in-95 duration-150">
         
         {/* Minimal Header */}
-        <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
+        <div className="px-5 sm:px-6 py-4 sm:py-5 border-b border-gray-100 flex items-center justify-between">
           <div>
             <h2 className="text-base font-bold text-gray-900 tracking-tight">
               Universal Bulk Upload

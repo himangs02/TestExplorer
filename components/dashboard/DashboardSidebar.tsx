@@ -34,18 +34,22 @@ interface SidebarProps {
   visibleItems: {
     label: string
     href: string
-    iconName: string // Changed from 'icon' component to string name
+    iconName: string
   }[]
   schoolData: any
   basePath: string
   profile: any
+  isMobileDrawer?: boolean
+  onItemClick?: () => void
 }
 
 export default function DashboardSidebar({ 
   visibleItems, 
   schoolData, 
   basePath, 
-  profile 
+  profile,
+  isMobileDrawer = false,
+  onItemClick
 }: SidebarProps) {
   const pathname = usePathname()
 
@@ -54,40 +58,42 @@ export default function DashboardSidebar({
   }, [pathname])
 
   return (
-    <aside className="w-64 bg-white border-r border-gray-200 hidden md:flex flex-col fixed inset-y-0 left-0 z-50">
+    <aside className="w-full h-full bg-white flex flex-col">
       
-      {/* BRANDING */}
-      <div className="h-16 flex items-center px-6 border-b border-gray-100">
-        {schoolData ? (
-          <Link href={`${basePath}/`} className="flex items-center gap-3 group">
-            {schoolData.logo_url ? (
-              <div className="w-8 h-8 relative shrink-0">
-                <img 
-                  src={schoolData.logo_url} 
-                  alt={schoolData.name} 
-                  className="w-full h-full object-contain rounded-lg"
-                />
+      {/* BRANDING (Only show on desktop sidebar since drawer has its own header) */}
+      {!isMobileDrawer && (
+        <div className="h-16 flex items-center px-6 border-b border-gray-100">
+          {schoolData ? (
+            <Link href={`${basePath}/`} className="flex items-center gap-3 group">
+              {schoolData.logo_url ? (
+                <div className="w-8 h-8 relative shrink-0">
+                  <img 
+                    src={schoolData.logo_url} 
+                    alt={schoolData.name} 
+                    className="w-full h-full object-contain rounded-lg"
+                  />
+                </div>
+              ) : (
+                <div className="w-8 h-8 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center font-bold text-sm shrink-0">
+                  {schoolData.name.substring(0, 2).toUpperCase()}
+                </div>
+              )}
+              <span className="font-bold text-gray-900 truncate group-hover:text-blue-600 transition-colors">
+                {schoolData.name}
+              </span>
+            </Link>
+          ) : (
+            <Link href="/" className="flex items-center gap-2">
+              <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
+                TE
               </div>
-            ) : (
-              <div className="w-8 h-8 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center font-bold text-sm shrink-0">
-                {schoolData.name.substring(0, 2).toUpperCase()}
-              </div>
-            )}
-            <span className="font-bold text-gray-900 truncate group-hover:text-blue-600 transition-colors">
-              {schoolData.name}
-            </span>
-          </Link>
-        ) : (
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
-              TE
-            </div>
-            <span className="text-xl font-black tracking-tighter text-blue-600">
-              Test Explorer
-            </span>
-          </Link>
-        )}
-      </div>
+              <span className="text-xl font-black tracking-tighter text-blue-600">
+                Test Explorer
+              </span>
+            </Link>
+          )}
+        </div>
+      )}
       
       {/* NAV LINKS */}
       <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
@@ -102,17 +108,18 @@ export default function DashboardSidebar({
               key={item.href}
               href={item.href}
               prefetch={true}
+              onClick={onItemClick}
               className={`
                 flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-colors group
                 ${isActive 
-                  ? 'bg-blue-50 text-blue-600' 
+                  ? 'bg-blue-50 text-blue-600 font-bold' 
                   : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}
               `}
             >
               <IconComponent 
-                className={`w-5 h-5 transition-colors ${isActive ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-600'}`} 
+                className={`w-5 h-5 transition-colors shrink-0 ${isActive ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-600'}`} 
               />
-              {item.label}
+              <span className="truncate">{item.label}</span>
             </Link>
           )
         })}

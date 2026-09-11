@@ -4,13 +4,13 @@ import { FormattedContent } from '@/components/ui/formatted-content'
 
 export const QuestionPaperModal = ({ questions, onClose }: { questions: Question[], onClose: () => void }) => {
   return (
-    <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-      <div className="bg-white w-full max-w-5xl h-[90vh] flex flex-col rounded shadow-2xl relative overflow-hidden">
+    <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/60 backdrop-blur-xs p-3 sm:p-6 animate-in fade-in duration-200">
+      <div className="bg-white w-full max-w-5xl max-h-[92dvh] flex flex-col rounded-2xl sm:rounded-3xl shadow-2xl relative overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-300 bg-gray-50/50">
-           <h2 className="text-2xl font-normal text-black">Question Paper</h2>
-           <button onClick={onClose} className="p-1 hover:bg-gray-200 rounded-full text-black transition-colors">
-             <X size={24} />
+        <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200 bg-gray-50/70 shrink-0">
+           <h2 className="text-lg sm:text-2xl font-bold text-gray-900">Question Paper</h2>
+           <button onClick={onClose} className="p-1.5 hover:bg-gray-200 rounded-full text-gray-700 transition-colors">
+             <X size={20} />
            </button>
         </div>
 

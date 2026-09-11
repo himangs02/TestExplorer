@@ -1,11 +1,8 @@
 import { redirect } from 'next/navigation'
-import { headers } from 'next/headers'
-import { getSchoolBySubdomain } from '@/lib/db/school'
-import UserNav from '@/components/Navbar/UserNav'
-import DashboardSidebar from '@/components/dashboard/DashboardSidebar'
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
+import DashboardShell from '@/components/dashboard/DashboardShell'
 
 export default async function DashboardLayout({
   children,
@@ -78,22 +75,14 @@ export default async function DashboardLayout({
     }))
 
   return (
-    <div className="min-h-screen flex bg-gray-50">
-      <DashboardSidebar
-        visibleItems={visibleItems}
-        schoolData={schoolData}
-        basePath={basePath}
-        profile={profile as any}
-      />
-      <main className="flex-1 flex flex-col md:ml-64 min-h-screen">
-        <header className="h-16 bg-white border-b border-gray-200 sticky top-0 z-40 flex items-center justify-between px-4 md:px-8">
-          <h1 className="font-bold text-lg text-gray-800">Dashboard</h1>
-          <UserNav profile={profile as any} email={user.email || undefined} />
-        </header>
-        <div className="flex-1 p-4 md:p-8 overflow-auto">
-          {children}
-        </div>
-      </main>
-    </div>
+    <DashboardShell
+      visibleItems={visibleItems}
+      schoolData={schoolData}
+      basePath={basePath}
+      profile={profile as any}
+      user={user}
+    >
+      {children}
+    </DashboardShell>
   )
 }

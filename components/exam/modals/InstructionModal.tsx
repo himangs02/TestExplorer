@@ -4,13 +4,13 @@ import { ExamData } from '../types'
 
 export const InstructionModal = ({ exam, onClose }: { exam: ExamData, onClose: () => void }) => {
     return (
-        <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-            <div className="bg-white w-full max-w-5xl h-[90vh] flex flex-col rounded shadow-2xl relative overflow-hidden">
+        <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/60 backdrop-blur-xs p-3 sm:p-6 animate-in fade-in duration-200">
+            <div className="bg-white w-full max-w-5xl max-h-[92dvh] flex flex-col rounded-2xl sm:rounded-3xl shadow-2xl relative overflow-hidden">
                 {/* Header */}
-                <div className="bg-[#4F8CBD] text-white py-2 px-4 font-bold text-lg flex justify-between items-center">
-                    <span>Instructions</span>
-                    <button onClick={onClose} className="text-white hover:text-gray-200">
-                        <X size={24} />
+                <div className="bg-[#4F8CBD] text-white py-3 px-4 sm:px-6 font-bold text-base sm:text-lg flex justify-between items-center shrink-0">
+                    <span>Exam Instructions</span>
+                    <button onClick={onClose} className="p-1 rounded-lg text-white hover:bg-white/10 transition-colors">
+                        <X size={20} />
                     </button>
                 </div>
 

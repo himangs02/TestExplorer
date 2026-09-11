@@ -121,7 +121,8 @@ export default function UserNav({ profile, email }: UserNavProps) {
                 console.error("Failed to prevent silent access:", err);
               }
             }
-            signOut({ callbackUrl: '/' })
+            await signOut({ redirect: false })
+            window.location.href = '/'
           }}
         >
           <LogOut className="mr-3 h-4 w-4" />

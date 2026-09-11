@@ -55,8 +55,8 @@ export default function CsvUploadModal({
 
       {/* Modal Overlay */}
       {isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-          <div className="bg-white w-full max-w-lg rounded-3xl p-8 shadow-2xl relative animate-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-3.5 sm:p-4 animate-in fade-in duration-200">
+          <div className="bg-white w-full max-w-lg max-h-[90dvh] overflow-y-auto rounded-3xl p-5 sm:p-8 shadow-2xl relative animate-in zoom-in-95 duration-200">
             
             {/* Close Button */}
             <button 

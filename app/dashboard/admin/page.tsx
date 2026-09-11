@@ -88,32 +88,32 @@ export default async function SuperAdminDashboard() {
   ]
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8">
+    <div className="max-w-7xl mx-auto space-y-6 sm:space-y-8">
       
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black text-gray-900 tracking-tight">Platform Dashboard</h1>
-          <p className="text-gray-500 font-medium">Monitor your content, users, and incoming requests.</p>
+          <h1 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">Platform Dashboard</h1>
+          <p className="text-gray-500 text-sm sm:text-base font-medium mt-0.5">Monitor your content, users, and incoming requests.</p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <Link 
             href="/dashboard/admin/schools/new" 
-            className="flex items-center gap-2 bg-white border border-gray-200 text-gray-700 px-4 py-2.5 rounded-xl font-bold hover:bg-gray-50 transition-all text-sm"
+            className="flex items-center gap-1.5 bg-white border border-gray-200 text-gray-700 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl font-bold hover:bg-gray-50 transition-all text-xs sm:text-sm shadow-2xs"
           >
-            <Plus className="w-4 h-4" /> School
+            <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> School
           </Link>
           <Link 
             href="/dashboard/admin/streams/new" 
-            className="flex items-center gap-2 bg-white border border-gray-200 text-gray-700 px-4 py-2.5 rounded-xl font-bold hover:bg-gray-50 transition-all text-sm"
+            className="flex items-center gap-1.5 bg-white border border-gray-200 text-gray-700 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl font-bold hover:bg-gray-50 transition-all text-xs sm:text-sm shadow-2xs"
           >
-            <Plus className="w-4 h-4" /> Stream
+            <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> Stream
           </Link>
           <Link 
             href="/dashboard/admin/blogs/create" 
-            className="flex items-center gap-2 bg-black text-white px-4 py-2.5 rounded-xl font-bold hover:bg-gray-800 transition-all shadow-lg text-sm"
+            className="flex items-center gap-1.5 bg-black text-white px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl font-bold hover:bg-gray-800 transition-all shadow-md text-xs sm:text-sm"
           >
-            <Plus className="w-4 h-4" /> Write Blog
+            <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> Write Blog
           </Link>
         </div>
       </div>

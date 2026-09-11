@@ -134,16 +134,16 @@ export default function SubjectsList({
           filteredSubjects.map((subject) => (
             <div
               key={subject.id}
-              className="bg-white p-6 rounded-2xl border border-gray-200 flex justify-between items-center group hover:border-blue-400 transition-all shadow-sm"
+              className="bg-white p-4 sm:p-6 rounded-2xl border border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 group hover:border-blue-400 transition-all shadow-2xs"
             >
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center border border-purple-100">
-                  <Library className="w-6 h-6" />
+              <div className="flex items-center gap-3.5 sm:gap-4">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center border border-purple-100 shrink-0">
+                  <Library className="w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-gray-900">{subject.title}</h3>
-                  <div className="flex items-center gap-2 text-sm text-gray-500 font-medium">
-                    <span className="flex items-center gap-1 bg-gray-100 px-2 py-0.5 rounded text-xs uppercase tracking-wide">
+                  <h3 className="text-base sm:text-lg font-bold text-gray-900 line-clamp-1">{subject.title}</h3>
+                  <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-500 font-medium mt-0.5">
+                    <span className="flex items-center gap-1 bg-gray-100 px-2 py-0.5 rounded text-[11px] uppercase tracking-wide">
                       <BookOpen className="w-3 h-3" />
                       {subject.courses?.title || 'Unknown Course'}
                     </span>
@@ -151,12 +151,12 @@ export default function SubjectsList({
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 self-end sm:self-center">
                 <Link
                   href={`/dashboard/admin/subjects/${subject.id}/edit`}
                   className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                 >
-                  <Pencil className="w-5 h-5" />
+                  <Pencil className="w-4 h-4 sm:w-5 sm:h-5" />
                 </Link>
                 <form action={deleteSubjectAction}>
                   <input type="hidden" name="id" value={subject.id} />
@@ -164,7 +164,7 @@ export default function SubjectsList({
                     type="submit"
                     className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                   >
-                    <Trash2 className="w-5 h-5" />
+                    <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
                 </form>
               </div>

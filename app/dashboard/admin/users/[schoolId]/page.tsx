@@ -103,24 +103,24 @@ export default async function SchoolStudentsPage({
         
       </div>
 
-      {/* Table */}
-      <div className="bg-white border border-gray-200 rounded-3xl overflow-hidden shadow-sm">
+      {/* Table Container */}
+      <div className="bg-white border border-gray-200 rounded-3xl overflow-hidden shadow-2xs">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+          <table className="min-w-[900px] w-full text-left border-collapse">
             <thead>
-              <tr className="bg-gray-50/50 border-b border-gray-200">
-                <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-wider">Student Name</th>
-                <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-wider">Stream</th>
-                <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-wider">Phone Number</th>
-                <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-wider">Address</th>
-                <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-wider">Joined Date & Time</th>
-                <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-wider text-right">Access Control</th>
+              <tr className="bg-gray-50/70 border-b border-gray-200">
+                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Student Name</th>
+                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Stream</th>
+                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Phone Number</th>
+                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Address</th>
+                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Joined Date & Time</th>
+                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">Access Control</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {students.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-8 py-12 text-center text-gray-400 font-medium">
+                  <td colSpan={6} className="px-6 py-12 text-center text-gray-400 font-medium">
                     No students found matching your filters.
                   </td>
                 </tr>
@@ -129,45 +129,45 @@ export default async function SchoolStudentsPage({
                   <tr key={student.id} className="hover:bg-gray-50/80 transition-colors group">
                     
                     {/* NAME */}
-                    <td className="px-8 py-5">
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-linear-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center text-gray-600 font-bold border border-gray-200 shadow-sm">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3.5">
+                        <div className="w-10 h-10 bg-linear-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center text-gray-700 font-bold border border-gray-200 shadow-2xs shrink-0">
                           {student.full_name?.charAt(0).toUpperCase() || <User className="w-5 h-5" />}
                         </div>
-                        <div>
-                           <div className="font-bold text-gray-900">{student.full_name}</div>
-                           <div className="text-xs text-gray-400">{student.email}</div>
+                        <div className="min-w-0">
+                           <div className="font-bold text-gray-900 truncate max-w-[200px]">{student.full_name}</div>
+                           <div className="text-xs text-gray-400 truncate max-w-[200px]">{student.email}</div>
                         </div>
                       </div>
                     </td>
 
-                    <td className="px-8 py-5">
-                       <div className="flex items-center gap-2 text-sm font-medium text-gray-700 bg-blue-50 px-3 py-1 rounded-full w-fit border border-blue-100">
-                         <GraduationCap className="w-4 h-4 text-blue-500" />
+                    <td className="px-6 py-4 whitespace-nowrap">
+                       <div className="flex items-center gap-1.5 text-xs font-semibold text-blue-700 bg-blue-50 px-3 py-1 rounded-full w-fit border border-blue-100">
+                         <GraduationCap className="w-3.5 h-3.5 text-blue-500" />
                          {/* @ts-ignore */}
-                         {student.stream || <span className="text-gray-400">N/A</span>}
+                         {student.stream || <span className="text-gray-400 font-normal">N/A</span>}
                        </div>
                     </td>
                     
                     {/* PHONE */}
-                    <td className="px-8 py-5">
+                    <td className="px-6 py-4 whitespace-nowrap">
                        <div className="flex items-center gap-2 text-sm font-medium text-gray-600">
-                         <Phone className="w-4 h-4 text-gray-300" />
+                         <Phone className="w-3.5 h-3.5 text-gray-400" />
                          {student.phone || student.phone_no || <span className="text-gray-300 italic">--</span>}
                        </div>
                     </td>
 
                     {/* ADDRESS */}
-                    <td className="px-8 py-5">
-                       <div className="flex items-center gap-2 text-sm font-medium text-gray-600">
-                         <MapPin className="w-4 h-4 text-gray-300" />
+                    <td className="px-6 py-4">
+                       <div className="flex items-center gap-2 text-sm font-medium text-gray-600 max-w-[220px]">
+                         <MapPin className="w-3.5 h-3.5 text-gray-400 shrink-0" />
                          {/* @ts-ignore */}
-                         {student.address || <span className="text-gray-300 italic">No address</span>}
+                         <span className="truncate">{student.address || <span className="text-gray-300 italic">No address</span>}</span>
                        </div>
                     </td>
 
                     {/* JOINED DATE & TIME */}
-                    <td className="px-8 py-5">
+                    <td className="px-6 py-4 whitespace-nowrap">
                       {student.created_at ? (
                         <div className="flex flex-col text-xs" suppressHydrationWarning>
                           <span className="font-semibold text-gray-800 flex items-center gap-1.5">
@@ -193,7 +193,7 @@ export default async function SchoolStudentsPage({
                     </td>
 
                     {/* MANAGE ACCESS BUTTON */}
-                    <td className="px-8 py-5 text-right">
+                    <td className="px-6 py-4 text-right whitespace-nowrap">
                       <EnrollmentManager 
                         studentId={student.id}
                         studentName={student.full_name ?? 'Unknown'}

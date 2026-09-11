@@ -82,11 +82,11 @@ export default async function SchoolStudentsPage({
 
       <SchoolStudentsFilter />
 
-      <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
+      <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-2xs">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+          <table className="min-w-[700px] w-full text-left border-collapse">
             <thead>
-              <tr className="bg-gray-50 border-b border-gray-200">
+              <tr className="bg-gray-50/70 border-b border-gray-200">
                 <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Student Name</th>
                 <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Stream</th>
                 <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Phone Number</th>
@@ -96,7 +96,7 @@ export default async function SchoolStudentsPage({
             <tbody className="divide-y divide-gray-100">
               {students.length === 0 ? (
                 <tr>
-                  <td colSpan={3} className="px-6 py-12 text-center text-gray-500">
+                  <td colSpan={4} className="px-6 py-12 text-center text-gray-400 font-medium">
                     No students found.
                   </td>
                 </tr>
@@ -105,7 +105,7 @@ export default async function SchoolStudentsPage({
                   <tr key={student.id} className="hover:bg-gray-50/50 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 font-bold border border-gray-200">
+                        <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 font-bold border border-gray-200 shrink-0">
                           {(student.full_name || '?').charAt(0).toUpperCase()}
                         </div>
                         <span className="font-bold text-gray-900">{student.full_name || 'Unknown'}</span>
