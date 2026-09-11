@@ -227,24 +227,24 @@ export const CollegePredictionList: React.FC<CollegePredictionListProps> = ({
   };
 
   return (
-    <div className="w-full mt-10">
-      {/* 1. TOP SUMMARY CARDS STRIP (Matching vmcrank 4-box counters) */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5 mb-8">
+    <div className="w-full mt-6 sm:mt-8">
+      {/* 1. TOP SUMMARY CARDS STRIP */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-3.5 mb-6">
         {/* Total */}
         <button
           type="button"
           onClick={() => setSelectedChance('ALL')}
-          className={`p-4 rounded-2xl text-left border-2 transition-all cursor-pointer ${
+          className={`p-3 sm:p-3.5 rounded-xl sm:rounded-2xl text-left border-2 transition-all cursor-pointer ${
             selectedChance === 'ALL'
               ? 'bg-slate-900 text-white border-slate-900 shadow-md'
               : 'bg-white text-gray-900 border-gray-200 hover:border-gray-300'
           }`}
         >
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-3xl font-black">{prediction.totalColleges}</span>
-            <Layers className="w-5 h-5 text-blue-400" />
+          <div className="flex items-center justify-between mb-0.5">
+            <span className="text-xl sm:text-2xl font-black">{prediction.totalColleges}</span>
+            <Layers className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400" />
           </div>
-          <span className="text-xs font-bold uppercase tracking-wider block opacity-80">
+          <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider block opacity-80">
             Total Options
           </span>
         </button>
@@ -253,17 +253,17 @@ export const CollegePredictionList: React.FC<CollegePredictionListProps> = ({
         <button
           type="button"
           onClick={() => setSelectedChance('HIGH')}
-          className={`p-4 rounded-2xl text-left border-2 transition-all cursor-pointer ${
+          className={`p-3 sm:p-3.5 rounded-xl sm:rounded-2xl text-left border-2 transition-all cursor-pointer ${
             selectedChance === 'HIGH'
               ? 'bg-emerald-600 text-white border-emerald-600 shadow-md'
               : 'bg-emerald-50/70 text-emerald-950 border-emerald-200/80 hover:border-emerald-300'
           }`}
         >
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-3xl font-black">{prediction.summary.highChanceCount}</span>
-            <Check className="w-5 h-5 text-emerald-700 stroke-[3]" />
+          <div className="flex items-center justify-between mb-0.5">
+            <span className="text-xl sm:text-2xl font-black">{prediction.summary.highChanceCount}</span>
+            <Check className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-700 stroke-[3]" />
           </div>
-          <span className="text-xs font-bold uppercase tracking-wider block opacity-90">
+          <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider block opacity-90">
             ✓ Safe Options
           </span>
         </button>
@@ -272,17 +272,17 @@ export const CollegePredictionList: React.FC<CollegePredictionListProps> = ({
         <button
           type="button"
           onClick={() => setSelectedChance('MODERATE')}
-          className={`p-4 rounded-2xl text-left border-2 transition-all cursor-pointer ${
+          className={`p-3 sm:p-3.5 rounded-xl sm:rounded-2xl text-left border-2 transition-all cursor-pointer ${
             selectedChance === 'MODERATE'
               ? 'bg-blue-600 text-white border-blue-600 shadow-md'
               : 'bg-blue-50/70 text-blue-950 border-blue-200/80 hover:border-blue-300'
           }`}
         >
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-3xl font-black">{prediction.summary.moderateChanceCount}</span>
-            <Target className="w-5 h-5 text-blue-600" />
+          <div className="flex items-center justify-between mb-0.5">
+            <span className="text-xl sm:text-2xl font-black">{prediction.summary.moderateChanceCount}</span>
+            <Target className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
           </div>
-          <span className="text-xs font-bold uppercase tracking-wider block opacity-90">
+          <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider block opacity-90">
             Target Options
           </span>
         </button>
@@ -291,17 +291,17 @@ export const CollegePredictionList: React.FC<CollegePredictionListProps> = ({
         <button
           type="button"
           onClick={() => setSelectedChance('AMBITIOUS')}
-          className={`p-4 rounded-2xl text-left border-2 transition-all cursor-pointer ${
+          className={`p-3 sm:p-3.5 rounded-xl sm:rounded-2xl text-left border-2 transition-all cursor-pointer ${
             selectedChance === 'AMBITIOUS'
               ? 'bg-amber-600 text-white border-amber-600 shadow-md'
               : 'bg-amber-50/70 text-amber-950 border-amber-200/80 hover:border-amber-300'
           }`}
         >
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-3xl font-black">{prediction.summary.ambitiousCount}</span>
-            <TrendingUp className="w-5 h-5 text-amber-600" />
+          <div className="flex items-center justify-between mb-0.5">
+            <span className="text-xl sm:text-2xl font-black">{prediction.summary.ambitiousCount}</span>
+            <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600" />
           </div>
-          <span className="text-xs font-bold uppercase tracking-wider block opacity-90">
+          <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider block opacity-90">
             ↑ Ambitious Options
           </span>
         </button>
