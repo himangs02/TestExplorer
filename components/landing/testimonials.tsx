@@ -5,10 +5,10 @@ import styles from "./marquee.module.css";
 const getValidImageUrl = (url: string) => {
   if (!url) return '';
   if (!url.includes('drive.google.com')) return url;
-  
+
   // Extract File ID from various Drive URL formats
   const fileId = url.match(/\/d\/([^/]+)/)?.[1] || url.match(/id=([^&]+)/)?.[1];
-  
+
   // The most reliable proxy URL format
   return fileId ? `https://lh3.googleusercontent.com/d/${fileId}` : url;
 };
@@ -20,7 +20,7 @@ export default function Testimonials({ data }: { data?: any[] }) {
       role: "Student, APS Waranagal",
       text: "The platform offered by Test Explorer is precisely mapped with CUET conducted by NTA.",
       gradient: "from-blue-600 to-violet-600",
-      image: "https://i.pravatar.cc/150?u=varuna" 
+      image: "https://i.pravatar.cc/150?u=varuna"
     },
     {
       name: "S.K Malhotra",
@@ -45,16 +45,16 @@ export default function Testimonials({ data }: { data?: any[] }) {
     }
   ];
 
-  const testimonialsToShow = data && data.length > 0 
+  const testimonialsToShow = data && data.length > 0
     ? data.map((t, index) => ({
-        name: t.student_name,
-        role: t.course_name,
-        text: t.message,
-        image: getValidImageUrl(t.student_image) || `https://i.pravatar.cc/150?u=${index}`,
-        gradient: index % 3 === 0 ? "from-blue-600 to-violet-600" : 
-                  index % 3 === 1 ? "from-orange-400 to-red-500" : 
-                  "from-emerald-400 to-teal-600"
-      }))
+      name: t.student_name,
+      role: t.course_name,
+      text: t.message,
+      image: getValidImageUrl(t.student_image) || `https://i.pravatar.cc/150?u=${index}`,
+      gradient: index % 3 === 0 ? "from-blue-600 to-violet-600" :
+        index % 3 === 1 ? "from-orange-400 to-red-500" :
+          "from-emerald-400 to-teal-600"
+    }))
     : defaultTestimonials;
 
   // LOGIC: Only scroll if we have more than 3 testimonials
@@ -80,13 +80,13 @@ export default function Testimonials({ data }: { data?: any[] }) {
             <div className="absolute top-0 bottom-0 right-0 w-32 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
           </>
         )}
-        
+
         {/* If shouldScroll is true, we use the track animation class. 
             Otherwise, we use a simple flexbox with centering. */}
         <div className={shouldScroll ? styles.track : "flex flex-wrap justify-center gap-8 px-4"}>
           {scrollList.map((t, i) => (
-            <div 
-              key={i} 
+            <div
+              key={i}
               className={`
                 relative shrink-0 w-[350px] md:w-[400px] rounded-[2.5rem] p-8 text-white 
                 bg-gradient-to-br ${t.gradient} shadow-xl 
@@ -95,21 +95,21 @@ export default function Testimonials({ data }: { data?: any[] }) {
             >
               <div className="flex flex-col items-center text-center">
                 <div className="w-16 h-16 rounded-full border-4 border-white/30 mb-4 overflow-hidden bg-white/10 flex items-center justify-center">
-                  <img 
-                    src={t.image} 
-                    alt={t.name || 'Student'} 
+                  <img
+                    src={t.image}
+                    alt={t.name || 'Student'}
                     className="w-full h-full object-cover"
                     onError={(e) => {
-                        e.currentTarget.src = "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y";
+                      e.currentTarget.src = "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y";
                     }}
                   />
                 </div>
-                
+
                 <h3 className="text-xl font-bold mb-1">{t.name}</h3>
                 <p className="text-[10px] font-bold uppercase tracking-wider mb-6 opacity-80 bg-black/10 px-3 py-1 rounded-full">
                   {t.role}
                 </p>
-                
+
                 <p className="text-sm font-medium leading-relaxed opacity-95 line-clamp-4">
                   "{t.text}"
                 </p>

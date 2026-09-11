@@ -11,7 +11,7 @@ export default async function HeroMain() {
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
-        
+
         {/* --- Hero Content --- */}
         <div className="text-center mb-16">
           {/* Badge */}
@@ -34,14 +34,14 @@ export default async function HeroMain() {
 
           {/* Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-5 mb-14">
-            <Link 
-              href="/signup" 
+            <Link
+              href="/signup"
               className="w-full sm:w-auto px-9 py-4.5 bg-gray-900 text-white rounded-full font-bold text-lg sm:text-xl hover:bg-gray-800 transition-all hover:scale-105 shadow-xl shadow-gray-200 flex items-center justify-center gap-2.5"
             >
               Start Practicing Free <ArrowRight className="w-5 h-5" />
             </Link>
-            <Link 
-              href="#features" 
+            <Link
+              href="#features"
               className="w-full sm:w-auto px-9 py-4.5 bg-white text-gray-900 border border-gray-200 rounded-full font-bold text-lg sm:text-xl hover:bg-gray-50 transition-all hover:border-gray-300"
             >
               How it works

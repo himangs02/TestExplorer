@@ -42,13 +42,13 @@ export default async function SchoolUpdates({ school }: { school: any }) {
           <section className="container mx-auto px-4 sm:px-6 max-w-7xl pt-12 pb-10">
             <div className="bg-white rounded-[2rem] border border-gray-200 shadow-lg p-8 md:p-12 relative overflow-hidden">
               <Quote className="lucide lucide-quote absolute top-8 right-8 w-32 h-32 text-gray-50 opacity-50 rotate-180 pointer-events-none" />
-              
+
               <div className="grid md:grid-cols-12 gap-10 items-center relative z-10">
                 <div className="md:col-span-4 lg:col-span-3 flex flex-col items-center">
                   <div className="w-48 h-48 md:w-full md:aspect-square relative rounded-2xl overflow-hidden shadow-xl border-4 border-white bg-gray-100 shrink-0">
-                    <img 
-                      src={getValidImageUrl(school.principal_image) || "https://ui-avatars.com/api/?name=Principal&background=f3f4f6&color=9ca3af"} 
-                      alt="Principal" 
+                    <img
+                      src={getValidImageUrl(school.principal_image) || "https://ui-avatars.com/api/?name=Principal&background=f3f4f6&color=9ca3af"}
+                      alt="Principal"
                       className="w-full h-full object-contain"
                     />
                   </div>
@@ -79,13 +79,13 @@ export default async function SchoolUpdates({ school }: { school: any }) {
         {/* === 3. WELCOME & NOTICE BOARD SECTION === */}
         <div className="container mx-auto px-4 sm:px-6 relative z-10 max-w-7xl mt-12">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
-            
+
             {/* === LEFT COLUMN: Welcome & Stats === */}
             <div className="space-y-8">
               <div className="inline-block px-4 py-1.5 bg-blue-100 text-blue-700 rounded-full text-sm font-bold tracking-wide">
                 WELCOME TO {school.name.toUpperCase()}
               </div>
-              
+
               <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-tight">
                 Excellence in <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">
@@ -94,7 +94,7 @@ export default async function SchoolUpdates({ school }: { school: any }) {
               </h2>
 
               <p className="text-lg text-gray-600 leading-relaxed max-w-xl">
-                {school.welcome_message || 
+                {school.welcome_message ||
                   "We are committed to providing a nurturing environment that fosters academic excellence, character development, and lifelong learning. Our innovative curriculum and dedicated faculty ensure every student reaches their full potential."}
               </p>
 
@@ -128,7 +128,7 @@ export default async function SchoolUpdates({ school }: { school: any }) {
             <div className="w-full flex justify-center lg:justify-end">
               <div className="w-full max-w-md">
                 <div className="bg-white/80 backdrop-blur-xl rounded-[2rem] p-6 md:p-8 shadow-2xl border border-white/50 relative overflow-hidden">
-                  
+
                   {/* Header */}
                   <div className="flex items-center gap-4 mb-8">
                     <div className="w-14 h-14 rounded-2xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-200">
@@ -137,7 +137,7 @@ export default async function SchoolUpdates({ school }: { school: any }) {
                     <div>
                       <h3 className="font-bold text-2xl text-gray-900">Notice Board</h3>
                       <p className="text-sm text-gray-500 font-medium flex items-center gap-1">
-                        <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"/> 
+                        <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
                         Live Updates
                       </p>
                     </div>
@@ -145,20 +145,20 @@ export default async function SchoolUpdates({ school }: { school: any }) {
 
                   {/* Scrolling Content Area */}
                   <div className="relative h-[400px] overflow-hidden group rounded-xl">
-                    
+
                     {/* Gradients */}
                     <div className="absolute top-0 left-0 right-0 h-12 bg-gradient-to-b from-white via-white/80 to-transparent z-10 pointer-events-none" />
                     <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white via-white/80 to-transparent z-10 pointer-events-none" />
 
                     {/* The Scrolling List */}
                     {list.length > 0 ? (
-                      <div 
-                        className="space-y-4 hover:[animation-play-state:paused]" 
+                      <div
+                        className="space-y-4 hover:[animation-play-state:paused]"
                         style={scrollAnimationStyles}
                       >
                         {scrollingList.map((item: any, i: number) => (
-                          <div 
-                            key={`${item.id}-${i}`} 
+                          <div
+                            key={`${item.id}-${i}`}
                             className="p-5 rounded-2xl bg-white hover:bg-blue-50 transition-all duration-300 border border-gray-100 hover:border-blue-200 shadow-sm cursor-pointer group/item"
                           >
                             <div className="flex justify-between items-start mb-3">
@@ -170,11 +170,11 @@ export default async function SchoolUpdates({ school }: { school: any }) {
                                 {new Date(item.created_at).toLocaleDateString()}
                               </div>
                             </div>
-                            
+
                             <h4 className="text-sm font-bold text-gray-900 leading-snug mb-2 group-hover/item:text-blue-700 transition-colors">
                               {item.title}
                             </h4>
-                            
+
                             {item.content && (
                               <p className="text-xs text-gray-500 leading-relaxed line-clamp-2">
                                 {item.content}

@@ -111,7 +111,7 @@ export default function PredictorHeroSection() {
             </span>
           </div>
 
-          <h2 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-gray-900 mb-5 leading-[1.12]">
+          <h2 className="text-4xl sm:text-3xl md:text-6xl font-black tracking-tight text-gray-900 mb-5 leading-[1.12]">
             Find Your Rank.{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600">
               Find Your College.
@@ -147,15 +147,15 @@ export default function PredictorHeroSection() {
                       }
                     }}
                     className={`p-3.5 rounded-2xl border-2 font-bold text-left transition-all cursor-pointer flex flex-col justify-between group ${isSelected
-                        ? `${theme.activeBorder} ${theme.activeBg} text-gray-900 shadow-sm ring-2 ring-blue-500/20`
-                        : 'border-gray-200 hover:border-gray-300 text-gray-700 bg-white hover:bg-gray-50/50'
+                      ? `${theme.activeBorder} ${theme.activeBg} text-gray-900 shadow-sm ring-2 ring-blue-500/20`
+                      : 'border-gray-200 hover:border-gray-300 text-gray-700 bg-white hover:bg-gray-50/50'
                       }`}
                   >
                     <div className="flex items-center justify-between mb-2.5">
                       <div
                         className={`w-9 h-9 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105 shadow-2xs ${isSelected
-                            ? `bg-linear-to-br ${theme.gradient} text-white shadow-md`
-                            : 'bg-gray-100 text-gray-700 group-hover:bg-gray-200'
+                          ? `bg-linear-to-br ${theme.gradient} text-white shadow-md`
+                          : 'bg-gray-100 text-gray-700 group-hover:bg-gray-200'
                           }`}
                       >
                         <IconComponent className="w-5 h-5" />
@@ -195,8 +195,8 @@ export default function PredictorHeroSection() {
                         type="button"
                         onClick={() => setInputMode(m)}
                         className={`px-1.5 py-0.5 rounded-md uppercase ${inputMode === m
-                            ? 'bg-blue-100 text-blue-800'
-                            : 'hover:text-gray-800'
+                          ? 'bg-blue-100 text-blue-800'
+                          : 'hover:text-gray-800'
                           }`}
                       >
                         {m}
