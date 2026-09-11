@@ -37,9 +37,9 @@ export default function DashboardShell({
   }, [pathname])
 
   return (
-    <div className="min-h-screen flex bg-gray-50/50 antialiased overflow-x-hidden">
+    <div className="h-screen flex bg-gray-50/50 antialiased overflow-hidden">
       {/* Desktop Fixed Sidebar */}
-      <div className="hidden md:flex w-64 shrink-0 h-screen sticky top-0 border-r border-gray-200 z-30">
+      <div className="hidden md:flex w-64 shrink-0 h-full border-r border-gray-200 z-30 flex-col">
         <DashboardSidebar
           visibleItems={visibleItems}
           schoolData={schoolData}
@@ -89,8 +89,8 @@ export default function DashboardShell({
       )}
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 min-h-screen">
-        <header className="h-16 bg-white/95 backdrop-blur-md border-b border-gray-200 sticky top-0 z-30 flex items-center justify-between px-4 sm:px-6 lg:px-8 shadow-xs">
+      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
+        <header className="h-16 shrink-0 bg-white/95 backdrop-blur-md border-b border-gray-200 z-30 flex items-center justify-between px-4 sm:px-6 lg:px-8 shadow-xs">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setMobileSidebarOpen(true)}
@@ -109,7 +109,7 @@ export default function DashboardShell({
           </div>
         </header>
 
-        <main className="flex-1 p-3.5 sm:p-6 lg:p-8 overflow-y-auto">
+        <main className="flex-1 p-3.5 sm:p-6 lg:p-8 overflow-y-auto overscroll-contain">
           <div className="max-w-7xl mx-auto w-full">
             {children}
           </div>

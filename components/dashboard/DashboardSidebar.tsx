@@ -96,7 +96,7 @@ export default function DashboardSidebar({
       )}
       
       {/* NAV LINKS */}
-      <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+      <nav className="flex-1 p-3.5 space-y-0.5 overflow-y-auto">
         {visibleItems.map((item) => {
           const isActive = pathname === item.href
           
@@ -110,14 +110,14 @@ export default function DashboardSidebar({
               prefetch={true}
               onClick={onItemClick}
               className={`
-                flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-colors group
+                flex items-center gap-3 px-3.5 py-2.5 text-sm font-medium rounded-xl transition-colors group
                 ${isActive 
                   ? 'bg-blue-50 text-blue-600 font-bold' 
                   : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}
               `}
             >
               <IconComponent 
-                className={`w-5 h-5 transition-colors shrink-0 ${isActive ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-600'}`} 
+                className={`w-4.5 h-4.5 transition-colors shrink-0 ${isActive ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-600'}`} 
               />
               <span className="truncate">{item.label}</span>
             </Link>
