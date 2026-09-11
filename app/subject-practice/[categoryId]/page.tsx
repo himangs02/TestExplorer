@@ -40,12 +40,12 @@ export default async function SubjectPracticeCoursePage({
         </Link>
       </header>
 
-      <main className="container mx-auto px-6 py-8 max-w-5xl">
-        <div className="mb-8">
-          <span className="text-xs font-bold text-green-600 uppercase tracking-widest mb-1.5 block">
+      <main className="container mx-auto px-6 py-12 max-w-5xl">
+        <div className="mb-12">
+          <span className="text-sm font-bold text-green-600 uppercase tracking-widest mb-2 block">
             {category.title}
           </span>
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 tracking-tight">
+          <h1 className="text-4xl md:text-6xl font-black text-gray-900 tracking-tight">
             Select a Course
           </h1>
         </div>

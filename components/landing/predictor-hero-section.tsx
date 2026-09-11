@@ -94,7 +94,7 @@ export default function PredictorHeroSection() {
   };
 
   return (
-    <section className="py-10 md:py-14 bg-linear-to-b from-gray-50 via-blue-50/30 to-white relative overflow-hidden border-t border-b border-gray-100">
+    <section className="py-14 md:py-20 bg-linear-to-b from-gray-50 via-blue-50/30 to-white relative overflow-hidden border-t border-b border-gray-100">
       {/* Ambient background blur */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-7xl h-full opacity-40 pointer-events-none">
         <div className="absolute top-10 left-1/4 w-80 h-80 bg-blue-200/50 rounded-full blur-3xl" />
@@ -103,22 +103,22 @@ export default function PredictorHeroSection() {
 
       <div className="container mx-auto px-4 relative z-10">
         {/* Title Header */}
-        <div className="text-center max-w-3xl mx-auto mb-8">
-          <div className="inline-flex items-center gap-2 bg-white border border-blue-200/60 rounded-full px-3.5 py-1 shadow-2xs mb-3">
+        <div className="text-center max-w-3xl mx-auto mb-10">
+          <div className="inline-flex items-center gap-2 bg-white border border-blue-200/60 rounded-full px-4 py-1.5 shadow-2xs mb-4">
             <span className="flex h-2 w-2 rounded-full bg-blue-600 animate-pulse"></span>
-            <span className="text-[11px] font-bold text-blue-700 tracking-wide uppercase">
+            <span className="text-xs font-bold text-blue-700 tracking-wide uppercase">
               🎯 Test Explorer Rank & College Predictor 2027
             </span>
           </div>
 
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-gray-900 mb-3 leading-[1.15]">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-gray-900 mb-4 leading-[1.15]">
             Find Your Rank.{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600">
               Find Your College.
             </span>
           </h2>
 
-          <p className="text-xs sm:text-sm text-gray-600 font-medium leading-relaxed max-w-xl mx-auto">
+          <p className="text-base sm:text-lg text-gray-600 font-medium leading-relaxed max-w-2xl mx-auto">
             Enter your marks or rank and discover your estimated rank, admission chances, and colleges you may be eligible for.
           </p>
         </div>

@@ -52,18 +52,18 @@ export default async function SchoolUpdates({ school }: { school: any }) {
                       className="w-full h-full object-contain"
                     />
                   </div>
-                  <div className="mt-3 text-center">
-                    <h4 className="font-bold text-gray-900 text-base">Principal&apos;s Desk</h4>
-                    <p className="text-xs font-medium text-blue-600">{school.name}</p>
+                  <div className="mt-4 text-center">
+                    <h4 className="font-bold text-gray-900 text-lg">Principal&apos;s Desk</h4>
+                    <p className="text-sm font-medium text-blue-600">{school.name}</p>
                   </div>
                 </div>
 
-                <div className="md:col-span-8 lg:col-span-9 space-y-4">
-                  <h3 className="text-xl sm:text-2xl font-black text-gray-900">
+                <div className="md:col-span-8 lg:col-span-9 space-y-6">
+                  <h3 className="text-3xl md:text-4xl font-black text-gray-900">
                     A Message to Our Students
                   </h3>
                   <div className="relative">
-                    <p className="text-sm text-gray-600 leading-relaxed relative z-10 whitespace-pre-line pl-4 border-l-4 border-blue-500 rounded-l">
+                    <p className="text-lg text-gray-600 leading-relaxed relative z-10 whitespace-pre-line pl-4 border-l-4 border-blue-500 rounded-l">
                       {school.principal_message}
                     </p>
                   </div>
@@ -77,29 +77,29 @@ export default async function SchoolUpdates({ school }: { school: any }) {
         <SchoolPromo schoolName={school.name} />
 
         {/* === 3. WELCOME & NOTICE BOARD SECTION === */}
-        <div className="container mx-auto px-4 sm:px-6 relative z-10 max-w-7xl mt-8">
-          <div className="grid lg:grid-cols-2 gap-10 items-center">
+        <div className="container mx-auto px-4 sm:px-6 relative z-10 max-w-7xl mt-12">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
             
             {/* === LEFT COLUMN: Welcome & Stats === */}
-            <div className="space-y-6">
-              <div className="inline-block px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold tracking-wide">
+            <div className="space-y-8">
+              <div className="inline-block px-4 py-1.5 bg-blue-100 text-blue-700 rounded-full text-sm font-bold tracking-wide">
                 WELCOME TO {school.name.toUpperCase()}
               </div>
               
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-gray-900 leading-tight">
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-tight">
                 Excellence in <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">
                   Education & Growth
                 </span>
               </h2>
 
-              <p className="text-sm text-gray-600 leading-relaxed max-w-xl">
+              <p className="text-lg text-gray-600 leading-relaxed max-w-xl">
                 {school.welcome_message || 
                   "We are committed to providing a nurturing environment that fosters academic excellence, character development, and lifelong learning. Our innovative curriculum and dedicated faculty ensure every student reaches their full potential."}
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-3 pt-2">
-                <button type="button" className="px-6 py-3 bg-gray-900 text-white rounded-xl font-bold text-xs sm:text-sm hover:bg-gray-800 transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2">
+              <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                <button type="button" className="px-8 py-4 bg-gray-900 text-white rounded-xl font-bold hover:bg-gray-800 transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2">
                   About Our School <ArrowRight className="w-4 h-4" />
                 </button>
                 <button type="button" className="px-8 py-4 bg-white text-gray-900 border border-gray-200 rounded-xl font-bold hover:bg-gray-50 transition-all shadow-sm flex items-center justify-center gap-2">

@@ -16,15 +16,15 @@ export default function CookiePolicy() {
   return (
     <div className="min-h-screen bg-slate-50/50">
       {/* Hero Header */}
-      <div className="bg-slate-900 pt-20 pb-14 px-6">
-        <div className="max-w-5xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-black uppercase tracking-widest mb-4">
-            <Cookie className="w-3.5 h-3.5" /> Data Transparency
+      <div className="bg-slate-900 pt-32 pb-20 px-6">
+        <div className="max-w-6xl mx-auto text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-black uppercase tracking-widest mb-6">
+            <Cookie className="w-4 h-4" /> Data Transparency
           </div>
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-white mb-3 tracking-tight">
+          <h1 className="text-4xl md:text-6xl font-black text-white mb-6 tracking-tight">
             Cookie Policy
           </h1>
-          <p className="text-slate-400 max-w-2xl mx-auto text-xs sm:text-sm leading-relaxed">
+          <p className="text-slate-400 max-w-2xl mx-auto text-lg leading-relaxed">
             We use cookies to ensure you have a smooth experience while practicing and exploring exams.
           </p>
         </div>

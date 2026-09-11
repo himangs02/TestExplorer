@@ -17,15 +17,15 @@ export default function GettingStarted() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="bg-slate-900 pt-20 pb-14 px-6 text-center">
+      <section className="bg-slate-900 pt-32 pb-20 px-6 text-center">
         <div className="max-w-4xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-black uppercase tracking-widest mb-4">
-            <Rocket className="w-3.5 h-3.5" /> Welcome to Test Explorer
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-black uppercase tracking-widest mb-6">
+            <Rocket className="w-4 h-4" /> Welcome to Test Explorer
           </div>
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-white mb-3 tracking-tight">
+          <h1 className="text-5xl md:text-7xl font-black text-white mb-6 tracking-tight">
             Let's get you <span className="text-blue-500">set up.</span>
           </h1>
-          <p className="text-slate-400 text-xs sm:text-sm max-w-2xl mx-auto leading-relaxed">
+          <p className="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
             Whether you are an educator managing a school or a student preparing for success, we've made the journey simple.
           </p>
         </div>

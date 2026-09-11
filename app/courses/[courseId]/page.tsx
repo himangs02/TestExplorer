@@ -70,19 +70,19 @@ export default async function CourseSubjectsPage({
         </div>
       </header>
 
-      <main className="container mx-auto px-6 py-8 max-w-5xl">
+      <main className="container mx-auto px-6 py-12 max-w-5xl">
         
         {/* --- Header Section --- */}
-        <div className="mb-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black text-white text-[11px] font-bold tracking-wider mb-4">
+        <div className="mb-16">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black text-white text-xs font-bold tracking-wider mb-6">
             <Hash className="w-3 h-3 text-yellow-400" />
             COURSE OVERVIEW
           </div>
           
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 tracking-tight mb-3 leading-tight">
+          <h1 className="text-5xl md:text-7xl font-black text-gray-900 tracking-tighter mb-4 leading-[0.9]">
             {course.title}
           </h1>
-          <p className="text-xs sm:text-sm text-gray-500 font-medium max-w-2xl">
+          <p className="text-xl text-gray-500 font-medium max-w-2xl">
             {course.description || "Select a subject to dive deep, or take a full-length mock test."}
           </p>
         </div>
