@@ -71,7 +71,7 @@ export default function CsvUploadModal({
               <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center mb-4">
                 <FileText className="w-6 h-6" />
               </div>
-              <h2 className="text-2xl font-black text-gray-900">Upload CSV</h2>
+              <h2 className="text-2xl font-black text-gray-900">Upload Questions</h2>
               <p className="text-gray-500 text-sm mt-1">
                 Adding questions to: <span className="font-bold text-black">{subjectTitle}</span>
               </p>
@@ -102,7 +102,7 @@ export default function CsvUploadModal({
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1">CSV File</label>
+                <label className="block text-sm font-bold text-gray-700 mb-1">Upload File (Excel .xlsx / CSV)</label>
                 <div className={`border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center transition-all cursor-pointer relative group ${fileName ? 'border-green-400 bg-green-50' : 'border-gray-200 bg-gray-50 hover:bg-white hover:border-blue-400'}`}>
                   
                   {/* Dynamic Visual Feedback */}
@@ -115,21 +115,22 @@ export default function CsvUploadModal({
                   ) : (
                     <>
                       <Upload className="w-8 h-8 text-gray-300 mb-2 group-hover:text-blue-400" />
-                      <span className="text-xs font-bold text-gray-400 group-hover:text-blue-500">Click to browse CSV</span>
+                      <span className="text-xs font-bold text-gray-700 text-center">Click to browse Excel (.xlsx, .xls) or CSV</span>
+                      <span className="text-[11px] text-gray-400 mt-0.5">Supports any Excel or CSV format</span>
                     </>
                   )}
                   
                   <input 
                     type="file" 
-                    name="csv_file" 
-                    accept=".csv"
+                    name="file" 
+                    accept=".csv, .xlsx, .xls, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
                     required 
-                    onChange={handleFileChange} // Capture file selection
+                    onChange={handleFileChange}
                     className="absolute inset-0 opacity-0 cursor-pointer" 
                   />
                 </div>
                 <p className="text-[10px] text-gray-400 mt-2 bg-gray-50 p-2 rounded border border-gray-100">
-                  <strong>Columns:</strong> description, question, option_a, option_b, option_c, option_d, correct_option, explanation
+                  <strong>Required Columns:</strong> question, option_a, option_b, option_c, option_d, correct_option
                 </p>
               </div>
 

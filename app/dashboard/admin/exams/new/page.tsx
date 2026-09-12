@@ -62,18 +62,20 @@ export default async function NewExamPage({
 
           <div className="h-px bg-gray-100 my-2" />
 
-          {/* 3. CSV Upload Section */}
+          {/* 3. Bulk Upload Section */}
           <div className="bg-blue-50 border border-blue-100 p-6 rounded-2xl">
             <h3 className="text-blue-900 font-bold mb-2 flex items-center gap-2">
-              <Upload className="w-4 h-4" /> Bulk Upload Questions
+              <Upload className="w-4 h-4" /> Bulk Upload Questions (Excel / CSV)
             </h3>
             <p className="text-sm text-blue-700/80 mb-4">
-              Upload a CSV file with columns: <strong>Question, Option A, Option B, Option C, Option D, Correct Answer, Explanation</strong>.
+              Upload an Excel (<code>.xlsx</code>, <code>.xls</code>) or <code>.csv</code> file.
+              <br />
+              <span className="text-xs text-blue-900 font-semibold">Required columns:</span> <code>question</code>, <code>option_a</code>, <code>option_b</code>, <code>option_c</code>, <code>option_d</code>, <code>correct_option</code>
             </p>
             <input 
               type="file" 
-              name="csv_file" 
-              accept=".csv"
+              name="file" 
+              accept=".csv, .xlsx, .xls, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
               className="block w-full text-sm text-slate-500
                 file:mr-4 file:py-2 file:px-4
                 file:rounded-full file:border-0

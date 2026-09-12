@@ -611,7 +611,7 @@ export default function QuestionListClient({
                   ) : (
                     <>
                       <Upload className="w-5 h-5" />
-                      <span>Upload CSV Questions</span>
+                      <span>Upload Questions</span>
                     </>
                   )}
                 </button>

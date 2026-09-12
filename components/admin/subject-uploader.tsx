@@ -171,7 +171,7 @@ export default function SubjectUploader({ streams }: { streams: any[] }) {
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1">CSV File</label>
+                <label className="block text-sm font-bold text-gray-700 mb-1">Upload File (Excel .xlsx / CSV)</label>
                 <div 
                   className={`
                     border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center transition-all cursor-pointer relative
@@ -187,14 +187,15 @@ export default function SubjectUploader({ streams }: { streams: any[] }) {
                   ) : (
                     <>
                       <Upload className="w-8 h-8 text-gray-300 mb-2" />
-                      <span className="text-xs font-bold text-gray-400">Click to browse CSV</span>
+                      <span className="text-xs font-bold text-gray-700 text-center">Click to browse Excel (.xlsx, .xls) or CSV</span>
+                      <span className="text-[11px] text-gray-400 mt-0.5">Supports any Excel or CSV format</span>
                     </>
                   )}
                   
                   <input 
                     type="file" 
-                    name="csv_file" 
-                    accept=".csv"
+                    name="file" 
+                    accept=".csv, .xlsx, .xls, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
                     required 
                     onChange={handleFileChange}
                     className="absolute inset-0 opacity-0 cursor-pointer" 

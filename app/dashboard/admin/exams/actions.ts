@@ -3,40 +3,34 @@
 import { prisma } from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
-import { parse } from 'csv-parse/sync'
+import { parseQuestionsFile } from '@/lib/excel-parser'
 
-// 1. Define the Shape of your CSV Row
-interface CSVQuestionRow {
-  text: string;
-  option_a: string;
-  option_b: string;
-  option_c: string;
-  option_d: string;
-  correct_option: string;
-  explanation?: string;
-  direction?: string;
-}
-
-// --- HELPER: Parse CSV and Insert ---
+// --- HELPER: Parse Excel/CSV and Insert ---
 async function parseAndInsertQuestions(file: File, parentId: string, type: 'prep' | 'mock' | 'practice') {
-  const fileContent = await file.text()
-
-  // 2. Cast the result of parse to your Interface array
-  const records = parse(fileContent, {
-    columns: true, 
-    skip_empty_lines: true,
-    trim: true,
-    relax_quotes: true 
-  }) as CSVQuestionRow[]
+  const arrayBuffer = await file.arrayBuffer()
+  const fileBuffer = Buffer.from(arrayBuffer)
+  
+  const records = await parseQuestionsFile(fileBuffer, file.name)
+  if (!records || records.length === 0) return
 
   // Iterate over parsed records
   for (const [index, row] of records.entries()) {
-    
+    const qText = (row.question || row.text || '').toString().trim()
+    const optA = (row.option_a || '').toString().trim()
+    const optB = (row.option_b || '').toString().trim()
+    const optC = (row.option_c || '').toString().trim()
+    const optD = (row.option_d || '').toString().trim()
+    const correctVal = (row.correct_option || 'A').toString().trim()
+
+    if (!qText || !optA || !optB) continue
+
     // Prepare Question Data
     const qData: any = {
-      text: row.text,
+      text: qText,
       explanation: row.explanation || '',
       direction: row.direction || null,
+      difficulty: row.difficulty || 'Medium',
+      marks: typeof row.marks === 'number' ? row.marks : (parseInt(String(row.marks || '1')) || 1),
       order_index: index + 1
     }
 
@@ -51,21 +45,30 @@ async function parseAndInsertQuestions(file: File, parentId: string, type: 'prep
       })
 
       // Prepare Options Data
-      const correctVal = row.correct_option ? row.correct_option.trim() : ''
+      const cleanCorrect = correctVal.replace(/^Option\s+/i, '').trim().toUpperCase()
       
-      const options = [
-        { text: row.option_a, label: 'A' },
-        { text: row.option_b, label: 'B' },
-        { text: row.option_c, label: 'C' },
-        { text: row.option_d, label: 'D' },
-      ]
+      const rawOptions = [
+        { text: optA, label: 'A' },
+        { text: optB, label: 'B' },
+        { text: optC, label: 'C' },
+        { text: optD, label: 'D' },
+      ].filter(o => o.text && o.text.trim() !== '')
 
-      const optionsData = options.map(opt => ({
+      const optionsData = rawOptions.map(opt => ({
         question_id: question.id,
         text: opt.text,
-        // Check if correct_option matches 'A'/'B' or the text itself
-        is_correct: correctVal.toUpperCase() === opt.label || correctVal === opt.text
+        is_correct: Boolean(cleanCorrect === opt.label || (opt.text && cleanCorrect.toLowerCase() === opt.text.toLowerCase()))
       }))
+
+      // If no option marked correct by label, check fallback
+      const hasCorrect = optionsData.some(o => o.is_correct)
+      if (!hasCorrect && optionsData.length > 0) {
+        if (cleanCorrect === '1') optionsData[0].is_correct = true
+        else if (cleanCorrect === '2' && optionsData.length > 1) optionsData[1].is_correct = true
+        else if (cleanCorrect === '3' && optionsData.length > 2) optionsData[2].is_correct = true
+        else if (cleanCorrect === '4' && optionsData.length > 3) optionsData[3].is_correct = true
+        else optionsData[0].is_correct = true
+      }
 
       await prisma.question_options.createMany({
         data: optionsData
@@ -83,7 +86,7 @@ export async function createExamAction(formData: FormData): Promise<any> {
   const subject_id = formData.get('subject_id') as string
   const duration = parseInt(formData.get('duration') as string) || 0
   const is_published = formData.get('is_published') === 'on'
-  const csvFile = formData.get('csv_file') as File
+  const file = (formData.get('file') || formData.get('csv_file')) as File
 
   let newRecordId = null
 
@@ -111,9 +114,9 @@ export async function createExamAction(formData: FormData): Promise<any> {
     return { error: error.message }
   }
 
-  // 2. Process CSV if uploaded
-  if (newRecordId && csvFile && csvFile.size > 0) {
-    await parseAndInsertQuestions(csvFile, newRecordId, type)
+  // 2. Process File if uploaded
+  if (newRecordId && file && file.size > 0) {
+    await parseAndInsertQuestions(file, newRecordId, type)
   }
 
   revalidatePath('/dashboard/admin/exams')
@@ -148,7 +151,7 @@ export async function updateExamAction(formData: FormData): Promise<any> {
   const subject_id = formData.get('subject_id') as string
   const duration = parseInt(formData.get('duration') as string) || 0
   const is_published = formData.get('is_published') === 'on'
-  const csvFile = formData.get('csv_file') as File
+  const file = (formData.get('file') || formData.get('csv_file')) as File
 
   const updatePayload: any = { title, description, subject_id, is_published }
   if (type !== 'prep') {
@@ -167,8 +170,8 @@ export async function updateExamAction(formData: FormData): Promise<any> {
     return { error: error.message }
   }
 
-  if (csvFile && csvFile.size > 0) {
-    await parseAndInsertQuestions(csvFile, id, type)
+  if (file && file.size > 0) {
+    await parseAndInsertQuestions(file, id, type)
   }
 
   revalidatePath('/dashboard/admin/exams')

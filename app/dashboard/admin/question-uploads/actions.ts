@@ -2,41 +2,23 @@
 
 import { prisma } from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
-import { parse } from 'csv-parse/sync'
 import { generatePracticeTestsAction, generateSubjectMockAction } from '@/app/dashboard/admin/subjects/actions'
+import { parseQuestionsFile } from '@/lib/excel-parser'
 
-// 1. Interface for Type Safety
-interface CSVQuestionRow {
-  [key: string]: string | undefined; 
-}
-
-// --- HELPER: Parse CSV and Insert ---
+// --- HELPER: Parse Excel/CSV and Insert Questions into Pool ---
 async function parseAndInsertQuestions(file: File, parentId: string) {
-  const fileContent = await file.text()
+  const arrayBuffer = await file.arrayBuffer()
+  const fileBuffer = Buffer.from(arrayBuffer)
+  
+  console.log(`[Question Pool] Processing file: ${file.name}, Size: ${fileBuffer.length} bytes`)
 
-  console.log(`[CSV] Processing file. Size: ${fileContent.length} bytes`)
+  const records = await parseQuestionsFile(fileBuffer, file.name)
 
-  // 2. Parse CSV with Robust Header Normalization
-  const records = parse(fileContent, {
-    columns: (headers: string[]) => 
-      headers.map(h => 
-        h.trim()
-         .toLowerCase()
-         .replace(/^[^a-z0-9]+|[^a-z0-9]+$/g, '') // Remove symbols
-         .replace(/\s+/g, '_') // Space to underscore
-      ),
-    skip_empty_lines: true,
-    trim: true,
-    relax_quotes: true,
-    bom: true 
-  }) as CSVQuestionRow[]
-
-  if (records.length === 0) {
-    return { error: "Parsed 0 records. Check if CSV is empty." }
+  if (!records || records.length === 0) {
+    return { error: "Parsed 0 records. Check if the file is empty or formatted properly." }
   }
 
-  // Debug: Log headers to help troubleshoot missing columns
-  console.log(`[CSV] Parsed ${records.length} rows. Headers:`, Object.keys(records[0]))
+  console.log(`[Question Pool] Successfully parsed ${records.length} question rows.`)
 
   let insertedCount = 0
   let skippedCount = 0
@@ -44,74 +26,82 @@ async function parseAndInsertQuestions(file: File, parentId: string) {
 
   for (const [index, row] of records.entries()) {
     try {
-      // 3. Robust Mapping (Handle multiple common header names)
-      const qText = row.question || row.text || row.question_text || row.q || row.question_name
-      const qDesc = row.description || row.direction || row.passage || row.instructions
-      const qExp = row.explanation || row.rationale || row.solution || row.exp
+      const qText = (row.question || row.text || '').toString().trim()
+      const qDesc = (row.direction || row.description || '').toString().trim()
+      const qExp = (row.explanation || '').toString().trim()
+      const qDiff = (row.difficulty || 'Medium').toString().trim()
+      const qMarks = typeof row.marks === 'number' ? row.marks : (parseInt(String(row.marks || '1')) || 1)
       
-      const optA = row.option_a || row.a || row.opt_a || row.option1
-      const optB = row.option_b || row.b || row.opt_b || row.option2
-      const optC = row.option_c || row.c || row.opt_c || row.option3
-      const optD = row.option_d || row.d || row.opt_d || row.option4
+      const optA = (row.option_a || '').toString().trim()
+      const optB = (row.option_b || '').toString().trim()
+      const optC = (row.option_c || '').toString().trim()
+      const optD = (row.option_d || '').toString().trim()
       
-      const correctVal = row.correct_option || row.answer || row.correct || row.ans || row.correct_answer || row.right_answer || row.answer_key
+      const correctVal = (row.correct_option || 'A').toString().trim()
 
       // Validate critical fields
-      if (!qText || !optA || !optB || !correctVal) {
-        console.warn(`[CSV] Skipping Row ${index + 1}: Missing critical data (Q, A, B, or Correct Answer).`)
+      if (!qText || !optA || !optB) {
+        console.warn(`[Question Pool] Skipping Row ${index + 1}: Missing critical data (Question text or Options A & B).`)
         skippedCount++
         continue
       }
 
-      // 4. Prepare Data
-      const qData: any = {
-        text: qText,
-        direction: qDesc || null,
-        explanation: qExp || '',
-        order_index: index + 1,
-        question_bank_id: parentId
-      }
-
-      // 5. Insert Question
+      // 1. Insert Question
       const question = await prisma.questions.create({
-        data: qData
+        data: {
+          text: qText,
+          direction: qDesc || null,
+          explanation: qExp || '',
+          difficulty: qDiff,
+          marks: qMarks,
+          order_index: index + 1,
+          question_bank_id: parentId
+        }
       })
 
-      // 6. Insert Options
+      // 2. Prepare Options
+      const cleanCorrect = correctVal.replace(/^Option\s+/i, '').trim().toUpperCase()
+
       const rawOptions = [
         { text: optA, label: 'A' },
         { text: optB, label: 'B' },
         { text: optC, label: 'C' },
         { text: optD, label: 'D' },
-      ]
-      
-      const cleanCorrect = correctVal.toString().trim().replace(/^Option\s+/i, '')
+      ].filter(o => o.text && o.text.trim() !== '')
 
-      const optionsData = rawOptions
-        .filter(o => o.text && o.text.trim() !== '')
-        .map(opt => {
-          const isCorrect = 
-            cleanCorrect.toUpperCase() === opt.label || 
-            (opt.text && cleanCorrect.toLowerCase() === opt.text.toString().toLowerCase())
+      const optionsData = rawOptions.map(opt => {
+        const isCorrect = Boolean(
+          cleanCorrect === opt.label || 
+          (opt.text && cleanCorrect.toLowerCase() === opt.text.toLowerCase())
+        )
 
-          return {
-            question_id: question.id,
-            text: opt.text,
-            is_correct: isCorrect
-          }
-        })
+        return {
+          question_id: question.id,
+          text: opt.text,
+          is_correct: isCorrect
+        }
+      })
+
+      // If no option marked correct by label, fallback to option text or 1st option
+      const hasCorrect = optionsData.some(o => o.is_correct)
+      if (!hasCorrect && optionsData.length > 0) {
+        if (cleanCorrect === '1') optionsData[0].is_correct = true
+        else if (cleanCorrect === '2' && optionsData.length > 1) optionsData[1].is_correct = true
+        else if (cleanCorrect === '3' && optionsData.length > 2) optionsData[2].is_correct = true
+        else if (cleanCorrect === '4' && optionsData.length > 3) optionsData[3].is_correct = true
+        else optionsData[0].is_correct = true
+      }
 
       await prisma.question_options.createMany({ data: optionsData as any })
-
       insertedCount++
 
     } catch (err: any) {
-      console.error(`[CSV] Error Row ${index + 1}:`, err.message)
+      console.error(`[Question Pool] Error Row ${index + 1}:`, err.message)
       errors.push(`Row ${index + 1}: ${err.message}`)
     }
   }
 
-  console.log(`[CSV] Complete. Inserted: ${insertedCount}, Skipped: ${skippedCount}`)
+  console.log(`[Question Pool] Complete. Inserted: ${insertedCount}, Skipped: ${skippedCount}`)
 
   if (insertedCount === 0) {
     return { error: `Failed to insert questions. Errors: ${errors.slice(0, 3).join(', ')}` }
@@ -125,9 +115,9 @@ export async function uploadQuestionBankAction(formData: FormData) {
   const title = formData.get('title') as string
   const description = formData.get('description') as string
   const subject_id = formData.get('subject_id') as string
-  const csvFile = formData.get('csv_file') as File
+  const file = (formData.get('file') || formData.get('csv_file')) as File
 
-  if (!csvFile || csvFile.size === 0) return { error: 'No file uploaded' }
+  if (!file || file.size === 0) return { error: 'No file uploaded' }
 
   let bankId: string | undefined = undefined;
   
@@ -143,14 +133,14 @@ export async function uploadQuestionBankAction(formData: FormData) {
     })
     bankId = bank.id;
 
-    // 2. Parse CSV & Insert Questions
-    const result = await parseAndInsertQuestions(csvFile, bank.id)
+    // 2. Parse File & Insert Questions
+    const result = await parseAndInsertQuestions(file, bank.id)
 
     if (result?.error) {
-      console.error("CSV Processing Failed:", result.error)
-      // Rollback: Delete the empty bank if CSV fails
+      console.error("File Processing Failed:", result.error)
+      // Rollback: Delete the empty bank if file fails
       await prisma.question_banks.delete({ where: { id: bank.id } })
-      return { error: result.error || "CSV Upload Failed" }
+      return { error: result.error || "File Upload Failed" }
     }
 
     // ------------------------------------------------------------------
@@ -171,14 +161,14 @@ export async function uploadQuestionBankAction(formData: FormData) {
 
       } catch (genError) {
         console.error("[Auto-Gen] Critical Error during generation:", genError)
-        // Note: We do NOT throw here. The questions are uploaded safely.
       }
     }
 
     revalidatePath(`/dashboard/admin/subjects/${subject_id}/edit`)
     revalidatePath(`/dashboard/admin/manage-content`)
+    revalidatePath(`/dashboard/admin/question-uploads`)
     
-    return { success: true }
+    return { success: true, count: result.inserted }
   } catch (error: any) {
     if (bankId) {
       await prisma.question_banks.delete({ where: { id: bankId } }).catch(() => {})
@@ -186,4 +176,5 @@ export async function uploadQuestionBankAction(formData: FormData) {
     return { error: `Failed to create bank: ${error.message}` }
   }
 }
+
 

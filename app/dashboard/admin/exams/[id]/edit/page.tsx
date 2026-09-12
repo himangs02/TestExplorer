@@ -103,18 +103,20 @@ export default async function EditExamPage({
                 </div>
               )}
 
-              {/* CSV Upload Section */}
+              {/* File Upload Section (Excel / CSV) */}
               <div className="bg-orange-50 border border-orange-100 p-6 rounded-2xl">
                 <h3 className="text-orange-900 font-bold mb-2 flex items-center gap-2">
-                  <Upload className="w-4 h-4" /> Add Questions (CSV)
+                  <Upload className="w-4 h-4" /> Add Questions (Excel / CSV)
                 </h3>
                 <p className="text-xs text-orange-700/80 mb-4">
-                  New questions will be appended. Use the list on the right to delete old ones.
+                  Upload an Excel (<code>.xlsx</code>, <code>.xls</code>) or <code>.csv</code> file. New questions will be appended.
+                  <br />
+                  <span className="font-semibold">Required columns:</span> <code>question</code>, <code>option_a</code>, <code>option_b</code>, <code>option_c</code>, <code>option_d</code>, <code>correct_option</code>
                 </p>
                 <input 
                   type="file" 
-                  name="csv_file" 
-                  accept=".csv"
+                  name="file" 
+                  accept=".csv, .xlsx, .xls, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
                   className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-orange-600 file:text-white hover:file:bg-orange-700"
                 />
               </div>

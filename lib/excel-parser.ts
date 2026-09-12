@@ -8,6 +8,7 @@ export interface ParsedQuestionRow {
   course?: string
   subject?: string
   chapter?: string
+  topic?: string
   question: string
   option_a: string
   option_b: string
@@ -15,6 +16,7 @@ export interface ParsedQuestionRow {
   option_d?: string
   correct_option: string
   explanation?: string
+  direction?: string
   difficulty?: string
   marks?: number
   [key: string]: any
@@ -238,17 +240,74 @@ function decodeXmlEntities(str: string): string {
     .replace(/&apos;/g, "'")
 }
 
+/**
+ * Helper to retrieve a value from rowObj matching any given alias.
+ * It first does direct key lookup, then checks if any key matches the alias without underscores.
+ */
+function getColumnValue(row: Record<string, string>, aliases: string[]): string {
+  // 1. Direct exact match
+  for (const alias of aliases) {
+    if (row[alias] !== undefined && row[alias] !== '') {
+      return row[alias]
+    }
+  }
+
+  // 2. Fallback: Check if any normalized key contains the alias
+  const rowKeys = Object.keys(row)
+  for (const alias of aliases) {
+    const matchedKey = rowKeys.find(k => k === alias || k.replace(/_/g, '') === alias.replace(/_/g, ''))
+    if (matchedKey && row[matchedKey] !== undefined && row[matchedKey] !== '') {
+      return row[matchedKey]
+    }
+  }
+
+  return ''
+}
+
 function mapObjectToQuestion(
   row: Record<string, string>,
   attachedImageUrl?: string,
   defaults?: { course?: string; subject?: string; chapter?: string }
 ): ParsedQuestionRow | null {
-  const qText = row.question || row.text || row.question_text || row.q || row.question_name || ''
-  const optA = row.option_a || row.option_1 || row.option1 || row.a || row.opt_a || row.opt1 || ''
-  const optB = row.option_b || row.option_2 || row.option2 || row.b || row.opt_b || row.opt2 || ''
-  const optC = row.option_c || row.option_3 || row.option3 || row.c || row.opt_c || row.opt3 || ''
-  const optD = row.option_d || row.option_4 || row.option4 || row.d || row.opt_d || row.opt4 || ''
-  const correctVal = row.correct_option || row.right_answer || row.right_answer || row.answer || row.correct || row.ans || row.correct_answer || row.answer_key || 'A'
+  // Extract Question Text
+  const qText = getColumnValue(row, [
+    'question', 'question_text', 'questiontext', 'text', 'q', 
+    'question_name', 'question_statement', 'questionstatement', 
+    'problem', 'item', 'title', 'questions'
+  ])
+
+  // Extract Options A through D
+  const optA = getColumnValue(row, [
+    'option_a', 'optiona', 'option_1', 'option1', 'opta', 'opt_a', 
+    'opt1', 'opt_1', 'choice_a', 'choicea', 'choice_1', 'choice1', 
+    'a', 'ans_a', 'ansa'
+  ])
+
+  const optB = getColumnValue(row, [
+    'option_b', 'optionb', 'option_2', 'option2', 'optb', 'opt_b', 
+    'opt2', 'opt_2', 'choice_b', 'choiceb', 'choice_2', 'choice2', 
+    'b', 'ans_b', 'ansb'
+  ])
+
+  const optC = getColumnValue(row, [
+    'option_c', 'optionc', 'option_3', 'option3', 'optc', 'opt_c', 
+    'opt3', 'opt_3', 'choice_c', 'choicec', 'choice_3', 'choice3', 
+    'c', 'ans_c', 'ansc'
+  ])
+
+  const optD = getColumnValue(row, [
+    'option_d', 'optiond', 'option_4', 'option4', 'optd', 'opt_d', 
+    'opt4', 'opt_4', 'choice_d', 'choiced', 'choice_4', 'choice4', 
+    'd', 'ans_d', 'ansd'
+  ])
+
+  // Extract Correct Option / Answer
+  const correctVal = getColumnValue(row, [
+    'correct_option', 'correctoption', 'correct_answer', 'correctanswer', 
+    'correct_ans', 'correctans', 'correct_choice', 'correctchoice',
+    'right_answer', 'rightanswer', 'right_ans', 'rightans', 'right_opt', 'rightopt',
+    'answer', 'ans', 'correct', 'answer_key', 'answerkey', 'key'
+  ]) || 'A'
 
   if (!qText && !attachedImageUrl) return null
   if (!optA || !optB) return null
@@ -263,17 +322,24 @@ function mapObjectToQuestion(
     }
   }
 
-  const course = row.course || row.exam || row.course_name || row.category || defaults?.course || 'JEE Main'
-  const subject = row.subject || row.subject_name || row.subj || defaults?.subject || 'Physics'
-  const chapter = row.chapter || row.chapter_name || row.chap || defaults?.chapter || 'General'
-  const explanation = row.explanation || row.solution || row.rationale || row.exp || ''
-  const difficulty = row.difficulty || row.level || 'Medium'
-  const marks = parseInt(row.marks || row.mark || row.score || row.points || '4') || 4
+  // Extract optional metadata fields
+  const course = getColumnValue(row, ['course', 'course_name', 'exam', 'exam_name', 'course_title', 'category']) || defaults?.course || 'JEE Main'
+  const subject = getColumnValue(row, ['subject', 'subject_name', 'subject_title', 'subj']) || defaults?.subject || 'Physics'
+  const chapter = getColumnValue(row, ['chapter', 'chapter_name', 'chapter_title', 'chap']) || defaults?.chapter || 'General'
+  const topic = getColumnValue(row, ['topic', 'topic_name', 'topic_title', 'top']) || ''
+  
+  const explanation = getColumnValue(row, ['explanation', 'solution', 'rationale', 'exp', 'reason', 'sol'])
+  const direction = getColumnValue(row, ['direction', 'directions', 'description', 'passage', 'instructions', 'instruction'])
+  const difficulty = getColumnValue(row, ['difficulty', 'difficulty_level', 'level', 'diff']) || 'Medium'
+  
+  const rawMarks = getColumnValue(row, ['marks', 'mark', 'score', 'points', 'point'])
+  const marks = parseInt(rawMarks || '1') || 1
 
   return {
     course,
     subject,
     chapter,
+    topic,
     question: finalQuestion,
     option_a: optA,
     option_b: optB,
@@ -281,6 +347,7 @@ function mapObjectToQuestion(
     option_d: optD,
     correct_option: correctVal.toUpperCase().trim(),
     explanation,
+    direction,
     difficulty,
     marks
   }
