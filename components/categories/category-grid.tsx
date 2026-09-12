@@ -45,15 +45,15 @@ export default function CategoryGrid({ categories }: { categories: Category[] | 
               style={finalStyle}
             >
               <div className='text-center space-y-2 px-2'>
-                <h3 className="text-xl font-black text-black tracking-tight leading-tight">
+                <h3 className="text-lg font-black text-black tracking-tight leading-tight">
                   {cat.title}
                 </h3>
-                <p className="text-black/70 font-bold text-xs line-clamp-2">
+                <p className="text-black/70 font-bold text-[11px] line-clamp-2">
                   {cat.description}
                 </p>
               </div>
 
-              <Button variant="outline" className='rounded-full text-xs border-black bg-white hover:bg-black hover:text-white transition-colors h-8'>
+              <Button variant="outline" className='rounded-full text-[11px] border-black bg-white hover:bg-black hover:text-white transition-colors h-7 px-3'>
                 Take Mock Test <ArrowRight className='w-3 h-3 ml-1'/>
               </Button>
             </div>

@@ -18,44 +18,44 @@ export default async function ContactPage() {
       <div className="w-full max-w-6xl bg-white rounded-[2rem] shadow-xl overflow-hidden flex flex-col md:flex-row">
         
         {/* Left: Info Section */}
-        <div className="w-full md:w-2/5 bg-gray-900 text-white p-10 md:p-16 flex flex-col justify-between">
+        <div className="w-full md:w-2/5 bg-gray-900 text-white p-8 md:p-12 flex flex-col justify-between">
           <div>
-            <h2 className="text-3xl font-bold mb-6">{contactInfo.title}</h2>
-            <p className="text-gray-400 mb-10 text-lg leading-relaxed">
+            <h2 className="text-2xl font-bold mb-4">{contactInfo.title}</h2>
+            <p className="text-gray-400 mb-8 text-base leading-relaxed">
               {contactInfo.description}
             </p>
             
-            <div className="space-y-8">
+            <div className="space-y-6">
               {/* Email */}
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shrink-0">
-                  <Mail className="w-5 h-5 text-blue-400" />
+              <div className="flex items-start gap-3.5">
+                <div className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center shrink-0">
+                  <Mail className="w-4 h-4 text-blue-400" />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-400 uppercase font-bold tracking-wider mb-1">Email</p>
-                  <p className="font-medium text-lg">{contactInfo.email}</p>
+                  <p className="text-[11px] text-gray-400 uppercase font-bold tracking-wider mb-0.5">Email</p>
+                  <p className="font-medium text-base">{contactInfo.email}</p>
                 </div>
               </div>
               
               {/* Phone */}
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shrink-0">
-                  <Phone className="w-5 h-5 text-green-400" />
+              <div className="flex items-start gap-3.5">
+                <div className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center shrink-0">
+                  <Phone className="w-4 h-4 text-green-400" />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-400 uppercase font-bold tracking-wider mb-1">Phone</p>
-                  <p className="font-medium text-lg">{contactInfo.phone}</p>
+                  <p className="text-[11px] text-gray-400 uppercase font-bold tracking-wider mb-0.5">Phone</p>
+                  <p className="font-medium text-base">{contactInfo.phone}</p>
                 </div>
               </div>
 
               {/* Organization Name (Visual consistency) */}
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shrink-0">
-                  <Building2 className="w-5 h-5 text-purple-400" />
+              <div className="flex items-start gap-3.5">
+                <div className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center shrink-0">
+                  <Building2 className="w-4 h-4 text-purple-400" />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-400 uppercase font-bold tracking-wider mb-1">Organization</p>
-                  <p className="font-medium text-lg">{contactInfo.companyName}</p>
+                  <p className="text-[11px] text-gray-400 uppercase font-bold tracking-wider mb-0.5">Organization</p>
+                  <p className="font-medium text-base">{contactInfo.companyName}</p>
                 </div>
               </div>
             </div>

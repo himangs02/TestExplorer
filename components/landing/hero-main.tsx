@@ -15,41 +15,41 @@ export default async function HeroMain() {
         {/* --- Hero Content --- */}
         <div className="text-center">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2.5 bg-white border border-gray-200 rounded-full px-5 py-2 shadow-xs mb-8 hover:scale-105 transition-transform cursor-default">
-            <span className="flex h-2.5 w-2.5 rounded-full bg-blue-600 animate-pulse"></span>
-            <span className="text-sm sm:text-base font-bold text-gray-700">#1 Platform for Exam Prep</span>
+          <div className="inline-flex items-center gap-2 bg-white border border-gray-200 rounded-full px-4 py-1.5 shadow-xs mb-6 hover:scale-105 transition-transform cursor-default">
+            <span className="flex h-2 w-2 rounded-full bg-blue-600 animate-pulse"></span>
+            <span className="text-xs sm:text-sm font-bold text-gray-700">#1 Platform for Exam Prep</span>
           </div>
 
           {/* Headline */}
-          <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight text-gray-900 mb-8 leading-[1.08]">
+          <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-gray-900 mb-6 leading-[1.1]">
             Ace Your Entrance Exams <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600">
               Without the Stress.
             </span>
           </h1>
 
-          <p className="text-xl sm:text-2xl text-gray-600 max-w-3xl mx-auto mb-10 font-medium leading-relaxed">
+          <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto mb-8 font-medium leading-relaxed">
             Unlimited mock tests, AI-driven analytics, and a community that actually helps you study.
           </p>
 
           {/* Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-5 mb-8 sm:mb-10">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-7 sm:mb-9">
             <Link
               href="/signup"
-              className="w-full sm:w-auto px-9 py-4.5 bg-gray-900 text-white rounded-full font-bold text-lg sm:text-xl hover:bg-gray-800 transition-all hover:scale-105 shadow-xl shadow-gray-200 flex items-center justify-center gap-2.5"
+              className="w-full sm:w-auto px-7 py-3.5 bg-gray-900 text-white rounded-full font-bold text-base sm:text-lg hover:bg-gray-800 transition-all hover:scale-105 shadow-xl shadow-gray-200 flex items-center justify-center gap-2"
             >
-              Start Practicing Free <ArrowRight className="w-5 h-5" />
+              Start Practicing Free <ArrowRight className="w-4 h-4" />
             </Link>
             <Link
               href="#features"
-              className="w-full sm:w-auto px-9 py-4.5 bg-white text-gray-900 border border-gray-200 rounded-full font-bold text-lg sm:text-xl hover:bg-gray-50 transition-all hover:border-gray-300"
+              className="w-full sm:w-auto px-7 py-3.5 bg-white text-gray-900 border border-gray-200 rounded-full font-bold text-base sm:text-lg hover:bg-gray-50 transition-all hover:border-gray-300"
             >
               How it works
             </Link>
           </div>
 
           {/* Social Proof */}
-          <div className="flex items-center justify-center gap-8 text-sm sm:text-base font-bold text-gray-400 grayscale opacity-70">
+          <div className="flex items-center justify-center gap-6 text-xs sm:text-sm font-bold text-gray-400 grayscale opacity-70">
             <span>TRUSTED BY 100+ SCHOOLS</span>
           </div>
         </div>

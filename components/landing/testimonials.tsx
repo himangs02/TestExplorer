@@ -63,11 +63,11 @@ export default function Testimonials({ data }: { data?: any[] }) {
 
   return (
     <section className="pt-6 sm:pt-8 pb-16 sm:pb-20 bg-white overflow-hidden">
-      <div className="container mx-auto px-4 mb-10 sm:mb-12 text-center">
-        <span className="bg-black text-white px-4 py-1 rounded-full text-xs sm:text-sm font-bold uppercase tracking-wider">
+      <div className="container mx-auto px-4 mb-8 sm:mb-10 text-center">
+        <span className="bg-black text-white px-3.5 py-0.5 rounded-full text-[11px] sm:text-xs font-bold uppercase tracking-wider">
           Testimonials
         </span>
-        <h2 className="text-2xl sm:text-3xl md:text-4xl font-black mt-2.5 tracking-tight">
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-black mt-2 tracking-tight">
           Don't just take our word for it.
         </h2>
       </div>
@@ -88,13 +88,13 @@ export default function Testimonials({ data }: { data?: any[] }) {
             <div
               key={i}
               className={`
-                relative shrink-0 w-[350px] md:w-[400px] h-[340px] rounded-[2.5rem] p-8 text-white 
+                relative shrink-0 w-[330px] md:w-[380px] h-[320px] rounded-[2rem] p-7 text-white 
                 bg-gradient-to-br ${t.gradient} shadow-xl 
                 hover:scale-[1.02] transition-transform duration-300 flex flex-col justify-between
               `}
             >
               <div className="flex flex-col items-center text-center">
-                <div className="w-16 h-16 rounded-full border-4 border-white/30 mb-4 overflow-hidden bg-white/10 flex items-center justify-center shrink-0">
+                <div className="w-14 h-14 rounded-full border-4 border-white/30 mb-3 overflow-hidden bg-white/10 flex items-center justify-center shrink-0">
                   <img
                     src={t.image}
                     alt={t.name || 'Student'}
@@ -105,18 +105,18 @@ export default function Testimonials({ data }: { data?: any[] }) {
                   />
                 </div>
 
-                <h3 className="text-xl font-bold mb-1">{t.name}</h3>
-                <p className="text-[10px] font-bold uppercase tracking-wider mb-5 opacity-80 bg-black/10 px-3 py-1 rounded-full">
+                <h3 className="text-lg font-bold mb-0.5">{t.name}</h3>
+                <p className="text-[9px] font-bold uppercase tracking-wider mb-4 opacity-80 bg-black/10 px-2.5 py-0.5 rounded-full">
                   {t.role}
                 </p>
 
-                <p className="text-sm font-medium leading-relaxed opacity-95 line-clamp-4">
+                <p className="text-xs sm:text-sm font-medium leading-relaxed opacity-95 line-clamp-4">
                   "{t.text}"
                 </p>
               </div>
 
-              <div className="flex justify-center mt-4">
-                <div className="w-12 h-1 bg-white/30 rounded-full" />
+              <div className="flex justify-center mt-3">
+                <div className="w-10 h-1 bg-white/30 rounded-full" />
               </div>
             </div>
           ))}

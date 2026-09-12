@@ -18,8 +18,8 @@ export default function FAQ() {
       <div className="w-full max-w-3xl mx-auto">
         
         {/* Header Badge */}
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-black bg-black text-white inline-block px-4 py-2 rounded-lg transform -rotate-1">
+        <div className="text-center mb-10">
+          <h2 className="text-2xl font-black bg-black text-white inline-block px-3.5 py-1.5 rounded-lg transform -rotate-1">
             Frequently Asked Questions
           </h2>
         </div>
@@ -37,13 +37,13 @@ export default function FAQ() {
                   type="button"
                   suppressHydrationWarning
                   onClick={() => setOpenIndex(isOpen ? null : i)}
-                  className={`w-full flex items-center justify-between p-6 text-left transition-all cursor-pointer ${
+                  className={`w-full flex items-center justify-between p-5 sm:p-6 text-left transition-all cursor-pointer ${
                     isOpen 
                       ? "bg-linear-to-r from-orange-400 to-orange-300 text-white" 
                       : "bg-linear-to-r from-orange-100 to-gray-200 text-gray-800 hover:from-orange-200"
                   }`}
                 >
-                  <span className="font-bold text-lg pr-4">{item.q}</span>
+                  <span className="font-bold text-base sm:text-lg pr-4">{item.q}</span>
                   {isOpen ? (
                     <Minus className="w-5 h-5 shrink-0" />
                   ) : (
@@ -53,10 +53,10 @@ export default function FAQ() {
                 
                 <div 
                   className={`bg-white px-6 overflow-hidden transition-all duration-300 ease-in-out ${
-                    isOpen ? "max-h-40 py-6 opacity-100" : "max-h-0 py-0 opacity-0"
+                    isOpen ? "max-h-40 py-5 opacity-100" : "max-h-0 py-0 opacity-0"
                   }`}
                 >
-                  <p className="text-gray-600 font-medium leading-relaxed">
+                  <p className="text-sm text-gray-600 font-medium leading-relaxed">
                     {item.a}
                   </p>
                 </div>

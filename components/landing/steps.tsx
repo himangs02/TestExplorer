@@ -67,14 +67,14 @@ export default function Steps() {
   ];
 
   return (
-    <section className="py-20 md:py-28 px-4 bg-gray-50/50">
+    <section className="py-16 md:py-24 px-4 bg-gray-50/50">
       <div className="container mx-auto">
 
         {/* Header */}
-        <div className="text-center mb-12 md:mb-16">
-          <span className="text-orange-500 font-bold tracking-wider uppercase text-xs">Simple Process</span>
-          <h2 className="text-2xl sm:text-3xl font-black text-gray-900 mt-1 tracking-tight">
-            How You Practice on <span className="bg-black text-white px-2.5 py-0.5 rounded-lg transform -rotate-1 inline-block">This Platform</span>
+        <div className="text-center mb-10 md:mb-14">
+          <span className="text-orange-500 font-bold tracking-wider uppercase text-[11px]">Simple Process</span>
+          <h2 className="text-xl sm:text-2xl font-black text-gray-900 mt-1 tracking-tight">
+            How You Practice on <span className="bg-black text-white px-2 py-0.5 rounded-lg transform -rotate-1 inline-block">This Platform</span>
           </h2>
         </div>
 
@@ -95,9 +95,9 @@ export default function Steps() {
                     `}
                 >
                   <div className="bg-white/20 p-3 rounded-full mb-3 backdrop-blur-sm">
-                    <card.icon className="w-6 h-6 text-white" />
+                    <card.icon className="w-5 h-5 text-white" />
                   </div>
-                  <span className="font-bold text-sm leading-tight">{card.title}</span>
+                  <span className="font-bold text-xs sm:text-sm leading-tight">{card.title}</span>
                 </div>
               ))}
             </div>
@@ -113,16 +113,16 @@ export default function Steps() {
                 )}
 
                 {/* Step Number Circle */}
-                <div className={`shrink-0 w-12 h-12 rounded-full ${item.color} text-white flex items-center justify-center font-bold text-lg shadow-lg shadow-gray-200 z-10 relative ring-4 ring-white`}>
+                <div className={`shrink-0 w-11 h-11 rounded-full ${item.color} text-white flex items-center justify-center font-bold text-base shadow-lg shadow-gray-200 z-10 relative ring-4 ring-white`}>
                   {item.step}
                 </div>
 
                 {/* Content */}
                 <div className="pb-2 pt-1">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2 uppercase tracking-wide flex items-center gap-2">
+                  <h3 className="text-lg font-bold text-gray-900 mb-1.5 uppercase tracking-wide flex items-center gap-2">
                     {item.title}
                   </h3>
-                  <p className="text-gray-600 font-medium leading-relaxed max-w-md">
+                  <p className="text-sm text-gray-600 font-medium leading-relaxed max-w-md">
                     {item.desc}
                   </p>
                 </div>

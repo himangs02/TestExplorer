@@ -103,22 +103,22 @@ export default function PredictorHeroSection() {
 
       <div className="container mx-auto px-4 relative z-10">
         {/* Title Header */}
-        <div className="text-center max-w-2xl mx-auto mb-8">
-          <div className="inline-flex items-center gap-2 bg-white border border-blue-200/60 rounded-full px-4 py-1.5 shadow-2xs mb-4">
-            <span className="flex h-2 w-2 rounded-full bg-blue-600 animate-pulse"></span>
-            <span className="text-[11px] sm:text-xs font-bold text-blue-700 tracking-wide uppercase">
+        <div className="text-center max-w-2xl mx-auto mb-7">
+          <div className="inline-flex items-center gap-2 bg-white border border-blue-200/60 rounded-full px-3.5 py-1 shadow-2xs mb-3">
+            <span className="flex h-1.5 w-1.5 rounded-full bg-blue-600 animate-pulse"></span>
+            <span className="text-[10px] sm:text-[11px] font-bold text-blue-700 tracking-wide uppercase">
               🎯 Test Explorer Rank & College Predictor 2027
             </span>
           </div>
 
-          <h2 className="text-2xl sm:text-3xl md:text-[34px] font-black tracking-tight text-gray-900 mb-3 leading-tight">
+          <h2 className="text-xl sm:text-2xl md:text-[28px] font-black tracking-tight text-gray-900 mb-2.5 leading-tight">
             Find Your Rank.{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600">
               Find Your College.
             </span>
           </h2>
 
-          <p className="text-xs sm:text-sm text-gray-500 font-medium leading-relaxed max-w-xl mx-auto">
+          <p className="text-[11px] sm:text-xs text-gray-500 font-medium leading-relaxed max-w-lg mx-auto">
             Enter your marks or rank and discover your estimated rank, admission chances, and colleges you may be eligible for.
           </p>
         </div>
@@ -296,29 +296,29 @@ export default function PredictorHeroSection() {
 
         {/* Value Props / Stats strip */}
         <div className="mt-8 text-center">
-          <p className="text-[11px] font-black uppercase tracking-widest text-gray-400 mb-4">
+          <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-gray-400 mb-3">
             One Score. Thousands of Possibilities.
           </p>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-3xl mx-auto">
             <div className="p-3 bg-white rounded-xl border border-gray-200 shadow-2xs">
-              <span className="text-xl sm:text-2xl font-black text-blue-600 block">5 Major</span>
-              <span className="text-[11px] font-bold text-gray-600 mt-0.5 block">Exams Supported</span>
+              <span className="text-lg sm:text-xl font-black text-blue-600 block">5 Major</span>
+              <span className="text-[10px] sm:text-[11px] font-bold text-gray-600 mt-0.5 block">Exams Supported</span>
             </div>
 
             <div className="p-3 bg-white rounded-xl border border-gray-200 shadow-2xs">
-              <span className="text-xl sm:text-2xl font-black text-purple-600 block">1,500+</span>
-              <span className="text-[11px] font-bold text-gray-600 mt-0.5 block">Premier Colleges</span>
+              <span className="text-lg sm:text-xl font-black text-purple-600 block">1,500+</span>
+              <span className="text-[10px] sm:text-[11px] font-bold text-gray-600 mt-0.5 block">Premier Colleges</span>
             </div>
 
             <div className="p-3 bg-white rounded-xl border border-gray-200 shadow-2xs">
-              <span className="text-xl sm:text-2xl font-black text-emerald-600 block">Multi-Year</span>
-              <span className="text-[11px] font-bold text-gray-600 mt-0.5 block">Verified Cutoffs</span>
+              <span className="text-lg sm:text-xl font-black text-emerald-600 block">Multi-Year</span>
+              <span className="text-[10px] sm:text-[11px] font-bold text-gray-600 mt-0.5 block">Verified Cutoffs</span>
             </div>
 
             <div className="p-3 bg-white rounded-xl border border-gray-200 shadow-2xs">
-              <span className="text-xl sm:text-2xl font-black text-indigo-600 block">JoSAA & MCC</span>
-              <span className="text-[11px] font-bold text-gray-600 mt-0.5 block">Counselling Systems</span>
+              <span className="text-lg sm:text-xl font-black text-indigo-600 block">JoSAA & MCC</span>
+              <span className="text-[10px] sm:text-[11px] font-bold text-gray-600 mt-0.5 block">Counselling Systems</span>
             </div>
           </div>
         </div>

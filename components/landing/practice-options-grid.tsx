@@ -39,14 +39,14 @@ export default function PracticeOptionsGrid({ categories }: { categories?: Categ
                 style={finalStyle}
               >
                 <div className="w-full flex-1 flex items-center justify-center">
-                  <h3 className="text-lg sm:text-xl font-black text-black tracking-tight text-center leading-tight">
+                  <h3 className="text-base sm:text-lg font-black text-black tracking-tight text-center leading-tight">
                     {cat.title}
                   </h3>
                 </div>
 
-                <div className="rounded-full text-xs font-bold border-2 border-black bg-white text-black px-3.5 py-1.5 flex items-center gap-1.5 whitespace-nowrap shrink-0 group-hover:bg-black group-hover:text-white transition-all shadow-2xs">
+                <div className="rounded-full text-[11px] font-bold border-2 border-black bg-white text-black px-3 py-1 flex items-center gap-1.5 whitespace-nowrap shrink-0 group-hover:bg-black group-hover:text-white transition-all shadow-2xs">
                   <span>Take Mock Test</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  <ArrowRight className="w-3 h-3" />
                 </div>
               </div>
             </Link>

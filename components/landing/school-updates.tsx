@@ -53,17 +53,17 @@ export default async function SchoolUpdates({ school }: { school: any }) {
                     />
                   </div>
                   <div className="mt-4 text-center">
-                    <h4 className="font-bold text-gray-900 text-lg">Principal&apos;s Desk</h4>
-                    <p className="text-sm font-medium text-blue-600">{school.name}</p>
+                    <h4 className="font-bold text-gray-900 text-base">Principal&apos;s Desk</h4>
+                    <p className="text-xs font-medium text-blue-600">{school.name}</p>
                   </div>
                 </div>
 
                 <div className="md:col-span-8 lg:col-span-9 space-y-6">
-                  <h3 className="text-3xl md:text-4xl font-black text-gray-900">
+                  <h3 className="text-2xl md:text-3xl font-black text-gray-900">
                     A Message to Our Students
                   </h3>
                   <div className="relative">
-                    <p className="text-lg text-gray-600 leading-relaxed relative z-10 whitespace-pre-line pl-4 border-l-4 border-blue-500 rounded-l">
+                    <p className="text-base text-gray-600 leading-relaxed relative z-10 whitespace-pre-line pl-4 border-l-4 border-blue-500 rounded-l">
                       {school.principal_message}
                     </p>
                   </div>
@@ -82,27 +82,27 @@ export default async function SchoolUpdates({ school }: { school: any }) {
 
             {/* === LEFT COLUMN: Welcome & Stats === */}
             <div className="space-y-8">
-              <div className="inline-block px-4 py-1.5 bg-blue-100 text-blue-700 rounded-full text-sm font-bold tracking-wide">
+              <div className="inline-block px-3.5 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold tracking-wide">
                 WELCOME TO {school.name.toUpperCase()}
               </div>
 
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-tight">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 leading-tight">
                 Excellence in <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">
                   Education & Growth
                 </span>
               </h2>
 
-              <p className="text-lg text-gray-600 leading-relaxed max-w-xl">
+              <p className="text-base text-gray-600 leading-relaxed max-w-xl">
                 {school.welcome_message ||
                   "We are committed to providing a nurturing environment that fosters academic excellence, character development, and lifelong learning. Our innovative curriculum and dedicated faculty ensure every student reaches their full potential."}
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                <button type="button" className="px-8 py-4 bg-gray-900 text-white rounded-xl font-bold hover:bg-gray-800 transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2">
+                <button type="button" className="px-6 py-3.5 bg-gray-900 text-white rounded-xl font-bold text-sm sm:text-base hover:bg-gray-800 transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2">
                   About Our School <ArrowRight className="w-4 h-4" />
                 </button>
-                <button type="button" className="px-8 py-4 bg-white text-gray-900 border border-gray-200 rounded-xl font-bold hover:bg-gray-50 transition-all shadow-sm flex items-center justify-center gap-2">
+                <button type="button" className="px-6 py-3.5 bg-white text-gray-900 border border-gray-200 rounded-xl font-bold text-sm sm:text-base hover:bg-gray-50 transition-all shadow-sm flex items-center justify-center gap-2">
                   Admissions
                 </button>
               </div>
@@ -110,16 +110,16 @@ export default async function SchoolUpdates({ school }: { school: any }) {
               {/* Stats Row */}
               <div className="grid grid-cols-3 gap-8 pt-8 border-t border-gray-200">
                 <div>
-                  <h4 className="text-3xl font-black text-gray-900">100%</h4>
-                  <p className="text-sm text-gray-500 font-medium mt-1">Result</p>
+                  <h4 className="text-2xl font-black text-gray-900">100%</h4>
+                  <p className="text-xs text-gray-500 font-medium mt-1">Result</p>
                 </div>
                 <div>
-                  <h4 className="text-3xl font-black text-gray-900">50+</h4>
-                  <p className="text-sm text-gray-500 font-medium mt-1">Awards</p>
+                  <h4 className="text-2xl font-black text-gray-900">50+</h4>
+                  <p className="text-xs text-gray-500 font-medium mt-1">Awards</p>
                 </div>
                 <div>
-                  <h4 className="text-3xl font-black text-gray-900">25:1</h4>
-                  <p className="text-sm text-gray-500 font-medium mt-1">Student Ratio</p>
+                  <h4 className="text-2xl font-black text-gray-900">25:1</h4>
+                  <p className="text-xs text-gray-500 font-medium mt-1">Student Ratio</p>
                 </div>
               </div>
             </div>
@@ -131,12 +131,12 @@ export default async function SchoolUpdates({ school }: { school: any }) {
 
                   {/* Header */}
                   <div className="flex items-center gap-4 mb-8">
-                    <div className="w-14 h-14 rounded-2xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-200">
-                      <Bell className="w-7 h-7 animate-pulse" />
+                    <div className="w-12 h-12 rounded-2xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-200">
+                      <Bell className="w-6 h-6 animate-pulse" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-2xl text-gray-900">Notice Board</h3>
-                      <p className="text-sm text-gray-500 font-medium flex items-center gap-1">
+                      <h3 className="font-bold text-xl text-gray-900">Notice Board</h3>
+                      <p className="text-xs text-gray-500 font-medium flex items-center gap-1">
                         <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
                         Live Updates
                       </p>
