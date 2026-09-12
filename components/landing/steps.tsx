@@ -44,6 +44,7 @@ export default function Steps() {
       transform: "translate-y-0"
     },
     {
+
       title: "Mock Tests",
       icon: MonitorPlay,
       bg: "bg-orange-500",
