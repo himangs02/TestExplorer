@@ -14,12 +14,12 @@ export default function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <section className="py-24 px-4 bg-gray-50">
+    <section className="py-8 sm:py-10 md:py-12 px-4 bg-gray-50">
       <div className="w-full max-w-3xl mx-auto">
         
         {/* Header Badge */}
-        <div className="text-center mb-10">
-          <h2 className="text-2xl font-black bg-black text-white inline-block px-3.5 py-1.5 rounded-lg transform -rotate-1">
+        <div className="text-center mb-6 sm:mb-8">
+          <h2 className="text-xl sm:text-2xl font-black bg-black text-white inline-block px-3.5 py-1.5 rounded-lg transform -rotate-1">
             Frequently Asked Questions
           </h2>
         </div>

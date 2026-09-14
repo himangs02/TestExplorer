@@ -29,8 +29,8 @@ export default async function SchoolUpdates({ school }: { school: any }) {
   const scrollingList = [...list, ...list];
 
   return (
-    <div className="bg-gray-50 pb-20">
-      <section className="relative w-full py-20 overflow-hidden">
+    <div className="bg-gray-50 pb-8 sm:pb-12">
+      <section className="relative w-full py-8 sm:py-12 overflow-hidden">
         {/* Background decoration */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
           <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-blue-200/20 rounded-full blur-3xl" />

@@ -94,7 +94,7 @@ export default function PredictorHeroSection() {
   };
 
   return (
-    <section className="py-8 sm:py-12 bg-linear-to-b from-gray-50 via-blue-50/30 to-white relative overflow-hidden border-t border-b border-gray-100">
+    <section className="py-6 sm:py-8 md:py-10 bg-linear-to-b from-gray-50 via-blue-50/30 to-white relative overflow-hidden border-t border-b border-gray-100">
       {/* Ambient background blur */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-7xl h-full opacity-30 pointer-events-none">
         <div className="absolute top-10 left-1/4 w-80 h-80 bg-blue-200/40 rounded-full blur-3xl" />
@@ -103,7 +103,7 @@ export default function PredictorHeroSection() {
 
       <div className="container mx-auto px-4 relative z-10">
         {/* Title Header */}
-        <div className="text-center max-w-2xl mx-auto mb-7">
+        <div className="text-center max-w-2xl mx-auto mb-5">
           <div className="inline-flex items-center gap-2 bg-white border border-blue-200/60 rounded-full px-3.5 py-1 shadow-2xs mb-3">
             <span className="flex h-1.5 w-1.5 rounded-full bg-blue-600 animate-pulse"></span>
             <span className="text-[10px] sm:text-[11px] font-bold text-blue-700 tracking-wide uppercase">
@@ -295,8 +295,8 @@ export default function PredictorHeroSection() {
         </div>
 
         {/* Value Props / Stats strip */}
-        <div className="mt-8 text-center">
-          <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-gray-400 mb-3">
+        <div className="mt-5 sm:mt-6 text-center">
+          <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-gray-400 mb-2.5">
             One Score. Thousands of Possibilities.
           </p>
 

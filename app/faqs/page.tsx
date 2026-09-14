@@ -8,9 +8,9 @@ export default function FAQPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-white py-24 px-6">
-      <div className="max-w-3xl mx-auto text-center mb-16">
-        <h1 className="text-4xl font-black text-slate-900 mb-4">Frequently Asked Questions</h1>
+    <div className="min-h-screen bg-white py-12 sm:py-16 px-6">
+      <div className="max-w-3xl mx-auto text-center mb-10 sm:mb-12">
+        <h1 className="text-3xl sm:text-4xl font-black text-slate-900 mb-3">Frequently Asked Questions</h1>
         <p className="text-slate-500">Everything you need to know about the platform.</p>
       </div>
       <div className="max-w-2xl mx-auto space-y-4">

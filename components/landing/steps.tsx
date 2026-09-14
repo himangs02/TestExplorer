@@ -68,18 +68,18 @@ export default function Steps() {
   ];
 
   return (
-    <section className="py-16 md:py-24 px-4 bg-gray-50/50">
+    <section className="py-8 sm:py-10 md:py-12 px-4 bg-gray-50/50">
       <div className="container mx-auto">
 
         {/* Header */}
-        <div className="text-center mb-10 md:mb-14">
+        <div className="text-center mb-6 md:mb-8">
           <span className="text-orange-500 font-bold tracking-wider uppercase text-[11px]">Simple Process</span>
           <h2 className="text-xl sm:text-2xl font-black text-gray-900 mt-1 tracking-tight">
             How You Practice on <span className="bg-black text-white px-2 py-0.5 rounded-lg transform -rotate-1 inline-block">This Platform</span>
           </h2>
         </div>
 
-        <div className="flex flex-col xl:flex-row items-center gap-16">
+        <div className="flex flex-col xl:flex-row items-center gap-8 lg:gap-12">
 
           {/* Left: 4 Visual Cards */}
           <div className="flex-1 w-full relative hidden xl:block">

@@ -29,9 +29,9 @@ const features = [
 
 export default function Features() {
   return (
-    <section className="pt-14 md:pt-20 pb-8 md:pb-10 px-4 bg-white">
+    <section className="py-8 sm:py-10 md:py-12 px-4 bg-white">
       <div className="container mx-auto">
-        <div className="text-center mb-8 max-w-2xl mx-auto">
+        <div className="text-center mb-6 md:mb-8 max-w-2xl mx-auto">
           <h2 className="text-lg sm:text-xl md:text-2xl font-black text-gray-900 mb-1.5 tracking-tight">
             Why students <span className="text-blue-600">love us</span>
           </h2>
