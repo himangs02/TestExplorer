@@ -140,6 +140,7 @@ export default function PredictorHeroSection() {
                   <button
                     key={exam.id}
                     type="button"
+                    suppressHydrationWarning
                     onClick={() => {
                       setSelectedExam(exam.id);
                       if (!exam.supportedInputModes.includes(inputMode)) {
@@ -175,7 +176,7 @@ export default function PredictorHeroSection() {
           </div>
 
           {/* Quick Input Form */}
-          <form onSubmit={handlePredictRedirect} className="space-y-3">
+          <form onSubmit={handlePredictRedirect} className="space-y-3" suppressHydrationWarning>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5">
               {/* Score / Rank Input */}
               <div className="sm:col-span-2">
@@ -193,6 +194,7 @@ export default function PredictorHeroSection() {
                       <button
                         key={m}
                         type="button"
+                        suppressHydrationWarning
                         onClick={() => setInputMode(m)}
                         className={`px-1.5 py-0.5 rounded uppercase ${inputMode === m
                           ? 'bg-blue-100 text-blue-800'
@@ -208,6 +210,7 @@ export default function PredictorHeroSection() {
                 <div className="relative">
                   <input
                     type="number"
+                    suppressHydrationWarning
                     step={inputMode === 'percentile' ? '0.01' : '1'}
                     placeholder={
                       inputMode === 'marks'
@@ -237,6 +240,7 @@ export default function PredictorHeroSection() {
                   Category
                 </label>
                 <select
+                  suppressHydrationWarning
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
                   className="w-full h-10 sm:h-10.5 px-3 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-gray-800 focus:border-blue-600 focus:bg-white focus:outline-hidden"
@@ -256,6 +260,7 @@ export default function PredictorHeroSection() {
                 </label>
                 {currentConfig.hasHomeState ? (
                   <select
+                    suppressHydrationWarning
                     value={homeState}
                     onChange={(e) => setHomeState(e.target.value)}
                     className="w-full h-10 sm:h-10.5 px-3 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-gray-800 focus:border-blue-600 focus:bg-white focus:outline-hidden"
@@ -268,6 +273,7 @@ export default function PredictorHeroSection() {
                   </select>
                 ) : (
                   <select
+                    suppressHydrationWarning
                     value={preferredBranch}
                     onChange={(e) => setPreferredBranch(e.target.value)}
                     className="w-full h-10 sm:h-10.5 px-3 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-gray-800 focus:border-blue-600 focus:bg-white focus:outline-hidden"
@@ -286,6 +292,7 @@ export default function PredictorHeroSection() {
             {/* CTA Button */}
             <button
               type="submit"
+              suppressHydrationWarning
               className="w-full h-11 sm:h-12 bg-gray-900 hover:bg-black text-white font-bold text-sm sm:text-base rounded-xl flex items-center justify-center gap-2 transition-all hover:scale-[1.005] shadow-md shadow-gray-200 cursor-pointer mt-2"
             >
               <span>Predict My Rank & Eligible Colleges</span>

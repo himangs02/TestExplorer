@@ -16,33 +16,40 @@ const getValidImageUrl = (url: string) => {
 export default function Testimonials({ data }: { data?: any[] }) {
   const defaultTestimonials = [
     {
-      name: "Varuna S",
-      role: "Student, APS Waranagal",
+      name: "Varun S",
+      role: "Student, APS Warangal",
       text: "The platform offered by Test Explorer is precisely mapped with CUET conducted by NTA.",
       gradient: "from-blue-600 to-violet-600",
-      image: "https://i.pravatar.cc/150?u=varuna"
+      image: "/testimonials/varun.jpg"
     },
     {
       name: "S.K Malhotra",
       role: "SKM Classes (Owner)",
       text: "I have been running my coaching centre successfully for more than 2 decades.",
       gradient: "from-orange-400 to-red-500",
-      image: "https://i.pravatar.cc/150?u=skm",
+      image: "/testimonials/sk_malhotra.jpg",
     },
     {
       name: "Manish Kumar",
       role: "Student, DPS Patna",
       text: "I solved MCQs on the platform for hardly one month but in a consistent manner.",
       gradient: "from-emerald-400 to-teal-600",
-      image: "https://i.pravatar.cc/150?u=manish"
+      image: "/testimonials/manish.jpg"
     },
     {
       name: "Priya Sharma",
       role: "Student, KV Delhi",
       text: "The analytics helped me find my weak areas in Physics instantly.",
       gradient: "from-pink-500 to-rose-500",
-      image: "https://i.pravatar.cc/150?u=priya"
+      image: "/testimonials/priya.jpg"
     }
+  ];
+
+  const fallbackAvatars = [
+    "/testimonials/varun.jpg",
+    "/testimonials/sk_malhotra.jpg",
+    "/testimonials/manish.jpg",
+    "/testimonials/priya.jpg"
   ];
 
   const testimonialsToShow = data && data.length > 0
@@ -50,7 +57,7 @@ export default function Testimonials({ data }: { data?: any[] }) {
       name: t.student_name,
       role: t.course_name,
       text: t.message,
-      image: getValidImageUrl(t.student_image) || `https://i.pravatar.cc/150?u=${index}`,
+      image: getValidImageUrl(t.student_image) || fallbackAvatars[index % fallbackAvatars.length],
       gradient: index % 3 === 0 ? "from-blue-600 to-violet-600" :
         index % 3 === 1 ? "from-orange-400 to-red-500" :
           "from-emerald-400 to-teal-600"

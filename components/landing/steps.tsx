@@ -113,17 +113,16 @@ export default function Steps() {
                   <div className="absolute left-6 top-14 bottom-0 w-0.5 border-l-2 border-dashed border-gray-300 group-hover:border-gray-400 transition-colors" />
                 )}
 
-                {/* Step Number Circle */}
-                <div className={`shrink-0 w-11 h-11 rounded-full ${item.color} text-white flex items-center justify-center font-bold text-base shadow-lg shadow-gray-200 z-10 relative ring-4 ring-white`}>
+                <div className={`shrink-0 w-11 h-11 sm:w-12 sm:h-12 rounded-full ${item.color} text-white flex items-center justify-center font-bold text-base sm:text-[17px] shadow-lg shadow-gray-200 z-10 relative ring-4 ring-white`}>
                   {item.step}
                 </div>
 
                 {/* Content */}
                 <div className="pb-2 pt-1">
-                  <h3 className="text-lg font-bold text-gray-900 mb-1.5 uppercase tracking-wide flex items-center gap-2">
+                  <h3 className="text-lg sm:text-[19px] font-bold text-gray-900 mb-1.5 uppercase tracking-wide flex items-center gap-2">
                     {item.title}
                   </h3>
-                  <p className="text-sm text-gray-600 font-medium leading-relaxed max-w-md">
+                  <p className="text-gray-600 font-medium text-sm sm:text-[15px] leading-relaxed max-w-md">
                     {item.desc}
                   </p>
                 </div>
