@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, Sparkles, ChevronRight } from "lucide-react";
+import { Menu, X, Search, Sparkles, ChevronRight, ArrowRight } from "lucide-react";
 import UserNav from "@/components/Navbar/UserNav";
 
 interface SiteHeaderProps {
@@ -19,11 +19,21 @@ interface SiteHeaderProps {
 export function SiteHeader({ school, user, profile, schoolSlug }: SiteHeaderProps) {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   // Close mobile drawer on route change
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [pathname]);
+
+  // Scroll detection for enhanced glass effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // Define the Base Path
   const basePath = schoolSlug ? `/${schoolSlug}` : "";
@@ -71,8 +81,12 @@ export function SiteHeader({ school, user, profile, schoolSlug }: SiteHeaderProp
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur-md shadow-xs transition-all">
-      <div className="container mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+    <header className={`sticky top-0 z-50 w-full transition-all duration-300 ${
+      scrolled 
+        ? "bg-white/90 backdrop-blur-xl border-b border-gray-200/80 shadow-xs" 
+        : "bg-white/95 backdrop-blur-md border-b border-gray-100"
+    }`}>
+      <div className="container mx-auto px-4 sm:px-6 h-17 flex items-center justify-between">
 
         {/* ================= LEFT SIDE: BRANDING ================= */}
         <div className="flex items-center gap-2 shrink-0">
@@ -83,11 +97,11 @@ export function SiteHeader({ school, user, profile, schoolSlug }: SiteHeaderProp
                   <img
                     src={school.logo_url}
                     alt={`${school.name} Logo`}
-                    className="object-contain w-full h-full rounded-lg"
+                    className="object-contain w-full h-full rounded-xl"
                   />
                 </div>
               ) : (
-                <div className="w-9 h-9 sm:w-10 sm:h-10 bg-blue-100 text-blue-700 rounded-xl flex items-center justify-center font-bold text-base sm:text-lg shrink-0 shadow-xs">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 bg-linear-to-br from-blue-600 to-indigo-700 text-white rounded-xl flex items-center justify-center font-bold text-base sm:text-lg shrink-0 shadow-sm">
                   {school.name.substring(0, 2).toUpperCase()}
                 </div>
               )}
@@ -96,11 +110,11 @@ export function SiteHeader({ school, user, profile, schoolSlug }: SiteHeaderProp
               </span>
             </Link>
           ) : (
-            <Link href="/" className="flex items-center gap-2 group">
-              <div className="w-8 h-8 sm:w-9 sm:h-9 bg-blue-600 rounded-xl flex items-center justify-center text-white font-extrabold text-lg shadow-sm group-hover:scale-105 transition-transform">
+            <Link href="/" className="flex items-center gap-2.5 group">
+              <div className="w-9 h-9 rounded-xl bg-gray-950 text-white flex items-center justify-center font-black text-sm tracking-tighter shadow-sm group-hover:bg-blue-600 transition-colors">
                 TE
               </div>
-              <span className="text-lg sm:text-xl font-black text-gray-900 tracking-tight">
+              <span className="text-xl font-black text-gray-950 tracking-tight">
                 Test<span className="text-blue-600">Explorer</span>
               </span>
             </Link>
@@ -108,23 +122,23 @@ export function SiteHeader({ school, user, profile, schoolSlug }: SiteHeaderProp
         </div>
 
         {/* ================= CENTER: DESKTOP NAVIGATION ================= */}
-        <nav className="hidden lg:flex gap-7 items-center text-sm font-semibold text-gray-600">
+        <nav className="hidden lg:flex gap-1.5 items-center">
           {navLinks.map((link) => {
-            const isActive = pathname === link.href;
+            const isActive = pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href));
             return (
               <Link
                 key={link.href}
                 href={link.href}
                 prefetch={true}
-                className={`transition-colors py-1 flex items-center gap-1.5 ${
+                className={`px-3.5 py-1.5 rounded-full text-sm font-semibold transition-all flex items-center gap-1.5 ${
                   isActive 
-                    ? "text-blue-600 font-bold" 
-                    : "hover:text-blue-600"
+                    ? "text-blue-600 bg-blue-50/70 font-bold" 
+                    : "text-gray-600 hover:text-gray-950 hover:bg-gray-100/60"
                 }`}
               >
                 <span>{link.label}</span>
                 {link.badge && (
-                  <span className="px-1.5 py-0.5 text-[9px] font-bold bg-blue-50 text-blue-700 border border-blue-200 rounded-full leading-none">
+                  <span className="px-1.5 py-0.5 text-[10px] font-extrabold bg-blue-100 text-blue-700 rounded-full leading-none">
                     {link.badge}
                   </span>
                 )}
@@ -133,8 +147,17 @@ export function SiteHeader({ school, user, profile, schoolSlug }: SiteHeaderProp
           })}
         </nav>
 
-        {/* ================= RIGHT SIDE: AUTH & MOBILE TRIGGER ================= */}
-        <div className="flex items-center gap-2 sm:gap-4">
+        {/* ================= RIGHT SIDE: AUTH & ACTIONS ================= */}
+        <div className="flex items-center gap-3">
+          {/* Quick Search trigger link */}
+          <Link
+            href={`${basePath}/categories`}
+            className="hidden md:flex items-center justify-center w-9 h-9 rounded-full text-gray-500 hover:text-gray-950 hover:bg-gray-100 transition-colors"
+            title="Search exams"
+          >
+            <Search className="w-4 h-4" />
+          </Link>
+
           {user && profile ? (
             <UserNav profile={profile} email={user.email} />
           ) : (
@@ -150,13 +173,10 @@ export function SiteHeader({ school, user, profile, schoolSlug }: SiteHeaderProp
               <Link
                 href={`${basePath}/signup`}
                 prefetch={true}
-                className={`px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-bold transition-all shadow-sm hover:shadow-md text-white shrink-0 ${
-                  school
-                    ? "bg-black hover:bg-gray-800"
-                    : "bg-blue-600 hover:bg-blue-700"
-                }`}
+                className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] text-white bg-blue-600 hover:bg-blue-700 shrink-0"
               >
-                Get Started
+                <span>Get Started</span>
+                <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
           )}
@@ -164,7 +184,7 @@ export function SiteHeader({ school, user, profile, schoolSlug }: SiteHeaderProp
           {/* Mobile Hamburger Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-2 rounded-xl text-gray-700 hover:text-gray-900 hover:bg-gray-100 transition-colors focus:outline-none"
+            className="lg:hidden p-2 rounded-xl text-gray-700 hover:text-gray-900 hover:bg-gray-100 transition-colors focus:outline-none cursor-pointer"
             aria-label="Toggle Navigation Menu"
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -174,7 +194,7 @@ export function SiteHeader({ school, user, profile, schoolSlug }: SiteHeaderProp
 
       {/* ================= MOBILE DRAWER MENU ================= */}
       {mobileMenuOpen && (
-        <div className="lg:hidden fixed inset-x-0 top-16 bg-white/98 backdrop-blur-xl border-b border-gray-200 shadow-2xl animate-in slide-in-from-top-2 duration-200 max-h-[calc(100vh-4rem)] overflow-y-auto z-50">
+        <div className="lg:hidden fixed inset-x-0 top-17 bg-white/98 backdrop-blur-2xl border-b border-gray-200 shadow-2xl animate-in slide-in-from-top-2 duration-200 max-h-[calc(100vh-4.25rem)] overflow-y-auto z-50">
           <div className="container mx-auto px-5 py-6 space-y-4">
             <div className="flex flex-col space-y-1">
               {navLinks.map((link) => {
@@ -185,9 +205,9 @@ export function SiteHeader({ school, user, profile, schoolSlug }: SiteHeaderProp
                     href={link.href}
                     prefetch={true}
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center justify-between px-4 py-3 rounded-xl font-bold text-base transition-colors ${
+                    className={`flex items-center justify-between px-4 py-3 rounded-2xl font-bold text-base transition-colors ${
                       isActive
-                        ? "bg-blue-50 text-blue-600"
+                        ? "bg-blue-50 text-blue-600 font-extrabold"
                         : "text-gray-800 hover:bg-gray-50"
                     }`}
                   >
@@ -220,11 +240,10 @@ export function SiteHeader({ school, user, profile, schoolSlug }: SiteHeaderProp
                   href={`${basePath}/signup`}
                   prefetch={true}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`w-full text-center py-3 rounded-xl font-bold text-white shadow-md transition-all text-sm ${
-                    school ? "bg-black hover:bg-gray-800" : "bg-blue-600 hover:bg-blue-700"
-                  }`}
+                  className="w-full text-center py-3 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-md transition-all text-sm flex items-center justify-center gap-1.5"
                 >
-                  Create Free Account
+                  <span>Create Free Account</span>
+                  <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
             )}

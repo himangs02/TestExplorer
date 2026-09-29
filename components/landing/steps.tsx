@@ -1,136 +1,106 @@
-import { BookOpen, MonitorPlay, BarChart, Award } from "lucide-react";
+import { BookOpen, MonitorPlay, BarChart3, Award, ArrowRight } from "lucide-react";
 
 export default function Steps() {
-  // Data for the 4 Steps (Right Side)
   const steps = [
     {
-      step: "1",
+      step: "01",
       title: "Choose Your Exam",
-      desc: "Select the entrance exam you’re preparing for.",
-      color: "bg-blue-600",
-      icon: <BookOpen className="w-5 h-5" />
+      desc: "Select the entrance exam you're preparing for.",
+      gradient: "from-blue-600 to-cyan-500",
+      iconBg: "bg-blue-50 text-blue-600 border-blue-200",
+      numBg: "bg-blue-600 text-white shadow-blue-500/30",
+      icon: BookOpen
     },
     {
-      step: "2",
+      step: "02",
       title: "Take Mock Test",
-      desc: "Attempt the test in real exam-like environment with timer.",
-      color: "bg-orange-500",
-      icon: <MonitorPlay className="w-5 h-5" />
+      desc: "Attempt tests in a real exam-like environment.",
+      gradient: "from-amber-500 to-orange-500",
+      iconBg: "bg-orange-50 text-orange-600 border-orange-200",
+      numBg: "bg-orange-500 text-white shadow-orange-500/30",
+      icon: MonitorPlay
     },
     {
-      step: "3",
+      step: "03",
       title: "Get Instant Results",
-      desc: "View score, accuracy, time taken & percentile instantly.",
-      color: "bg-teal-500",
-      icon: <BarChart className="w-5 h-5" />
+      desc: "View score, accuracy, time taken & percentile.",
+      gradient: "from-purple-600 to-indigo-600",
+      iconBg: "bg-purple-50 text-purple-600 border-purple-200",
+      numBg: "bg-purple-600 text-white shadow-purple-500/30",
+      icon: BarChart3
     },
     {
-      step: "4",
+      step: "04",
       title: "Rank Predictor",
-      desc: "Know Your Expected Rank Before the Actual Result.",
-      color: "bg-purple-600",
-      icon: <Award className="w-5 h-5" />
-    }
-  ];
-
-  // Data for the 4 Visual Cards (Left Side)
-  // We use slightly different styles/transforms to create the 'wave' effect
-  const cards = [
-    {
-      title: "Select Exam",
-      icon: BookOpen,
-      bg: "bg-blue-500",
-      shadow: "shadow-blue-200",
-      transform: "translate-y-0"
-    },
-    {
-
-      title: "Mock Tests",
-      icon: MonitorPlay,
-      bg: "bg-orange-500",
-      shadow: "shadow-orange-200",
-      transform: "-translate-y-4" // Staggered Up
-    },
-    {
-      title: "Analysis",
-      icon: BarChart,
-      bg: "bg-teal-500",
-      shadow: "shadow-teal-200",
-      transform: "translate-y-0"
-    },
-    {
-      title: "Rankings",
-      icon: Award,
-      bg: "bg-purple-500",
-      shadow: "shadow-purple-200",
-      transform: "-translate-y-4" // Staggered Up
+      desc: "Know your expected rank and eligible colleges.",
+      gradient: "from-emerald-500 to-teal-600",
+      iconBg: "bg-teal-50 text-teal-600 border-teal-200",
+      numBg: "bg-teal-500 text-white shadow-teal-500/30",
+      icon: Award
     }
   ];
 
   return (
-    <section className="py-8 sm:py-10 md:py-12 px-4 bg-gray-50/50">
+    <section className="py-12 sm:py-16 px-4 sm:px-6 bg-slate-50/70 border-b border-gray-100 relative">
       <div className="container mx-auto">
 
-        {/* Header */}
-        <div className="text-center mb-6 md:mb-8">
-          <span className="text-orange-500 font-bold tracking-wider uppercase text-[11px]">Simple Process</span>
-          <h2 className="text-xl sm:text-2xl font-black text-gray-900 mt-1 tracking-tight">
-            How You Practice on <span className="bg-black text-white px-2 py-0.5 rounded-lg transform -rotate-1 inline-block">This Platform</span>
+        {/* Section Header */}
+        <div className="text-center mb-10 sm:mb-14 max-w-2xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl font-black text-gray-950 tracking-tight">
+            How You Practice on <span className="text-blue-600">Test Explorer</span>
           </h2>
+          <p className="text-sm text-gray-500 font-medium mt-1.5">
+            A simple and effective process to help you achieve your goals.
+          </p>
         </div>
 
-        <div className="flex flex-col xl:flex-row items-center gap-8 lg:gap-12">
+        {/* Horizontal Timeline Process */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 relative">
+          {steps.map((item, i) => {
+            const IconComp = item.icon;
+            const isLast = i === steps.length - 1;
 
-          {/* Left: 4 Visual Cards */}
-          <div className="flex-1 w-full relative hidden xl:block">
-            {/* Background Blur Effect */}
-            <div className="absolute inset-0 bg-blue-200 rounded-full blur-3xl opacity-20 transform scale-90" />
-
-            <div className="relative bg-white p-8 rounded-[2.5rem] shadow-xl border border-gray-100 flex gap-4 min-h-[400px] items-center justify-center">
-              {cards.map((card, i) => (
-                <div
-                  key={i}
-                  className={`
-                      flex-1 ${card.bg} h-64 rounded-2xl flex flex-col items-center justify-center text-white p-4 text-center 
-                      transform transition-all duration-300 hover:scale-105 shadow-xl ${card.shadow} ${card.transform}
-                    `}
-                >
-                  <div className="bg-white/20 p-3 rounded-full mb-3 backdrop-blur-sm">
-                    <card.icon className="w-5 h-5 text-white" />
+            return (
+              <div
+                key={i}
+                className="relative bg-white rounded-3xl p-6 border border-gray-200/80 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group"
+              >
+                {/* Connecting Arrow for Desktop (between cards) */}
+                {!isLast && (
+                  <div className="hidden lg:flex absolute -right-3.5 top-1/2 -translate-y-1/2 z-20 w-7 h-7 rounded-full bg-white border border-gray-200 text-gray-400 items-center justify-center shadow-xs">
+                    <ArrowRight className="w-3.5 h-3.5 text-gray-400 group-hover:text-blue-600 group-hover:translate-x-0.5 transition-all" />
                   </div>
-                  <span className="font-bold text-xs sm:text-sm leading-tight">{card.title}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Right: 4 Timeline Steps */}
-          <div className="flex-1 w-full space-y-8 max-w-2xl mx-auto xl:max-w-none">
-            {steps.map((item, i) => (
-              <div key={i} className="flex gap-6 relative group">
-                {/* Connecting Line (Only show if NOT the last item) */}
-                {i !== steps.length - 1 && (
-                  <div className="absolute left-6 top-14 bottom-0 w-0.5 border-l-2 border-dashed border-gray-300 group-hover:border-gray-400 transition-colors" />
                 )}
 
-                <div className={`shrink-0 w-11 h-11 sm:w-12 sm:h-12 rounded-full ${item.color} text-white flex items-center justify-center font-bold text-base sm:text-[17px] shadow-lg shadow-gray-200 z-10 relative ring-4 ring-white`}>
-                  {item.step}
-                </div>
+                <div>
+                  {/* Step Header: Circle Number + Icon */}
+                  <div className="flex items-center justify-between mb-4">
+                    <div className={`w-11 h-11 rounded-2xl flex items-center justify-center font-black text-sm shadow-md ${item.numBg}`}>
+                      {item.step}
+                    </div>
+                    <div className={`w-11 h-11 rounded-2xl border flex items-center justify-center ${item.iconBg} group-hover:scale-110 transition-transform`}>
+                      <IconComp className="w-5 h-5" />
+                    </div>
+                  </div>
 
-                {/* Content */}
-                <div className="pb-2 pt-1">
-                  <h3 className="text-lg sm:text-[19px] font-bold text-gray-900 mb-1.5 uppercase tracking-wide flex items-center gap-2">
+                  {/* Title & Description */}
+                  <h3 className="text-base sm:text-lg font-bold text-gray-950 mb-2 tracking-tight group-hover:text-blue-600 transition-colors">
                     {item.title}
                   </h3>
-                  <p className="text-gray-600 font-medium text-sm sm:text-[15px] leading-relaxed max-w-md">
+                  <p className="text-xs sm:text-sm text-gray-500 font-medium leading-relaxed">
                     {item.desc}
                   </p>
                 </div>
-              </div>
-            ))}
-          </div>
 
+                {/* Bottom decorative bar */}
+                <div className="mt-5 pt-3 border-t border-gray-100 flex items-center gap-1.5">
+                  <div className={`h-1 rounded-full bg-gradient-to-r ${item.gradient} w-8 group-hover:w-full transition-all duration-300`} />
+                </div>
+              </div>
+            );
+          })}
         </div>
+
       </div>
     </section>
   );

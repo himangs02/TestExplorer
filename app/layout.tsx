@@ -1,4 +1,5 @@
 import { headers, cookies } from "next/headers";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import { getSchoolBySubdomain } from "@/lib/db/school"; 
 import { SiteHeader } from "@/components/layout/site-header";
 import "./globals.css";
@@ -9,9 +10,16 @@ import { prisma } from "@/lib/prisma";
 import { NextAuthProvider } from "@/components/providers/NextAuthProvider";
 import { Metadata } from "next";
 
+const plusJakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800"],
+  variable: "--font-plus-jakarta",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
-  title: "Test Explorer",
-  description: "Your learning journey starts here.",
+  title: "Test Explorer - Turn Your Preparation Into Real Possibilities",
+  description: "Unlimited mock tests, AI-driven analytics, and college rank predictions for JEE, NEET, CUET, CLAT & more.",
   icons: {
     icon: "/favicon.ico", 
   },
@@ -77,8 +85,8 @@ export default async function RootLayout({
   }
 
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className="min-h-screen bg-gray-50 font-sans antialiased" suppressHydrationWarning>
+    <html lang="en" className={plusJakarta.variable} suppressHydrationWarning>
+      <body className={`min-h-screen bg-white text-gray-900 ${plusJakarta.className} antialiased`} suppressHydrationWarning>
         <NextAuthProvider>
           <SiteHeader 
             school={schoolData} 

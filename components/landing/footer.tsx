@@ -1,130 +1,174 @@
+'use client';
+
 import Link from "next/link";
-import { Facebook, Twitter, Instagram, Linkedin, Mail, Heart } from "lucide-react";
+import { Facebook, Twitter, Instagram, Linkedin, Mail, Heart, GraduationCap, ArrowRight, ShieldCheck, Sparkles } from "lucide-react";
 
 export default function Footer({ school }: { school?: any }) {
   const brandName = school ? school.name : "Test Explorer";
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-gray-950 text-white pt-10 sm:pt-12 pb-8 rounded-t-[2rem] sm:rounded-t-[2.5rem] mt-4 sm:mt-6">
-      <div className="container mx-auto px-4">
+    <footer className="bg-slate-950 text-white pt-12 sm:pt-16 pb-10 mt-6 sm:mt-10 border-t border-slate-800/80 relative overflow-hidden">
+      
+      {/* Ambient background glow */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-48 bg-blue-600/10 blur-3xl pointer-events-none" />
+
+      <div className="container mx-auto px-4 sm:px-6 relative z-10">
         
-        {/* Top Section: CTA & Newsletter */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 sm:gap-8 border-b border-gray-800 pb-8 sm:pb-10">
-          <div className="max-w-md">
-            <h2 className="text-xl sm:text-2xl font-bold mb-2">
-              Ready to <span className="text-blue-500">level up?</span>
-            </h2>
-            <p className="text-xs sm:text-sm text-gray-400">
-              Join thousands of students acing their exams with {brandName}. 
-              Start your free practice session today.
-            </p>
-          </div>
-          
-          <div className="w-full md:w-auto">
-             <div className="flex gap-2">
-                <input 
-                  type="email" 
-                  placeholder="Enter your email" 
-                  suppressHydrationWarning
-                  className="bg-gray-900 border border-gray-800 text-white text-sm px-4 sm:px-5 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 w-full md:w-80"
-                />
+        {/* ================= TOP CTA BANNER ================= */}
+        <div className="rounded-3xl bg-linear-to-r from-slate-900 via-blue-950/70 to-slate-900 border border-slate-800 p-6 sm:p-10 mb-12 shadow-2xl">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            
+            {/* Left Info */}
+            <div className="lg:col-span-6">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-500/30">
+                  <GraduationCap className="w-5 h-5" />
+                </div>
+                <span className="text-xs font-bold text-cyan-400 uppercase tracking-wider">
+                  Start Your Preparation Today
+                </span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-black text-white mb-2 tracking-tight">
+                Ready to take the <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">next step?</span>
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-400 font-medium max-w-md leading-relaxed">
+                Join thousands of students using {brandName}. Start your free practice session today and unlock AI-powered rank predictions.
+              </p>
+            </div>
+
+            {/* Right: Newsletter Input & Live Stats */}
+            <div className="lg:col-span-6 flex flex-col gap-6">
+              <form onSubmit={(e) => e.preventDefault()} className="flex flex-col sm:flex-row gap-2.5">
+                <div className="relative flex-1">
+                  <input 
+                    type="email" 
+                    placeholder="Enter your email address" 
+                    suppressHydrationWarning
+                    className="w-full bg-slate-900 border border-slate-700/80 text-white text-xs sm:text-sm px-4 py-3 rounded-xl focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 placeholder-slate-500"
+                  />
+                </div>
                 <button 
+                  type="submit"
                   suppressHydrationWarning
-                  className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-5 py-2.5 rounded-xl font-bold transition-all shrink-0 cursor-pointer"
+                  className="bg-linear-to-r from-cyan-500 to-teal-500 hover:from-cyan-400 hover:to-teal-400 text-slate-950 text-xs sm:text-sm px-6 py-3 rounded-xl font-black transition-all shrink-0 cursor-pointer shadow-md shadow-cyan-500/20 flex items-center justify-center gap-1.5"
                 >
-                  Subscribe
+                  <span>Subscribe</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </button>
-             </div>
-             <p className="text-[11px] text-gray-500 mt-1.5">We care about your data in our privacy policy.</p>
+              </form>
+
+              {/* Platform Statistics Strip */}
+              <div className="grid grid-cols-4 gap-2 pt-4 border-t border-slate-800 text-center">
+                <div>
+                  <div className="text-lg sm:text-xl font-black text-white">50K+</div>
+                  <div className="text-[10px] sm:text-[11px] text-slate-400 font-semibold">Students</div>
+                </div>
+                <div>
+                  <div className="text-lg sm:text-xl font-black text-cyan-400">100+</div>
+                  <div className="text-[10px] sm:text-[11px] text-slate-400 font-semibold">Schools</div>
+                </div>
+                <div>
+                  <div className="text-lg sm:text-xl font-black text-blue-400">1.5K+</div>
+                  <div className="text-[10px] sm:text-[11px] text-slate-400 font-semibold">Colleges</div>
+                </div>
+                <div>
+                  <div className="text-lg sm:text-xl font-black text-amber-400">5</div>
+                  <div className="text-[10px] sm:text-[11px] text-slate-400 font-semibold">Major Exams</div>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
 
-        {/* Middle Section: Links */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 sm:gap-10 py-8 sm:py-10">
+        {/* ================= MIDDLE NAVIGATION LINKS ================= */}
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 py-8 border-b border-slate-900">
           
-          {/* Column 1: Brand & Logo */}
-          <div className="col-span-2 md:col-span-1">
-             <div className="flex items-center gap-3 mb-5">
-                
-                {/* --- LOGO LOGIC START --- */}
-                {school && school.logo_url ? (
-                  <div className="w-10 h-10 rounded-lg flex items-center justify-center p-1 overflow-hidden">
-                    <img 
-                      src={school.logo_url} 
-                      alt={`${brandName} Logo`} 
-                      className="w-full h-full object-cover rounded-lg"
-                    />
-                  </div>
-                ) : (
-                  <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-base">
-                    {school ? school.name.substring(0, 1) : "TE"}
-                  </div>
-                )}
-                {/* --- LOGO LOGIC END --- */}
+          {/* Col 1 & 2: Brand Info */}
+          <div className="col-span-2">
+            <div className="flex items-center gap-2.5 mb-4">
+              {school && school.logo_url ? (
+                <div className="w-9 h-9 rounded-xl overflow-hidden">
+                  <img 
+                    src={school.logo_url} 
+                    alt={`${brandName} Logo`} 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white font-black text-sm">
+                  {school ? school.name.substring(0, 2).toUpperCase() : "TE"}
+                </div>
+              )}
+              <span className="text-xl font-black tracking-tight text-white">
+                Test<span className="text-blue-500">Explorer</span>
+              </span>
+            </div>
 
-                <span className="text-lg font-bold">{brandName}</span>
-             </div>
+            <p className="text-slate-400 text-xs sm:text-sm leading-relaxed mb-6 max-w-sm font-medium">
+              The smartest entrance exam preparation platform. AI-driven mock testing, accurate cutoff analytics, and All India rank forecasting.
+            </p>
 
-             <p className="text-gray-400 text-xs sm:text-sm leading-relaxed mb-5">
-               The smartest way to prepare for competitive exams. AI-driven analytics, unlimited mock tests, and comprehensive study material.
-             </p>
-             <div className="flex gap-3">
-               <Link href="#" className="w-9 h-9 rounded-full bg-gray-900 flex items-center justify-center hover:bg-blue-600 transition-colors text-white">
-                 <Twitter className="w-3.5 h-3.5" />
-               </Link>
-               <Link href="#" className="w-9 h-9 rounded-full bg-gray-900 flex items-center justify-center hover:bg-pink-600 transition-colors text-white">
-                 <Instagram className="w-3.5 h-3.5" />
-               </Link>
-               <Link href="#" className="w-9 h-9 rounded-full bg-gray-900 flex items-center justify-center hover:bg-blue-700 transition-colors text-white">
-                 <Linkedin className="w-3.5 h-3.5" />
-               </Link>
-             </div>
+            <div className="flex gap-2.5">
+              <Link href="#" className="w-9 h-9 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-colors text-slate-400" aria-label="Twitter">
+                <Twitter className="w-4 h-4" />
+              </Link>
+              <Link href="#" className="w-9 h-9 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center hover:bg-pink-600 hover:text-white transition-colors text-slate-400" aria-label="Instagram">
+                <Instagram className="w-4 h-4" />
+              </Link>
+              <Link href="#" className="w-9 h-9 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center hover:bg-blue-700 hover:text-white transition-colors text-slate-400" aria-label="LinkedIn">
+                <Linkedin className="w-4 h-4" />
+              </Link>
+            </div>
           </div>
 
-          {/* Column 2: Platform */}
+          {/* Col 3: Platform */}
           <div>
-  <h3 className="font-bold text-base mb-5 text-white">Platform</h3>
-  <ul className="space-y-3 text-xs sm:text-sm text-gray-400">
-    <li><Link href="/getting-started" className="hover:text-white transition-colors">Getting Started</Link></li>
-    <li><Link href="/library" className="hover:text-white transition-colors">Open Library</Link></li>
-    <li><Link href="/categories" className="hover:text-white transition-colors">Streams</Link></li>
-    <li><Link href="/login" className="hover:text-white transition-colors">Student Login</Link></li>
-  </ul>
-</div>
-
-          {/* Column 3: Resources */}
-          <div>
-            <h3 className="font-bold text-base mb-5">Resources</h3>
-            <ul className="space-y-3 text-xs sm:text-sm text-gray-400">
-              <li><Link href="/blogs" className="hover:text-white transition-colors">Blog</Link></li>
-              <li><Link href="/about" className="hover:text-white transition-colors">About Us</Link></li>
-              <li><Link href="/contact" className="hover:text-white transition-colors">Contact Support</Link></li>
-              <li><Link href="#" className="hover:text-white transition-colors">FAQs</Link></li>
+            <h3 className="font-bold text-sm text-white mb-4 uppercase tracking-wider">Platform</h3>
+            <ul className="space-y-2.5 text-xs sm:text-sm text-slate-400 font-medium">
+              <li><Link href="/getting-started" className="hover:text-cyan-400 transition-colors">Getting Started</Link></li>
+              <li><Link href="/library" className="hover:text-cyan-400 transition-colors">Open Library</Link></li>
+              <li><Link href="/categories" className="hover:text-cyan-400 transition-colors">Exam Streams</Link></li>
+              <li><Link href="/predictor" className="hover:text-cyan-400 transition-colors">Rank Predictor 2027</Link></li>
+              <li><Link href="/login" className="hover:text-cyan-400 transition-colors">Student Login</Link></li>
             </ul>
           </div>
 
-          {/* Column 4: Legal */}
+          {/* Col 4: Resources */}
           <div>
-            <h3 className="font-bold text-base mb-5">Legal</h3>
-            <ul className="space-y-3 text-xs sm:text-sm text-gray-400">
-              <li><Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
-              <li><Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link></li>
-              <li><Link href="/cookie-policy" className="hover:text-white transition-colors">Cookie Policy</Link></li>
-              <li><Link href="/security" className="hover:text-white transition-colors">Security</Link></li>
+            <h3 className="font-bold text-sm text-white mb-4 uppercase tracking-wider">Resources</h3>
+            <ul className="space-y-2.5 text-xs sm:text-sm text-slate-400 font-medium">
+              <li><Link href="/blogs" className="hover:text-cyan-400 transition-colors">Exam Blog & Tips</Link></li>
+              <li><Link href="/about" className="hover:text-cyan-400 transition-colors">About Us</Link></li>
+              <li><Link href="/contact" className="hover:text-cyan-400 transition-colors">Contact Support</Link></li>
+              <li><Link href="#features" className="hover:text-cyan-400 transition-colors">How It Works</Link></li>
             </ul>
           </div>
+
+          {/* Col 5: Legal */}
+          <div>
+            <h3 className="font-bold text-sm text-white mb-4 uppercase tracking-wider">Legal</h3>
+            <ul className="space-y-2.5 text-xs sm:text-sm text-slate-400 font-medium">
+              <li><Link href="/privacy" className="hover:text-cyan-400 transition-colors">Privacy Policy</Link></li>
+              <li><Link href="/terms" className="hover:text-cyan-400 transition-colors">Terms of Service</Link></li>
+              <li><Link href="/cookie-policy" className="hover:text-cyan-400 transition-colors">Cookie Policy</Link></li>
+              <li><Link href="/security" className="hover:text-cyan-400 transition-colors">Security Standards</Link></li>
+            </ul>
+          </div>
+
         </div>
 
-        {/* Bottom Section: Copyright */}
-        <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-gray-500 text-sm">
+        {/* ================= BOTTOM COPYRIGHT ================= */}
+        <div className="pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500 font-medium">
+          <p>
             &copy; {currentYear} {brandName}. All rights reserved.
           </p>
-          <p className="text-gray-600 text-sm flex items-center gap-1">
-            Made with <Heart className="w-3 h-3 text-red-500 fill-red-500" /> by Geeta Technical Hub
+          <p className="flex items-center gap-1.5">
+            Made with <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500" /> by Geeta Technical Hub
           </p>
         </div>
+
       </div>
     </footer>
   );
