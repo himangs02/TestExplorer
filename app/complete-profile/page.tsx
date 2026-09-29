@@ -2,7 +2,7 @@
 
 import { prisma } from '@/lib/prisma'
 import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { authOptions } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import CompleteProfileForm from '@/components/complete-profile/complete-profile-form'
 import { Sparkles } from 'lucide-react'

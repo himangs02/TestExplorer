@@ -5,7 +5,7 @@ import { SiteHeader } from "@/components/layout/site-header";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from '@/lib/auth';
 import { prisma } from "@/lib/prisma";
 import { NextAuthProvider } from "@/components/providers/NextAuthProvider";
 import { Metadata } from "next";

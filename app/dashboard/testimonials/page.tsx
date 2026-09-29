@@ -3,7 +3,7 @@ import { Quote, User } from 'lucide-react'
 import CreateTestimonialForm from '@/components/testimonials/create-testimonial-form'
 import DeleteTestimonialButton from '@/components/testimonials/delete-button'
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from '@/lib/auth';
 import { prisma } from "@/lib/prisma";
 
 // Helper function to handle Google Drive links
