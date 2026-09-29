@@ -242,6 +242,7 @@ export default function BlogForm({ blog, availableTags = [], defaultAuthor }: Pr
         </div>
 
         <div>
+           <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" />
            <label className="block text-sm font-bold text-gray-900 mb-2">Blog Content*</label>
            <div className="bg-white rounded-xl overflow-hidden border border-gray-200">
              <ReactQuill 
