@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight, Stethoscope, Cog, Scale, GraduationCap, ChevronLeft, ChevronRight, Sparkles, BookOpen, Layers } from 'lucide-react';
+import { ArrowRight, Stethoscope, Cog, Scale, GraduationCap, ChevronLeft, ChevronRight, BookOpen, Layers } from 'lucide-react';
 
 interface Category {
   id: string;

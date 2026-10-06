@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { generatePracticeTestsAction, generateMockTestsAction } from '@/app/dashboard/admin/subjects/actions'
 import { Button } from '@/components/ui/button'
-import { Loader2, Sparkles, AlertCircle, Trophy, BookOpen } from 'lucide-react'
+import { Loader2, Layers, AlertCircle, Trophy, BookOpen } from 'lucide-react'
 import { toast } from 'sonner'
 
 export default function GenerateTestsCard({ 
@@ -49,7 +49,7 @@ export default function GenerateTestsCard({
       <div className="flex items-start justify-between mb-8">
         <div>
           <h2 className="text-xl font-black text-gray-900 flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-purple-600" />
+            <Layers className="w-5 h-5 text-purple-600" />
             Test Generator
           </h2>
           <p className="text-gray-500 text-sm mt-2 max-w-md">

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo, useRef } from 'react'
-import { Plus, Search, Filter, Trash2, Upload, UploadCloud, FileText, Download, CheckCircle2, AlertCircle, Loader2, Layers, Sparkles } from 'lucide-react'
+import { Plus, Search, Filter, Trash2, Upload, UploadCloud, FileText, Download, CheckCircle2, AlertCircle, Loader2, Layers } from 'lucide-react'
 import { toast } from 'sonner'
 import { createQuestionAction, deleteQuestionAction, bulkUploadQuestionsAction } from '@/app/dashboard/admin/question-portal/questions/actions'
 import UniversalBulkUploadModal from '@/components/admin/universal-bulk-upload-modal'

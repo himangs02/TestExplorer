@@ -15,7 +15,7 @@ import {
   ShieldCheck,
   Building,
   TrendingUp,
-  Sparkles,
+  Zap,
   Layers,
   Award,
   CheckCircle2
@@ -180,7 +180,7 @@ export default function PredictorHeroSection() {
             
             {/* Playful Floating Tag */}
             <div className="hidden sm:flex absolute -top-5 right-6 z-20 items-center gap-1.5 text-xs font-bold font-mono tracking-tight bg-teal-950 text-teal-300 px-3 py-1 rounded-full border border-teal-500/30 shadow-md">
-              <Sparkles className="w-3.5 h-3.5 text-teal-400" />
+              <Zap className="w-3.5 h-3.5 text-teal-400" />
               <span>Get AI-powered College Predictions instantly!</span>
             </div>
 

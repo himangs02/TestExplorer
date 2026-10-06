@@ -1,6 +1,6 @@
 'use client'
 
-import { X, Trophy, Clock, Target, BarChart2, BookOpen, Crown, Sparkles } from 'lucide-react'
+import { X, Trophy, Clock, Target, BarChart2, BookOpen, Crown, Zap } from 'lucide-react'
 import { Doughnut } from 'react-chartjs-2'
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import Link from 'next/link'
@@ -96,7 +96,7 @@ export const ResultReportModal = ({
                <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
                  <div>
                    <div className="flex items-center gap-2 mb-2 text-indigo-200 font-bold uppercase tracking-wider text-xs">
-                     <Sparkles className="w-4 h-4 text-yellow-300" /> AI Performance Insight
+                     <Zap className="w-4 h-4 text-yellow-300" /> AI Performance Insight
                    </div>
                    <h3 className="text-2xl font-black leading-tight">Great Effort! Here is your standing.</h3>
                    <p className="text-indigo-100 text-sm opacity-90 mt-1">Projected based on historical cut-offs for this score range.</p>

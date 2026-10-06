@@ -1,5 +1,5 @@
 import { getCurrentSchool } from "@/lib/db/school";
-import { Target, Zap, ShieldCheck, Heart, ArrowRight, Sparkles, Globe, Award } from "lucide-react";
+import { Target, Zap, ShieldCheck, Heart, ArrowRight, Globe, Award, Compass, TrendingUp } from "lucide-react";
 import Link from "next/link";
 
 export default async function AboutPage({
@@ -28,7 +28,7 @@ export default async function AboutPage({
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px] -mr-48 -mt-48" />
         <div className="max-w-5xl mx-auto text-center relative z-10">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[11px] font-black uppercase tracking-widest mb-6">
-            <Sparkles className="w-3.5 h-3.5" /> Discover our story
+            <Compass className="w-3.5 h-3.5" /> Discover our story
           </div>
           <h1 className="text-4xl md:text-6xl font-black text-white mb-6 tracking-tighter">
             We are <span className="text-blue-500">{schoolName}</span>.
@@ -46,7 +46,7 @@ export default async function AboutPage({
             { label: "Active Students", value: "10K+", icon: <Target className="w-4 h-4" /> },
             { label: "Solved Questions", value: "500k+", icon: <Zap className="w-4 h-4" /> },
             { label: "Partner Schools", value: "100+", icon: <Award className="w-4 h-4" /> },
-            { label: "Average Growth", value: "42%", icon: <Sparkles className="w-4 h-4" /> },
+            { label: "Average Growth", value: "42%", icon: <TrendingUp className="w-4 h-4" /> },
           ].map((stat, i) => (
             <div key={i} className="bg-white p-7 rounded-[2rem] shadow-xl shadow-slate-200/50 text-center border border-slate-100 group hover:border-blue-500 transition-all">
               <div className="w-9 h-9 rounded-2xl bg-slate-50 flex items-center justify-center mx-auto mb-3 text-slate-400 group-hover:bg-blue-600 group-hover:text-white transition-all">

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Play, Sparkles, TrendingUp, CheckCircle2, Award, Clock, Target, BarChart2, ShieldCheck } from "lucide-react";
+import { ArrowRight, Play, Lightbulb, TrendingUp, CheckCircle2, Award, Clock, Target, BarChart2, ShieldCheck } from "lucide-react";
 
 export default async function HeroMain() {
   return (
@@ -223,7 +223,7 @@ export default async function HeroMain() {
                     <div className="sm:col-span-6 p-3.5 bg-linear-to-br from-indigo-950/50 to-slate-950/60 rounded-xl border border-indigo-900/40 flex flex-col justify-between">
                       <div>
                         <div className="flex items-center gap-1.5 text-xs font-bold text-indigo-300 mb-1.5">
-                          <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                          <Lightbulb className="w-3.5 h-3.5 text-amber-400" />
                           <span>AI Study Insights</span>
                         </div>
                         <p className="text-[11px] text-slate-300 leading-snug">

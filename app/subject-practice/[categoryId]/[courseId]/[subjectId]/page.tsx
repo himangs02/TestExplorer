@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, BookOpen, HelpCircle, ChevronRight, Sparkles, CheckCircle2, Award } from 'lucide-react'
+import { ArrowLeft, BookOpen, HelpCircle, ChevronRight, Play, CheckCircle2, Award } from 'lucide-react'
 import ChapterTopicList from '@/components/subject-practice/ChapterTopicList'
 
 export default async function SubjectPracticeChaptersPage({
@@ -113,7 +113,7 @@ export default async function SubjectPracticeChaptersPage({
                     href={`/subject-practice/${categoryId}/${courseId}/${subjectId}/practice?chapterId=${firstPracticableChapter.id}`}
                     className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold shadow-lg shadow-blue-600/30 transition-all transform hover:-translate-y-0.5"
                   >
-                    <Sparkles className="w-4 h-4 text-yellow-300" />
+                    <Play className="w-4 h-4 fill-white" />
                     Start Practicing ({firstPracticableChapter.name})
                   </Link>
                 </div>

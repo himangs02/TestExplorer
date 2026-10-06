@@ -1,7 +1,7 @@
 'use client';
 
 import Link from "next/link";
-import { Facebook, Twitter, Instagram, Linkedin, Mail, Heart, GraduationCap, ArrowRight, ShieldCheck, Sparkles } from "lucide-react";
+import { Facebook, Twitter, Instagram, Linkedin, Mail, Heart, GraduationCap, ArrowRight, ShieldCheck } from "lucide-react";
 
 export default function Footer({ school }: { school?: any }) {
   const brandName = school ? school.name : "Test Explorer";

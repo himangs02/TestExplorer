@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
-import { BookOpen, Layers, HelpCircle, ArrowUpRight, UploadCloud, Sparkles } from 'lucide-react'
+import { BookOpen, Layers, HelpCircle, ArrowUpRight, UploadCloud } from 'lucide-react'
 import UniversalBulkUploadModal from '@/components/admin/universal-bulk-upload-modal'
 import { useRouter } from 'next/navigation'
 

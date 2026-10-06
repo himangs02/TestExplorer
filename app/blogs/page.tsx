@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { Calendar, Clock, ArrowRight, Tag, Sparkles, BookOpen } from "lucide-react";
+import { Calendar, Clock, ArrowRight, Tag, BookOpen } from "lucide-react";
 import BlogFilters, { BlogTags } from "@/components/blogs/blog-filters";
 import {
   Pagination,
@@ -68,7 +68,7 @@ export default async function BlogsPage({
         {/* Header */}
         <div className="max-w-2xl">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-200/80 text-blue-700 text-xs font-bold uppercase tracking-wider mb-4">
-            <Sparkles className="w-3.5 h-3.5 text-blue-600" />
+            <BookOpen className="w-3.5 h-3.5 text-blue-600" />
             <span>Admissions & Strategy Journal</span>
           </div>
           <h1 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight leading-[1.1] mb-3">

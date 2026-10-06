@@ -57,7 +57,7 @@ export default function EditStreamForm({ stream }: { stream: any }) {
             <option value="Scale">Scale (Law)</option>
             <option value="GraduationCap">Graduation Cap (General)</option>
             <option value="Globe">Globe (Others)</option>
-            <option value="Sparkles">Sparkles</option>
+            <option value="TrendingUp">Trending Up (Growth)</option>
           </select>
         </div>
         <div>
