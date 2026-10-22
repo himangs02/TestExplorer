@@ -38,8 +38,10 @@ export default function CourseTabs({
   enrolledSubjectIds,
   hasFullAccess,
 }: CourseTabsProps) {
-  const [activeTab, setActiveTab] = useState<"subjects" | "mocks">("subjects");
-  const examMocks = mocks.filter((mock: any) => !mock.subject_id);
+  const [activeTab, setActiveTab] = useState<"subjects" | "subject_mocks" | "mocks">("subjects");
+  const isSubjectWise = (mock: any) => Boolean(mock.subject_id);
+  const subjectMocks = mocks.filter(isSubjectWise);
+  const examMocks = mocks.filter((mock: any) => !isSubjectWise(mock));
 
   const handleAccessCheck = (
     e: React.MouseEvent,
@@ -51,7 +53,7 @@ export default function CourseTabs({
 
   return (
     <div>
-      <div className="flex items-center gap-2 mb-8 bg-gray-100 p-1.5 rounded-2xl w-fit">
+      <div className="flex flex-wrap items-center gap-2 mb-8 bg-gray-100 p-1.5 rounded-2xl w-fit">
         <button
           onClick={() => setActiveTab("subjects")}
           className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${
@@ -61,6 +63,16 @@ export default function CourseTabs({
           }`}
         >
           Subjects
+        </button>
+        <button
+          onClick={() => setActiveTab("subject_mocks")}
+          className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${
+            activeTab === "subject_mocks"
+              ? "bg-white text-black shadow-sm"
+              : "text-gray-500 hover:text-black"
+          }`}
+        >
+          Subject Wise Full Mock Test
         </button>
         <button
           onClick={() => setActiveTab("mocks")}
@@ -136,6 +148,74 @@ export default function CourseTabs({
                     </div>
                   </div>
                 </Link>
+              );
+            })
+          )}
+        </div>
+      )}
+
+      {activeTab === "subject_mocks" && (
+        <div className="grid gap-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          {subjectMocks.length === 0 ? (
+            <EmptyState
+              icon={Trophy}
+              text="No subject-wise mock tests generated yet."
+            />
+          ) : (
+            subjectMocks.map((mock: any) => {
+              const isLocked = false;
+
+              return (
+                <div
+                  key={mock.id}
+                  className={`group flex flex-col md:flex-row md:items-center justify-between p-6 rounded-3xl border-2 bg-white transition-all border-gray-100 hover:border-blue-200`}
+                >
+                  <div className="flex gap-5 items-start">
+                    <Image
+                      src="/nta.jpeg"
+                      className="w-12 h-12 rounded-full"
+                      alt="NTA"
+                      width={48}
+                      height={48}
+                    />
+                    <div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <h3 className="text-xl font-black text-gray-900">
+                          {mock.title}
+                        </h3>
+                        {isLocked && (
+                          <span className="px-2 py-0.5 bg-gray-200 text-gray-500 text-[10px] font-bold uppercase rounded">
+                            Locked
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex flex-wrap items-center gap-4 text-sm font-bold text-gray-500">
+                        <span className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded-md">
+                          <Clock className="w-4 h-4" /> {mock.duration_minutes}m
+                        </span>
+                        <span className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded-md">
+                          <HelpCircle className="w-4 h-4" />{" "}
+                          {mock.mock_test_questions?.[0]?.count || 0} Qs
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-4 md:mt-0">
+                    <Link
+                      href={`/mocktest/exam/${mock.id}`}
+                      onClick={(e) => handleAccessCheck(e, mock.id, "mock")}
+                      className={`
+                        w-full md:w-auto px-6 py-3 font-bold rounded-xl transition-all flex items-center justify-center gap-2 bg-black text-white hover:bg-gray-800`}
+                    >
+                      {isLocked ? "Locked" : "Start Test"}
+                      {isLocked ? (
+                        <Lock className="w-4 h-4" />
+                      ) : (
+                        <Play className="w-4 h-4 fill-current" />
+                      )}
+                    </Link>
+                  </div>
+                </div>
               );
             })
           )}

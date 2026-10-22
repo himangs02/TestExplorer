@@ -52,6 +52,14 @@ export default async function CourseSubjectsPage({
   // 3. Fetch Mock Tests for this Course
   const mockTests = await prisma.mock_tests.findMany({
     where: { course_id: courseId, is_active: true },
+    include: {
+      subjects: {
+        select: { id: true, title: true }
+      },
+      _count: {
+        select: { mock_test_questions: true }
+      }
+    },
     orderBy: { created_at: 'desc' }
   })
 

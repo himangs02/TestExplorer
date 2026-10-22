@@ -18,7 +18,7 @@ export async function searchSchools(query: string) {
       },
       take: 5
     });
-
+    
     return schools;
   } catch (error) {
     console.error('Error searching schools:', error);
