@@ -56,33 +56,30 @@ export default function CourseTabs({
       <div className="flex flex-wrap items-center gap-2 mb-8 bg-gray-100 p-1.5 rounded-2xl w-fit">
         <button
           onClick={() => setActiveTab("subjects")}
-          className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${
-            activeTab === "subjects"
+          className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${activeTab === "subjects"
               ? "bg-white text-black shadow-sm"
               : "text-gray-500 hover:text-black"
-          }`}
+            }`}
         >
           Subjects
         </button>
         <button
           onClick={() => setActiveTab("subject_mocks")}
-          className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${
-            activeTab === "subject_mocks"
+          className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${activeTab === "subject_mocks"
               ? "bg-white text-black shadow-sm"
               : "text-gray-500 hover:text-black"
-          }`}
+            }`}
         >
           Subject Wise Full Mock Test
         </button>
         <button
           onClick={() => setActiveTab("mocks")}
-          className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${
-            activeTab === "mocks"
+          className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${activeTab === "mocks"
               ? "bg-white text-black shadow-sm"
               : "text-gray-500 hover:text-black"
-          }`}
+            }`}
         >
-          Full Mock Tests
+          NTA Mock Zone
         </button>
       </div>
 
@@ -102,9 +99,8 @@ export default function CourseTabs({
                   key={subject.id}
                   href={`/courses/${courseId}/subjects/${subject.id}`}
                   onClick={(e) => handleAccessCheck(e, subject.id, "subject")}
-                  className={`group block relative ${
-                    isLocked ? "cursor-not-allowed" : ""
-                  }`}
+                  className={`group block relative ${isLocked ? "cursor-not-allowed" : ""
+                    }`}
                 >
                   <div
                     className={`
@@ -239,13 +235,13 @@ export default function CourseTabs({
                   className={`group flex flex-col md:flex-row md:items-center justify-between p-6 rounded-3xl border-2 bg-white transition-all border-gray-100 hover:border-blue-200`}
                 >
                   <div className="flex gap-5 items-start">
-                      <Image
-                        src="/nta.jpeg"
-                        className="w-12 h-12 rounded-full"
-                        alt="NTA"
-                        width={48}
-                        height={48}
-                      />
+                    <Image
+                      src="/nta.jpeg"
+                      className="w-12 h-12 rounded-full"
+                      alt="NTA"
+                      width={48}
+                      height={48}
+                    />
                     <div>
                       <div className="flex items-center gap-2 mb-2">
                         <h3 className="text-xl font-black text-gray-900">

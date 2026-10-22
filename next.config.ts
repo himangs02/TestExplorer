@@ -25,6 +25,9 @@ const nextConfig: NextConfig = {
 
   serverExternalPackages: ['@prisma/client', 'bcryptjs'],
   experimental: {
+    // Prevent Hostinger/Docker from spawning 63 workers and hitting OS thread limits (EAGAIN / os error 11)
+    cpus: 1,
+    workerThreads: false,
     optimizePackageImports: [
       'lucide-react',
       'country-state-city',
