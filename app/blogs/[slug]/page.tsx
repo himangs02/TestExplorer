@@ -49,10 +49,39 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
     take: 4
   })
 
-  // 3. Generate Table of Contents from HTML Content
+  // 3. Parse tags and FAQs safely
+  let tagsList: string[] = [];
+  if (Array.isArray(blog.tags)) {
+    tagsList = blog.tags;
+  } else if (typeof blog.tags === 'string') {
+    try {
+      const parsed = JSON.parse(blog.tags);
+      tagsList = Array.isArray(parsed) ? parsed : [blog.tags];
+    } catch {
+      tagsList = blog.tags.split(',').map((s: string) => s.trim()).filter(Boolean);
+    }
+  }
+
+  let faqsList: { question: string; answer: string }[] = [];
+  if (Array.isArray(blog.faqs)) {
+    faqsList = blog.faqs;
+  } else if (typeof blog.faqs === 'string') {
+    try {
+      const parsed = JSON.parse(blog.faqs);
+      faqsList = Array.isArray(parsed) ? parsed : [];
+    } catch {
+      faqsList = [];
+    }
+  }
+
+  const cleanContent = (blog.content || '').replace(/<[^>]*>?/gm, '');
+  const wordCount = cleanContent.trim().split(/\s+/).filter(Boolean).length;
+  const readTime = `${Math.max(3, Math.ceil(wordCount / 180))} min read`;
+
+  // 4. Generate Table of Contents from HTML Content
   const toc = extractHeadings(blog.content || "");
 
-  // 4. Inject IDs into Content for Anchor Links (Simple String Replacement)
+  // 5. Inject IDs into Content for Anchor Links (Simple String Replacement)
   let processedContent = blog.content || "";
   toc.forEach(item => {
     // Basic replacement to add id attribute to h2 tags
@@ -88,13 +117,15 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                  <Calendar className="w-4 h-4" /> {formatDate(blog.created_at)}
                </div>
                <div className="flex items-center gap-2">
-                 <Clock className="w-4 h-4" /> 8 min read
+                 <Clock className="w-4 h-4" /> {readTime}
                </div>
-               <div className="flex items-center gap-2">
-                  <span className="px-2 py-0.5 bg-gray-100 rounded text-xs font-bold text-gray-600 uppercase">
-                    {blog.tags?.[0]}
-                  </span>
-               </div>
+               {tagsList.length > 0 && (
+                 <div className="flex items-center gap-2">
+                   <span className="px-2.5 py-0.5 bg-blue-50 text-blue-700 rounded text-xs font-bold uppercase tracking-wider border border-blue-200/60">
+                     {tagsList[0]}
+                   </span>
+                 </div>
+               )}
             </div>
 
             {/* Featured Image */}
@@ -138,11 +169,11 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           />
 
           {/* FAQ Section */}
-          {blog.faqs && Array.isArray(blog.faqs) && blog.faqs.length > 0 && (
+          {faqsList.length > 0 && (
             <div className="mt-16 pt-10 border-t border-gray-200">
               <h3 className="text-2xl font-bold text-gray-900 mb-6">Frequently Asked Questions</h3>
               <Accordion type="single" collapsible className="w-full">
-                {blog.faqs.map((faq: any, index: number) => (
+                {faqsList.map((faq: any, index: number) => (
                   <AccordionItem key={index} value={`item-${index}`} className="border-b border-gray-200">
                     <AccordionTrigger className="text-left font-bold text-gray-900 hover:text-blue-600 hover:no-underline py-4">
                       {faq.question}
@@ -160,7 +191,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           <div className="mt-12 py-8 border-y border-gray-200 flex flex-col md:flex-row items-center justify-between gap-6">
              <div className="flex flex-wrap items-center gap-2">
                 <span className="text-sm font-bold text-gray-500 mr-2">Tags:</span>
-                {blog.tags?.map((t: string) => (
+                {tagsList.map((t: string) => (
                   <span key={t} className="px-3 py-1 bg-gray-100 text-gray-600 text-sm font-medium rounded-full hover:bg-gray-200 cursor-default transition-colors">
                     {t}
                   </span>

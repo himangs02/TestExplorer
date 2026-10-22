@@ -33,7 +33,7 @@ export async function middleware(request: NextRequest) {
 
   const allowedSubroutes = [
     'about', 'contact', 'blogs', 'categories', 'streams', 'login', 'signup', 
-    'forgot-password', 'reset-password'
+    'forgot-password', 'reset-password', 'privacy', 'terms', 'cookie-policy', 'security', 'faqs'
   ];
 
   const segments = path.split('/').filter(Boolean);
@@ -62,6 +62,11 @@ export async function middleware(request: NextRequest) {
     path.startsWith('/streams') ||    
     path.startsWith('/categories') ||        
     path.startsWith('/blogs') ||         
+    path.startsWith('/privacy') ||
+    path.startsWith('/terms') ||
+    path.startsWith('/cookie-policy') ||
+    path.startsWith('/security') ||
+    path.startsWith('/faqs') ||
     path.startsWith('/predictor') ||
     path.startsWith('/jee-main-college-predictor') ||
     path.startsWith('/jee-advanced-college-predictor') ||

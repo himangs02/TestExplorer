@@ -19,6 +19,28 @@ function formatDate(dateString: string) {
   return date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
+function getFirstTag(tags: any, fallback = 'Article'): string {
+  if (Array.isArray(tags)) return tags[0] || fallback;
+  if (typeof tags === 'string') {
+    try {
+      const parsed = JSON.parse(tags);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed[0];
+    } catch {
+      const parts = tags.split(',').map((s: string) => s.trim()).filter(Boolean);
+      if (parts.length > 0) return parts[0];
+    }
+  }
+  return fallback;
+}
+
+function getReadingTime(content?: string | null): string {
+  if (!content) return '5 min read';
+  const clean = content.replace(/<[^>]*>?/gm, '');
+  const words = clean.trim().split(/\s+/).filter(Boolean).length;
+  const minutes = Math.max(3, Math.ceil(words / 180));
+  return `${minutes} min read`;
+}
+
 export default async function BlogsPage({
   searchParams,
 }: {
@@ -103,7 +125,7 @@ export default async function BlogsPage({
                     {/* Category Badge */}
                     <div className="absolute top-4 left-4">
                       <span className="px-3 py-1 bg-white/95 backdrop-blur-md text-slate-900 text-[10px] font-extrabold rounded-full uppercase tracking-wider border border-slate-200 shadow-xs">
-                        {Array.isArray(post.tags) ? (post.tags as any)[0] : 'Featured'}
+                        {getFirstTag(post.tags, 'Featured')}
                       </span>
                     </div>
                   </div>
@@ -119,7 +141,7 @@ export default async function BlogsPage({
                         </div>
                         <div className="flex items-center gap-1.5">
                           <Clock className="w-3.5 h-3.5 text-slate-400" />
-                          6 min read
+                          {getReadingTime(post.content)}
                         </div>
                       </div>
 
@@ -178,7 +200,7 @@ export default async function BlogsPage({
                     />
                     <div className="absolute top-3 left-3">
                       <span className="px-2.5 py-0.5 bg-white/95 backdrop-blur-md text-slate-900 text-[10px] font-extrabold rounded-full uppercase tracking-wider border border-slate-200 shadow-2xs">
-                        {Array.isArray(post.tags) ? (post.tags as any)[0] : 'Article'}
+                        {getFirstTag(post.tags, 'Article')}
                       </span>
                     </div>
                   </div>
@@ -192,7 +214,7 @@ export default async function BlogsPage({
                         </span>
                         <span>•</span>
                         <span className="flex items-center gap-1">
-                          <Clock className="w-3 h-3" /> 5 min
+                          <Clock className="w-3 h-3" /> {getReadingTime(post.content)}
                         </span>
                       </div>
                       

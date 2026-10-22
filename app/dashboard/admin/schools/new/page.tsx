@@ -11,10 +11,28 @@ export default function AddSchoolPage() {
     
     // 2. Extract Form Data
     const name = formData.get('name') as string
-    const slug = (formData.get('slug') as string).toLowerCase()
+    const slug = (formData.get('slug') as string).toLowerCase().trim()
+    const principalImageRaw = (formData.get('principal_image') as string)?.trim() || null
+    const principalMessage = (formData.get('principal_message') as string)?.trim() || null
     const adminName = formData.get('adminName') as string
-    const email = formData.get('email') as string
+    const email = (formData.get('email') as string).toLowerCase().trim()
     const password = formData.get('password') as string
+
+    function getValidImageUrl(url: string | null) {
+      if (!url) return null
+      try {
+        const urlObj = new URL(url)
+        if (urlObj.hostname.includes('drive.google.com')) {
+          const pathMatch = urlObj.pathname.match(/\/(?:file\/)?d\/([a-zA-Z0-9_-]+)/)
+          const idParam = urlObj.searchParams.get('id')
+          const fileId = pathMatch ? pathMatch[1] : idParam
+          if (fileId) {
+            return `https://lh3.googleusercontent.com/d/${fileId}`
+          }
+        }
+      } catch (e) {}
+      return url
+    }
 
     // Check if user email is taken
     const existingUser = await prisma.users.findUnique({ where: { email } })
@@ -37,6 +55,8 @@ export default function AddSchoolPage() {
             name,
             slug,
             welcome_message: `Welcome to ${name}`,
+            principal_image: getValidImageUrl(principalImageRaw),
+            principal_message: principalMessage,
           }
         })
 
@@ -106,6 +126,29 @@ export default function AddSchoolPage() {
                 <label className="block text-xs font-bold text-gray-500 mb-1">Subdomain Slug</label>
                 <input name="slug" type="text" placeholder="springfield" required className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-black outline-none" />
               </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-gray-500 mb-1">Principal Image URL</label>
+              <input 
+                name="principal_image" 
+                type="text" 
+                placeholder="https://example.com/principal.jpg or Google Drive Link" 
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-black outline-none" 
+              />
+              <p className="text-[11px] text-gray-400 mt-1 font-medium">
+                If using a Google Drive link, ensure the file is set to <strong>&quot;Anyone with the link can view&quot;</strong>.
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-gray-500 mb-1">Principal Message (Optional)</label>
+              <textarea 
+                name="principal_message" 
+                rows={3} 
+                placeholder="Message for students from the principal..." 
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-black outline-none" 
+              />
             </div>
           </div>
 

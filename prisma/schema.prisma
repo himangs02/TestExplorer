@@ -26,8 +26,8 @@ model blogs {
   id                     String      @id @default(uuid())
   title                  String
   slug                   String      @unique
-  excerpt                String?
-  content                String?
+  excerpt                String?     @db.Text
+  content                String?     @db.LongText
   image_url              String?     @db.LongText
   tags                   String      @db.LongText
   faqs                   String?     @db.LongText

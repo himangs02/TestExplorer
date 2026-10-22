@@ -57,7 +57,7 @@ export default function Testimonials({ data }: { data?: any[] }) {
       score: "AIR 890 (NEET-UG)",
       text: "The chapter-wise breakdown and speed analytics helped me shave off 20 minutes from my Biology paper. Truly a game changer for serious preparation.",
       rating: 5,
-      image: "/testimonials/priya.jpg",
+      image: "/testimonials/ananya.jpg",
       accent: "border-t-teal-500"
     },
     {
@@ -66,7 +66,7 @@ export default function Testimonials({ data }: { data?: any[] }) {
       score: "99.8 %ile (JEE Adv)",
       text: "Attempting mock tests with the exact CBT exam interface and realistic timer reduced my exam day anxiety to zero. Highly recommended!",
       rating: 5,
-      image: "/testimonials/manish.jpg",
+      image: "/testimonials/rohan.jpg",
       accent: "border-t-rose-500"
     }
   ];
@@ -76,8 +76,8 @@ export default function Testimonials({ data }: { data?: any[] }) {
     "/testimonials/priya.jpg",
     "/testimonials/varun.jpg",
     "/testimonials/sk_malhotra.jpg",
-    "/testimonials/priya.jpg",
-    "/testimonials/manish.jpg"
+    "/testimonials/ananya.jpg",
+    "/testimonials/rohan.jpg"
   ];
 
   const accents = [
