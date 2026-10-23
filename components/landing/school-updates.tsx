@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { Bell, Calendar, ArrowRight, Quote } from "lucide-react";
 import Image from "next/image";
 import SchoolPromo from "./school-promo";
+import PrincipalAvatar from "./principal-avatar";
 
 // Helper function to handle Google Drive links
 const getValidImageUrl = (url?: string | null) => {
@@ -40,30 +41,27 @@ export default async function SchoolUpdates({ school }: { school: any }) {
         {/* === 1. PRINCIPAL'S DESK / MESSAGE SECTION === */}
         {school.principal_message && (
           <section className="container mx-auto px-4 sm:px-6 max-w-7xl pt-12 pb-10">
-            <div className="bg-white rounded-[2rem] border border-gray-200 shadow-lg p-8 md:p-12 relative overflow-hidden">
-              <Quote className="lucide lucide-quote absolute top-8 right-8 w-32 h-32 text-gray-50 opacity-50 rotate-180 pointer-events-none" />
+            <div className="bg-white rounded-[2rem] border border-gray-200 shadow-lg p-6 sm:p-8 md:p-12 relative overflow-hidden">
+              <Quote className="lucide lucide-quote absolute top-8 right-8 w-32 h-32 text-gray-50 opacity-40 rotate-180 pointer-events-none" />
 
-              <div className="grid md:grid-cols-12 gap-10 items-center relative z-10">
+              <div className="grid md:grid-cols-12 gap-8 md:gap-10 items-start relative z-10">
                 <div className="md:col-span-4 lg:col-span-3 flex flex-col items-center">
-                  <div className="w-48 h-48 md:w-full md:aspect-square relative rounded-2xl overflow-hidden shadow-xl border-4 border-white bg-gray-100 shrink-0">
-                    <img
-                      src={getValidImageUrl(school.principal_image) || "https://ui-avatars.com/api/?name=Principal&background=f3f4f6&color=9ca3af"}
-                      alt="Principal"
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
+                  <PrincipalAvatar
+                    src={getValidImageUrl(school.principal_image)}
+                    schoolName={school.name}
+                  />
                   <div className="mt-4 text-center">
                     <h4 className="font-bold text-gray-900 text-base">Principal&apos;s Desk</h4>
                     <p className="text-xs font-medium text-blue-600">{school.name}</p>
                   </div>
                 </div>
 
-                <div className="md:col-span-8 lg:col-span-9 space-y-6">
-                  <h3 className="text-2xl md:text-3xl font-black text-gray-900">
+                <div className="md:col-span-8 lg:col-span-9 space-y-4">
+                  <h3 className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight">
                     A Message to Our Students
                   </h3>
                   <div className="relative">
-                    <p className="text-base text-gray-600 leading-relaxed relative z-10 whitespace-pre-line pl-4 border-l-4 border-blue-500 rounded-l">
+                    <p className="text-sm sm:text-base text-gray-600 leading-relaxed relative z-10 whitespace-pre-line pl-4 border-l-4 border-blue-500 rounded-l">
                       {school.principal_message}
                     </p>
                   </div>

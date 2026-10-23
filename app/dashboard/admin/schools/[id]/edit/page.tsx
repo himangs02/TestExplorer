@@ -72,6 +72,33 @@ export default async function EditSchoolPage({ params }: { params: Promise<{ id:
             />
           </div>
 
+          {/* Principal Image URL */}
+          <div>
+            <label className="block text-sm font-bold text-gray-900 mb-2">Principal Image URL</label>
+            <input 
+              name="principal_image" 
+              type="text" 
+              defaultValue={school.principal_image ?? ''}
+              placeholder="https://example.com/principal.jpg or Google Drive Link" 
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-black outline-none transition-all" 
+            />
+            <p className="text-[11px] text-gray-400 mt-1 font-medium">
+              If using a Google Drive link, ensure the file is set to <strong>&quot;Anyone with the link can view&quot;</strong>.
+            </p>
+          </div>
+
+          {/* Principal Message */}
+          <div>
+            <label className="block text-sm font-bold text-gray-900 mb-2">Principal Message (A Message to Our Students)</label>
+            <textarea 
+              name="principal_message" 
+              defaultValue={school.principal_message ?? ''}
+              rows={6}
+              placeholder="Message for students from the principal..." 
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-black outline-none transition-all" 
+            />
+          </div>
+
           <button type="submit" className="w-full py-4 bg-black text-white font-bold rounded-xl hover:bg-gray-800 transition-all mt-4 flex items-center justify-center gap-2">
             <Save className="w-4 h-4" />
             Save Changes

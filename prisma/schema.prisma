@@ -234,12 +234,12 @@ model organizations {
   slug                 String                 @unique
   logo_url             String?                @db.LongText
   hero_image_url       String?                @db.LongText
-  welcome_message      String?
+  welcome_message      String?                @db.Text
   created_at           DateTime?              @default(now())
   email                String?
   phone                String?
   updated_at           DateTime?              @default(now())
-  principal_message    String?
+  principal_message    String?                @db.LongText
   principal_image      String?                @db.LongText
   contact_messages     contact_messages[]
   profiles             profiles[]
