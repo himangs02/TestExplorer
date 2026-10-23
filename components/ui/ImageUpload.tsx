@@ -27,6 +27,59 @@ function formatUrl(url: string): string {
   return url
 }
 
+async function compressImage(file: File): Promise<Blob | File> {
+  if (!file.type.startsWith('image/') || file.type.includes('svg')) {
+    return file;
+  }
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new window.Image();
+      img.onload = () => {
+        const MAX_WIDTH = 1920;
+        const MAX_HEIGHT = 1080;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > MAX_WIDTH || height > MAX_HEIGHT) {
+          if (width / height > MAX_WIDTH / MAX_HEIGHT) {
+            height = Math.round((height * MAX_WIDTH) / width);
+            width = MAX_WIDTH;
+          } else {
+            width = Math.round((width * MAX_HEIGHT) / height);
+            height = MAX_HEIGHT;
+          }
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          resolve(file);
+          return;
+        }
+        ctx.drawImage(img, 0, 0, width, height);
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              resolve(new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' }));
+            } else {
+              resolve(file);
+            }
+          },
+          'image/jpeg',
+          0.85
+        );
+      };
+      img.onerror = () => resolve(file);
+      img.src = e.target?.result as string;
+    };
+    reader.onerror = () => resolve(file);
+    reader.readAsDataURL(file);
+  });
+}
+
 export default function ImageUpload({ 
   label, 
   value, 
@@ -47,8 +100,9 @@ export default function ImageUpload({
     if (!file) return;
     try {
         setUploading(true);
+        const optimizedFile = await compressImage(file);
         const formData = new FormData();
-        formData.append('file', file);
+        formData.append('file', optimizedFile);
         const res = await fetch('/api/upload-image', {
             method: 'POST',
             body: formData,
@@ -152,7 +206,7 @@ export default function ImageUpload({
             <button
               type="button"
               onClick={handleApplyUrl}
-              className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700"
+              className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 cursor-pointer"
             >
               Apply
             </button>
@@ -172,7 +226,7 @@ export default function ImageUpload({
               {uploading ? (
                 <>
                   <Loader2 className="w-8 h-8 text-blue-600 animate-spin mb-3" />
-                  <p className="text-sm text-gray-500">Uploading...</p>
+                  <p className="text-sm text-gray-500">Optimizing & Uploading...</p>
                 </>
               ) : (
                 <>
@@ -182,7 +236,7 @@ export default function ImageUpload({
                   <p className="mb-2 text-sm text-gray-500">
                     <span className="font-semibold text-gray-900">Click to upload</span> or drag and drop
                   </p>
-                  <p className="text-xs text-gray-400">SVG, PNG, JPG, AVIF or WEBP (MAX. 5MB)</p>
+                  <p className="text-xs text-gray-400">SVG, PNG, JPG, AVIF or WEBP</p>
                 </>
               )}
             </div>

@@ -44,15 +44,11 @@ export default function HeroSchool({ school }: { school: any }) {
       {/* 1. Background Image - Only rendered when an image has been uploaded and loads successfully */}
       {imgSrc && !hasError && (
         <div className="absolute inset-0 z-0">
-          <Image
+          <img
             src={imgSrc}
             alt={`${school?.name || 'School'} Campus`}
-            fill
-            sizes="100vw"
-            className="object-cover transition-opacity duration-500"
-            priority
+            className="w-full h-full object-cover transition-opacity duration-500"
             onError={handleImageError}
-            unoptimized={true}
             referrerPolicy="no-referrer"
           />
           <div className="absolute inset-0 bg-black/15 bg-blend-overlay" />
