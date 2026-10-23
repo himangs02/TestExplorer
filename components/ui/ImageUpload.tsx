@@ -1,13 +1,29 @@
 'use client'
 
 import { useState } from 'react'
-import { Upload, X, Loader2, ImageIcon } from 'lucide-react'
+import { Upload, X, Loader2, Link as LinkIcon } from 'lucide-react'
 
 interface ImageUploadProps {
   label: string
   value: string | null
   onChange: (url: string) => void
   bucket?: string
+}
+
+function formatUrl(url: string): string {
+  if (!url) return ''
+  try {
+    if (url.includes('drive.google.com')) {
+      const urlObj = new URL(url)
+      const pathMatch = urlObj.pathname.match(/\/(?:file\/)?d\/([a-zA-Z0-9_-]+)/)
+      const idParam = urlObj.searchParams.get('id')
+      const fileId = pathMatch ? pathMatch[1] : idParam
+      if (fileId) {
+        return `https://lh3.googleusercontent.com/d/${fileId}`
+      }
+    }
+  } catch {}
+  return url
 }
 
 export default function ImageUpload({ 
@@ -17,6 +33,9 @@ export default function ImageUpload({
   bucket = 'school-assets' 
 }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false)
+  const [showUrlInput, setShowUrlInput] = useState(false)
+  const [urlInputVal, setUrlInputVal] = useState('')
+
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -39,29 +58,83 @@ export default function ImageUpload({
     } finally {
         setUploading(false);
     }
-};
+  };
+
+  const handleApplyUrl = () => {
+    if (!urlInputVal.trim()) return
+    const formatted = formatUrl(urlInputVal.trim())
+    onChange(formatted)
+    setUrlInputVal('')
+    setShowUrlInput(false)
+  }
+
+  const displayUrl = value ? formatUrl(value) : ''
 
   return (
     <div className="w-full">
-      <label className="block text-sm font-medium text-gray-700 mb-2">
-        {label}
-      </label>
+      <div className="flex items-center justify-between mb-2">
+        <label className="block text-sm font-medium text-gray-700">
+          {label}
+        </label>
+        {!value && (
+          <button
+            type="button"
+            onClick={() => setShowUrlInput(!showUrlInput)}
+            className="text-xs text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1"
+          >
+            <LinkIcon className="w-3 h-3" />
+            {showUrlInput ? 'Upload file instead' : 'Or paste URL / Google Drive link'}
+          </button>
+        )}
+      </div>
       
       {value ? (
         // Preview State
         <div className="relative w-full aspect-video md:aspect-[3/1] bg-gray-100 rounded-xl overflow-hidden border border-gray-200 group">
           <img 
-            src={value} 
+            src={displayUrl} 
             alt="Upload preview" 
             className="w-full h-full object-cover"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = '/images/placeholder-school.jpg'
+            }}
           />
           <button
             onClick={() => onChange('')} // Clear image
             type="button"
-            className="absolute top-2 right-2 p-2 bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-700"
+            className="absolute top-2 right-2 p-2 bg-red-600 text-white rounded-full opacity-90 group-hover:opacity-100 transition-opacity hover:bg-red-700 shadow-md"
+            title="Remove image"
           >
             <X className="w-4 h-4" />
           </button>
+        </div>
+      ) : showUrlInput ? (
+        // Direct URL Input State
+        <div className="space-y-2 p-4 bg-gray-50 rounded-xl border border-gray-200">
+          <label className="block text-xs font-semibold text-gray-600">Enter image URL or Google Drive link:</label>
+          <div className="flex gap-2">
+            <input 
+              type="text"
+              value={urlInputVal}
+              onChange={(e) => setUrlInputVal(e.target.value)}
+              placeholder="https://... or Google Drive link"
+              className="flex-1 px-3 py-2 text-sm rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault()
+                  handleApplyUrl()
+                }
+              }}
+            />
+            <button
+              type="button"
+              onClick={handleApplyUrl}
+              className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700"
+            >
+              Apply
+            </button>
+          </div>
+          <p className="text-[11px] text-gray-500">Google Drive links will be automatically converted to direct images.</p>
         </div>
       ) : (
         // Upload State
@@ -86,7 +159,7 @@ export default function ImageUpload({
                   <p className="mb-2 text-sm text-gray-500">
                     <span className="font-semibold text-gray-900">Click to upload</span> or drag and drop
                   </p>
-                  <p className="text-xs text-gray-400">SVG, PNG, JPG or GIF (MAX. 2MB)</p>
+                  <p className="text-xs text-gray-400">SVG, PNG, JPG, AVIF or WEBP (MAX. 5MB)</p>
                 </>
               )}
             </div>

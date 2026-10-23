@@ -32,6 +32,8 @@ const getValidImageUrl = (url: string) => {
 export default function EditSchoolForm({ school }: { school: any }) {
   const [isPending, setIsPending] = useState(false)
   const [currentImage, setCurrentImage] = useState(school.principal_image || '')
+  const [currentHero, setCurrentHero] = useState(school.hero_image_url || '')
+  const [currentLogo, setCurrentLogo] = useState(school.logo_url || '')
   const router = useRouter()
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -39,6 +41,8 @@ export default function EditSchoolForm({ school }: { school: any }) {
     setIsPending(true)
     
     const formData = new FormData(event.currentTarget)
+    formData.set('hero_image_url', currentHero)
+    formData.set('logo_url', currentLogo)
     const result = await updateSchoolAction(formData)
     
     if (result && 'error' in result) {
@@ -89,6 +93,61 @@ export default function EditSchoolForm({ school }: { school: any }) {
 
       <div className="h-px bg-gray-100 my-6" />
 
+      {/* Hero / Banner Image */}
+      <div>
+        <label className="block text-sm font-bold text-gray-900 mb-2">Hero Banner Image URL</label>
+        {currentHero && (
+          <div className="mb-3 relative w-full h-40 rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
+             <img 
+               src={getValidImageUrl(currentHero)} 
+               alt="Hero Banner Preview" 
+               className="w-full h-full object-cover" 
+               onError={(e) => {
+                 (e.target as HTMLImageElement).src = '/images/placeholder-school.jpg'
+               }}
+             />
+          </div>
+        )}
+        <input 
+          name="hero_image_url" 
+          type="text" 
+          value={currentHero}
+          onChange={(e) => setCurrentHero(e.target.value)}
+          className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-black outline-none transition-all"
+          placeholder="https://example.com/campus.jpg, /uploads/..., or Google Drive Link"
+        />
+        <p className="text-xs text-gray-500 mt-2 font-medium">
+          This image appears as the background banner on the school&apos;s home page. Supports direct image URLs, /uploads paths, and Google Drive links.
+        </p>
+      </div>
+
+      {/* School Logo */}
+      <div>
+        <label className="block text-sm font-bold text-gray-900 mb-2">School Logo URL</label>
+        {currentLogo && (
+          <div className="mb-3">
+             <img 
+               src={getValidImageUrl(currentLogo)} 
+               alt="School Logo Preview" 
+               className="w-20 h-20 rounded-xl object-contain border border-gray-200 bg-gray-50 p-1" 
+               onError={(e) => {
+                 (e.target as HTMLImageElement).src = 'https://ui-avatars.com/api/?name=School+Logo&background=f3f4f6&color=9ca3af'
+               }}
+             />
+          </div>
+        )}
+        <input 
+          name="logo_url" 
+          type="text" 
+          value={currentLogo}
+          onChange={(e) => setCurrentLogo(e.target.value)}
+          className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-black outline-none transition-all"
+          placeholder="https://example.com/logo.png, /uploads/..., or Google Drive Link"
+        />
+      </div>
+
+      <div className="h-px bg-gray-100 my-6" />
+
       {/* Principal Message */}
       <div>
         <label className="block text-sm font-bold text-gray-900 mb-2">Principal Message</label>
@@ -126,7 +185,7 @@ export default function EditSchoolForm({ school }: { school: any }) {
           placeholder="https://example.com/principal.jpg or Google Drive Link"
         />
         <p className="text-xs text-gray-500 mt-2 font-medium">
-          If using a Google Drive link, ensure the file is set to <strong>"Anyone with the link can view"</strong>.
+          If using a Google Drive link, ensure the file is set to <strong>&quot;Anyone with the link can view&quot;</strong>.
         </p>
       </div>
 

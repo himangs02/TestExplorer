@@ -134,20 +134,28 @@ export async function updateSchoolAction(formData: FormData): Promise<any> {
   const name = formData.get('name') as string
   const slug = (formData.get('slug') as string)?.toLowerCase()?.trim()
   const welcome_message = (formData.get('welcome_message') as string) || null
+  const hero_image_url = (formData.get('hero_image_url') as string)?.trim() || null
+  const logo_url = (formData.get('logo_url') as string)?.trim() || null
   const principal_image = (formData.get('principal_image') as string)?.trim() || null
   const principal_message = (formData.get('principal_message') as string)?.trim() || null
 
   try {
-    await prisma.organizations.update({
+    const updated = await prisma.organizations.update({
       where: { id },
       data: {
         name,
         slug,
         welcome_message,
+        hero_image_url: getValidImageUrl(hero_image_url),
+        logo_url: getValidImageUrl(logo_url),
         principal_image: getValidImageUrl(principal_image),
         principal_message
       }
     })
+
+    if (updated.slug) {
+      revalidatePath(`/${updated.slug}`)
+    }
   } catch (error: any) {
     console.error('Update failed:', error)
     return { error: 'Failed to update school.' }

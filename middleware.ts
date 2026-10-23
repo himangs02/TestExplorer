@@ -3,7 +3,7 @@ import { getToken } from 'next-auth/jwt'
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!_next/static|_next/image|uploads/|images/|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|ico|bmp|tiff)$).*)',
   ],
 }
 
@@ -28,7 +28,8 @@ export async function middleware(request: NextRequest) {
     'getting-started', 'library', 'privacy', 'profile', 'security', 'terms', 
     'update-password', '_next', 'subject-practice', 'predictor',
     'jee-main-college-predictor', 'jee-advanced-college-predictor',
-    'neet-college-predictor', 'cuet-college-predictor', 'clat-college-predictor'
+    'neet-college-predictor', 'cuet-college-predictor', 'clat-college-predictor',
+    'uploads', 'images', 'favicon.ico'
   ];
 
   const allowedSubroutes = [

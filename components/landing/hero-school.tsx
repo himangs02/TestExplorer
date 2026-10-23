@@ -1,43 +1,64 @@
-"use client"; // Required for hover/scroll interaction
+"use client";
 
+import { useState, useEffect } from "react";
 import Image from "next/image";
-import { Bell } from "lucide-react";
-import styles from "./marquee.module.css"; // Import the CSS we made above
+
+// Helper to convert Google Drive links to direct image links
+function formatImageUrl(url?: string | null): string {
+  if (!url || typeof url !== 'string' || !url.trim()) {
+    return "/images/placeholder-school.jpg";
+  }
+  const trimmed = url.trim();
+  try {
+    if (trimmed.includes('drive.google.com')) {
+      const urlObj = new URL(trimmed);
+      const pathMatch = urlObj.pathname.match(/\/(?:file\/)?d\/([a-zA-Z0-9_-]+)/);
+      const idParam = urlObj.searchParams.get('id');
+      const fileId = pathMatch ? pathMatch[1] : idParam;
+      if (fileId) {
+        return `https://lh3.googleusercontent.com/d/${fileId}`;
+      }
+    }
+  } catch {}
+  return trimmed;
+}
 
 export default function HeroSchool({ school }: { school: any }) {
-  // Fallback hero image
-  const heroImage = school.hero_image_url || "/images/placeholder-school.jpg";
-  
-  // Use real announcements if available, otherwise use mock data
-  const announcementsData = school.announcements?.length > 0 
-    ? school.announcements 
-    : [
-        { id: 1, title: "Final Term Math Mock Test is live", content: "All students from Class 12 must attempt this before Friday.", date: "Today", tag: "EXAM", color: "blue" },
-        { id: 2, title: "School closed on Friday", content: "Holiday declared for Cultural Fest preparation.", date: "2d ago", tag: "HOLIDAY", color: "purple" },
-        { id: 3, title: "Physics Assignment Due", content: "Chapter 4 assignment submission portal closes tonight.", date: "Yesterday", tag: "URGENT", color: "red" },
-        { id: 4, title: "New Course Added", content: "Introduction to Python is now available in the library.", date: "1w ago", tag: "UPDATE", color: "green" },
-      ];
+  const initialUrl = formatImageUrl(school?.hero_image_url);
+  const [imgSrc, setImgSrc] = useState(initialUrl);
+  const [hasError, setHasError] = useState(false);
 
-  // Duplicate the list to ensure seamless infinite scrolling
-  const scrollingList = [...announcementsData, ...announcementsData];
+  useEffect(() => {
+    const formatted = formatImageUrl(school?.hero_image_url);
+    setImgSrc(formatted);
+    setHasError(false);
+  }, [school?.hero_image_url]);
+
+  const handleImageError = () => {
+    if (!hasError) {
+      setHasError(true);
+      setImgSrc("/images/placeholder-school.jpg");
+    }
+  };
 
   return (
-    <section className="relative min-h-[900px]  overflow-hidden py-0">
-      
+    <section className="relative min-h-[500px] md:min-h-[700px] lg:min-h-[900px] w-full overflow-hidden py-0 bg-slate-900">
       {/* 1. Background Image */}
       <div className="absolute inset-0 z-0">
         <Image
-          src={heroImage}
-          alt={`${school.name} Campus`}
-            fill
-          className="object-cover"
+          src={imgSrc}
+          alt={`${school?.name || 'School'} Campus`}
+          fill
+          sizes="100vw"
+          className="object-cover transition-opacity duration-500"
           priority
+          onError={handleImageError}
+          unoptimized={true}
         />
-        <div className="absolute inset-0 bg-black/10 bg-blend-overlay" />
+        <div className="absolute inset-0 bg-black/15 bg-blend-overlay" />
       </div>
 
       {/* 2. Content Container */}
-      
     </section>
   );
 }
