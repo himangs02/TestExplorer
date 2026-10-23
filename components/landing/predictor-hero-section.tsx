@@ -18,8 +18,10 @@ import {
   Zap,
   Layers,
   Award,
-  CheckCircle2
+  CheckCircle2,
+  AlertCircle
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 const EXAM_THEMES: Record<
   ExamId,
@@ -93,22 +95,30 @@ export default function PredictorHeroSection() {
 
     const val = parseFloat(scoreVal);
     if (isNaN(val) || val < 0) {
-      setInputError('Please enter a valid non-negative number.');
+      const msg = 'Please enter a valid non-negative number.';
+      setInputError(msg);
+      toast.error(msg);
       return;
     }
 
     if (inputMode === 'marks' && val > currentConfig.maxMarks) {
-      setInputError(`Marks cannot exceed ${currentConfig.maxMarks} for ${currentConfig.name}.`);
+      const msg = `Marks cannot exceed ${currentConfig.maxMarks} for ${currentConfig.name}.`;
+      setInputError(msg);
+      toast.error(msg);
       return;
     }
 
     if (inputMode === 'percentile' && (val > 100 || val < 0)) {
-      setInputError('Percentile must be between 0 and 100.');
+      const msg = 'Percentile must be between 0 and 100.';
+      setInputError(msg);
+      toast.error(msg);
       return;
     }
 
     if (inputMode === 'rank' && val < 1) {
-      setInputError('Rank must be 1 or higher.');
+      const msg = 'Rank must be 1 or higher.';
+      setInputError(msg);
+      toast.error(msg);
       return;
     }
 
@@ -320,7 +330,24 @@ export default function PredictorHeroSection() {
                               : 'e.g. 18450'
                         }
                         value={scoreVal}
-                        onChange={(e) => setScoreVal(e.target.value)}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setScoreVal(val);
+                          const num = parseFloat(val);
+                          if (!isNaN(num)) {
+                            if (inputMode === 'marks' && num > currentConfig.maxMarks) {
+                              setInputError(`Marks cannot exceed ${currentConfig.maxMarks} for ${currentConfig.name}.`);
+                            } else if (inputMode === 'percentile' && (num > 100 || num < 0)) {
+                              setInputError('Percentile must be between 0 and 100.');
+                            } else if (inputMode === 'rank' && num < 1) {
+                              setInputError('Rank must be 1 or higher.');
+                            } else {
+                              setInputError(null);
+                            }
+                          } else {
+                            setInputError(null);
+                          }
+                        }}
                         min={inputMode === 'rank' ? 1 : 0}
                         max={inputMode === 'marks' ? currentConfig.maxMarks : inputMode === 'percentile' ? 100 : undefined}
                         className={`w-full h-11 px-4 bg-slate-950 border rounded-xl text-sm font-bold text-white placeholder-slate-500 focus:ring-1 focus:outline-none transition-all ${
@@ -338,9 +365,10 @@ export default function PredictorHeroSection() {
                       </span>
                     </div>
                     {inputError && (
-                      <p className="mt-1 text-[11px] font-bold text-rose-400 flex items-center gap-1">
-                        <span>•</span> {inputError}
-                      </p>
+                      <div className="mt-2 p-2.5 rounded-xl bg-rose-500/20 border border-rose-500/50 flex items-center gap-2 text-xs font-bold text-rose-300 animate-in fade-in shadow-md">
+                        <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+                        <span>{inputError}</span>
+                      </div>
                     )}
                   </div>
 

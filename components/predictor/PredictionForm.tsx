@@ -10,7 +10,8 @@ import {
   Quota
 } from '@/lib/predictor/types';
 import { INDIAN_STATES, CUET_UNIVERSITIES } from '@/lib/predictor/data/exams-config';
-import { ArrowRight, ChevronDown, ChevronUp, Check } from 'lucide-react';
+import { ArrowRight, ChevronDown, ChevronUp, Check, AlertCircle } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface PredictionFormProps {
   exam: ExamConfig;
@@ -57,22 +58,30 @@ export const PredictionForm: React.FC<PredictionFormProps> = ({
 
     const val = parseFloat(inputValue);
     if (isNaN(val) || val < 0) {
-      setFormError('Please enter a valid number.');
+      const msg = 'Please enter a valid number.';
+      setFormError(msg);
+      toast.error(msg);
       return;
     }
 
     if (inputMode === 'marks' && val > exam.maxMarks) {
-      setFormError(`Marks cannot exceed the maximum of ${exam.maxMarks} for ${exam.name}.`);
+      const msg = `Marks cannot exceed the maximum of ${exam.maxMarks} for ${exam.name}.`;
+      setFormError(msg);
+      toast.error(msg);
       return;
     }
 
     if (inputMode === 'percentile' && (val > 100 || val < 0)) {
-      setFormError('Percentile must be between 0 and 100.');
+      const msg = 'Percentile must be between 0 and 100.';
+      setFormError(msg);
+      toast.error(msg);
       return;
     }
 
     if (inputMode === 'rank' && val < 1) {
-      setFormError('Rank must be at least 1.');
+      const msg = 'Rank must be at least 1.';
+      setFormError(msg);
+      toast.error(msg);
       return;
     }
 
@@ -180,8 +189,8 @@ export const PredictionForm: React.FC<PredictionFormProps> = ({
         </div>
 
         {formError && (
-          <div className="mt-3 p-3 rounded-xl bg-rose-50 border border-rose-200 flex items-center gap-2 text-xs font-bold text-rose-700 animate-in fade-in">
-            <span className="w-1.5 h-1.5 rounded-full bg-rose-600 shrink-0" />
+          <div className="mt-3 p-3 rounded-xl bg-rose-50 border-2 border-rose-200 flex items-center gap-2.5 text-xs font-bold text-rose-700 animate-in fade-in shadow-xs">
+            <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
             <span>{formError}</span>
           </div>
         )}

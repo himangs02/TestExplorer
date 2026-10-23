@@ -195,7 +195,7 @@ export default async function TestPage({
          courseId={courseId}
          subjectId={subjectId}
          examId={examId}
-         user={JSON.parse(JSON.stringify(userData))} 
+         user={JSON.parse(JSON.stringify(userData || { id: user.id, email: user.email, full_name: user.name }))} 
       />
     )
   }

@@ -20,6 +20,8 @@ export async function submitExamAction(
   // 2. Fetch Exam & Questions
   let questions: any = []
   let examRecord: any = null
+  let isMockTest = false
+  let isExam = false
   
   if (testType === 'practice') {
     examRecord = await prisma.practice_tests.findUnique({ where: { id: examId } })
@@ -30,8 +32,13 @@ export async function submitExamAction(
   } else {
     // Check mock_tests first, then exams table
     examRecord = await prisma.mock_tests.findUnique({ where: { id: examId } })
-    if (!examRecord) {
+    if (examRecord) {
+      isMockTest = true
+    } else {
       examRecord = await prisma.exams.findUnique({ where: { id: examId } })
+      if (examRecord) {
+        isExam = true
+      }
     }
 
     const mockQs = await prisma.mock_test_questions.findMany({
@@ -117,9 +124,9 @@ export async function submitExamAction(
         percentage: percentageCalc,
         time_taken_seconds: timeTaken,
         answers: JSON.stringify(answers),
-        mock_test_id: testType === 'mock' ? examId : undefined,
+        mock_test_id: isMockTest ? examId : undefined,
         practice_test_id: testType === 'practice' ? examId : undefined,
-        exam_id: testType === 'mock' ? examId : undefined,
+        exam_id: isExam ? examId : undefined,
         status: 'completed',
         completed_at: new Date()
       }

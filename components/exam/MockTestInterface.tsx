@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { Info, Loader2 } from 'lucide-react' 
 import { submitExamAction } from '@/app/courses/[courseId]/subjects/[subjectId]/test/[testType]/[examId]/actions' 
@@ -41,7 +41,7 @@ export default function MockTestInterface({
   // 1. Hydrate state from localStorage on page refresh
   useEffect(() => {
     try {
-      const raw = localStorage.getItem(storageKey)
+      const raw = localStorage.getItem(storageKey) || localStorage.getItem(`mock_progress_${examId}`)
       if (raw) {
         const saved = JSON.parse(raw)
         if (saved && (saved.stage === 'test' || saved.stage === 'report')) {
@@ -60,9 +60,9 @@ export default function MockTestInterface({
           }
 
           setTimeLeft(remainingSeconds)
-          setStage('test')
+          setStage(saved.stage)
 
-          if (remainingSeconds <= 0) {
+          if (remainingSeconds <= 0 && saved.stage === 'test') {
             toast.warning('Exam time expired while offline. Submitting responses...')
           } else {
             toast.info('Test session restored. Timer and answers resumed.')
@@ -74,7 +74,7 @@ export default function MockTestInterface({
     } finally {
       setIsHydrated(true)
     }
-  }, [storageKey, totalDurationSeconds, questions?.length])
+  }, [storageKey, totalDurationSeconds, questions?.length, examId])
 
   // 2. Persist state to localStorage whenever in 'test' stage
   useEffect(() => {
@@ -89,45 +89,23 @@ export default function MockTestInterface({
         lastUpdated: Date.now()
       }
       localStorage.setItem(storageKey, JSON.stringify(stateToSave))
+      localStorage.setItem(`mock_progress_${examId}`, JSON.stringify(stateToSave))
     } catch (e) {
       console.error('Failed to save test session to localStorage:', e)
     }
-  }, [isHydrated, stage, answers, questionStatus, currentQIndex, timeLeft, storageKey])
+  }, [isHydrated, stage, answers, questionStatus, currentQIndex, timeLeft, storageKey, examId])
 
-  // -- Empty State --
-  if (!questions || questions.length === 0) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100 font-sans">
-        <div className="bg-white p-8 rounded shadow-md text-center max-w-md">
-          <div className="w-16 h-16 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Info className="w-8 h-8" />
-          </div>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">No Questions Found</h2>
-          <button onClick={() => router.back()} className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 font-bold">Go Back</button>
-        </div>
-      </div>
-    )
-  }
+  // Ref to hold handleSubmit function to avoid stale closure or hook order violation
+  const handleSubmitRef = useRef<() => void>(() => {})
 
-  if (!isHydrated) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 font-sans">
-        <div className="flex flex-col items-center gap-3">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-          <p className="text-sm font-semibold text-gray-600">Loading Exam Portal...</p>
-        </div>
-      </div>
-    )
-  }
-
-  // -- Timer --
+  // 3. Timer Hook - MUST BE CALLED UNCONDITIONALLY BEFORE ANY RETURNS
   useEffect(() => {
     if (stage !== 'test') return
     const timer = setInterval(() => {
       setTimeLeft(prev => {
         if (prev <= 1) {
           clearInterval(timer)
-          handleSubmit()
+          handleSubmitRef.current()
           return 0
         }
         return prev - 1
@@ -142,18 +120,19 @@ export default function MockTestInterface({
   }
 
   const handleSaveNext = () => {
-    const isAnswered = !!answers[questions[currentQIndex].id]
-    setQuestionStatus(prev => ({ ...prev, [questions[currentQIndex].id]: isAnswered ? 'answered' : 'not_answered' }))
+    const isAnswered = !!answers[questions[currentQIndex]?.id]
+    setQuestionStatus(prev => ({ ...prev, [questions[currentQIndex]?.id]: isAnswered ? 'answered' : 'not_answered' }))
     if (currentQIndex < questions.length - 1) setCurrentQIndex(prev => prev + 1)
   }
 
   const handleReviewNext = () => {
-    const isAnswered = !!answers[questions[currentQIndex].id]
-    setQuestionStatus(prev => ({ ...prev, [questions[currentQIndex].id]: isAnswered ? 'ans_and_review' : 'review' }))
+    const isAnswered = !!answers[questions[currentQIndex]?.id]
+    setQuestionStatus(prev => ({ ...prev, [questions[currentQIndex]?.id]: isAnswered ? 'ans_and_review' : 'review' }))
     if (currentQIndex < questions.length - 1) setCurrentQIndex(prev => prev + 1)
   }
 
   const handleClear = () => {
+    if (!questions[currentQIndex]) return
     const newAnswers = { ...answers }
     delete newAnswers[questions[currentQIndex].id]
     setAnswers(newAnswers)
@@ -168,6 +147,7 @@ export default function MockTestInterface({
     // Clear saved progress on submission
     try {
       localStorage.removeItem(storageKey)
+      localStorage.removeItem(`mock_progress_${examId}`)
     } catch (e) {}
 
     const timeTaken = totalDurationSeconds - timeLeft
@@ -214,6 +194,34 @@ export default function MockTestInterface({
     } finally {
       setIsSubmitting(false)
     }
+  }
+
+  handleSubmitRef.current = handleSubmit
+
+  // -- Empty State & Hydration Guard (Strictly AFTER all hooks) --
+  if (!questions || questions.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100 font-sans">
+        <div className="bg-white p-8 rounded shadow-md text-center max-w-md">
+          <div className="w-16 h-16 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Info className="w-8 h-8" />
+          </div>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">No Questions Found</h2>
+          <button onClick={() => router.back()} className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 font-bold">Go Back</button>
+        </div>
+      </div>
+    )
+  }
+
+  if (!isHydrated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 font-sans">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+          <p className="text-sm font-semibold text-gray-600">Loading Exam Portal...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
