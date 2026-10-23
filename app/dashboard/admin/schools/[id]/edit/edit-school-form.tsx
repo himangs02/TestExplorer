@@ -109,7 +109,7 @@ export default function EditSchoolForm({ school }: { school: any }) {
              <img 
                src={getValidImageUrl(currentImage)} 
                alt="Principal" 
-               className="w-16 h-16 rounded-full object-cover border border-gray-200 bg-gray-50" 
+               className="w-20 h-20 rounded-xl object-contain border border-gray-200 bg-gray-50 p-1" 
                onError={(e) => {
                  // Fallback if the image URL is broken or private
                  (e.target as HTMLImageElement).src = 'https://ui-avatars.com/api/?name=Image+Error&background=f3f4f6&color=9ca3af'
