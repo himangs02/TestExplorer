@@ -4,9 +4,9 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 
 // Helper to convert Google Drive links to direct image links
-function formatImageUrl(url?: string | null): string {
+function formatImageUrl(url?: string | null): string | null {
   if (!url || typeof url !== 'string' || !url.trim()) {
-    return "/images/placeholder-school.jpg";
+    return null;
   }
   const trimmed = url.trim();
   try {
@@ -25,7 +25,7 @@ function formatImageUrl(url?: string | null): string {
 
 export default function HeroSchool({ school }: { school: any }) {
   const initialUrl = formatImageUrl(school?.hero_image_url);
-  const [imgSrc, setImgSrc] = useState(initialUrl);
+  const [imgSrc, setImgSrc] = useState<string | null>(initialUrl);
   const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
@@ -35,29 +35,29 @@ export default function HeroSchool({ school }: { school: any }) {
   }, [school?.hero_image_url]);
 
   const handleImageError = () => {
-    if (!hasError) {
-      setHasError(true);
-      setImgSrc("/images/placeholder-school.jpg");
-    }
+    setHasError(true);
+    setImgSrc(null);
   };
 
   return (
     <section className="relative min-h-[500px] md:min-h-[700px] lg:min-h-[900px] w-full overflow-hidden py-0 bg-slate-900">
-      {/* 1. Background Image */}
-      <div className="absolute inset-0 z-0">
-        <Image
-          src={imgSrc}
-          alt={`${school?.name || 'School'} Campus`}
-          fill
-          sizes="100vw"
-          className="object-cover transition-opacity duration-500"
-          priority
-          onError={handleImageError}
-          unoptimized={true}
-          referrerPolicy="no-referrer"
-        />
-        <div className="absolute inset-0 bg-black/15 bg-blend-overlay" />
-      </div>
+      {/* 1. Background Image - Only rendered when an image has been uploaded and loads successfully */}
+      {imgSrc && !hasError && (
+        <div className="absolute inset-0 z-0">
+          <Image
+            src={imgSrc}
+            alt={`${school?.name || 'School'} Campus`}
+            fill
+            sizes="100vw"
+            className="object-cover transition-opacity duration-500"
+            priority
+            onError={handleImageError}
+            unoptimized={true}
+            referrerPolicy="no-referrer"
+          />
+          <div className="absolute inset-0 bg-black/15 bg-blend-overlay" />
+        </div>
+      )}
 
       {/* 2. Content Container */}
     </section>

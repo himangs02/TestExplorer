@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { Upload, X, Loader2, Link as LinkIcon } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Upload, X, Loader2, Link as LinkIcon, ImageOff } from 'lucide-react'
 import { toast } from 'sonner'
 
 interface ImageUploadProps {
@@ -36,6 +36,11 @@ export default function ImageUpload({
   const [uploading, setUploading] = useState(false)
   const [showUrlInput, setShowUrlInput] = useState(false)
   const [urlInputVal, setUrlInputVal] = useState('')
+  const [imgError, setImgError] = useState(false)
+
+  useEffect(() => {
+    setImgError(false)
+  }, [value])
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -54,6 +59,7 @@ export default function ImageUpload({
         const data = await res.json();
         if (data.url) {
           onChange(data.url);
+          setImgError(false);
           toast.success('Image uploaded successfully');
         } else {
           throw new Error(data.error || 'Failed to upload image');
@@ -70,6 +76,7 @@ export default function ImageUpload({
     if (!urlInputVal.trim()) return
     const formatted = formatUrl(urlInputVal.trim())
     onChange(formatted)
+    setImgError(false)
     setUrlInputVal('')
     setShowUrlInput(false)
   }
@@ -97,19 +104,28 @@ export default function ImageUpload({
       {value ? (
         // Preview State
         <div className="relative w-full aspect-video md:aspect-[3/1] bg-gray-100 rounded-xl overflow-hidden border border-gray-200 group">
-          <img 
-            src={displayUrl} 
-            alt="Upload preview" 
-            className="w-full h-full object-cover"
-            referrerPolicy="no-referrer"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = '/images/placeholder-school.jpg'
-            }}
-          />
+          {imgError ? (
+            <div className="w-full h-full flex flex-col items-center justify-center p-4 bg-gray-50 text-gray-400 text-center">
+              <ImageOff className="w-8 h-8 text-gray-400 mb-1" />
+              <p className="text-xs font-semibold text-gray-600">Could not load preview</p>
+              <p className="text-[11px] text-gray-400">Click remove (X) to clear or upload a new file</p>
+            </div>
+          ) : (
+            <img 
+              src={displayUrl} 
+              alt="Upload preview" 
+              className="w-full h-full object-cover"
+              referrerPolicy="no-referrer"
+              onError={() => setImgError(true)}
+            />
+          )}
           <button
-            onClick={() => onChange('')} // Clear image
+            onClick={() => {
+              onChange('')
+              setImgError(false)
+            }}
             type="button"
-            className="absolute top-2 right-2 p-2 bg-red-600 text-white rounded-full opacity-90 group-hover:opacity-100 transition-opacity hover:bg-red-700 shadow-md"
+            className="absolute top-2 right-2 p-2 bg-red-600 text-white rounded-full opacity-90 group-hover:opacity-100 transition-opacity hover:bg-red-700 shadow-md cursor-pointer"
             title="Remove image"
           >
             <X className="w-4 h-4" />
