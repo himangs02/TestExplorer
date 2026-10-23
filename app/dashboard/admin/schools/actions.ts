@@ -162,5 +162,5 @@ export async function updateSchoolAction(formData: FormData): Promise<any> {
   }
 
   revalidatePath('/dashboard/admin/schools')
-  redirect('/dashboard/admin/schools')
+  return { success: true }
 }

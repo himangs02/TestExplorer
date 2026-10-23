@@ -3,209 +3,176 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import { Save, Loader2 } from 'lucide-react'
+import { Save, Loader2, Building, Image as ImageIcon, User, Sparkles } from 'lucide-react'
 import { updateSchoolAction } from '../../actions'
-
-// UPDATED: Helper function to convert Google Drive links to direct image links
-const getValidImageUrl = (url: string) => {
-  if (!url) return ''
-  try {
-    const urlObj = new URL(url)
-    if (urlObj.hostname.includes('drive.google.com')) {
-      // Extract ID from format: /file/d/ID/... or /d/ID/...
-      const pathMatch = urlObj.pathname.match(/\/(?:file\/)?d\/([a-zA-Z0-9_-]+)/)
-      const idParam = urlObj.searchParams.get('id')
-      
-      const fileId = pathMatch ? pathMatch[1] : idParam
-      
-      if (fileId) {
-        // This is the new, reliable way to embed public Google Drive images
-        return `https://lh3.googleusercontent.com/d/${fileId}`
-      }
-    }
-  } catch (e) {
-    // Return as-is if not a valid URL
-  }
-  return url
-}
+import ImageUpload from '@/components/ui/ImageUpload'
 
 export default function EditSchoolForm({ school }: { school: any }) {
   const [isPending, setIsPending] = useState(false)
-  const [currentImage, setCurrentImage] = useState(school.principal_image || '')
   const [currentHero, setCurrentHero] = useState(school.hero_image_url || '')
   const [currentLogo, setCurrentLogo] = useState(school.logo_url || '')
+  const [currentImage, setCurrentImage] = useState(school.principal_image || '')
   const router = useRouter()
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setIsPending(true)
     
-    const formData = new FormData(event.currentTarget)
-    formData.set('hero_image_url', currentHero)
-    formData.set('logo_url', currentLogo)
-    const result = await updateSchoolAction(formData)
-    
-    if (result && 'error' in result) {
-      toast.error(result.error)
-    } else {
-      toast.success('School updated successfully')
-      router.push('/dashboard/admin/schools')
-      router.refresh()
+    try {
+      const formData = new FormData(event.currentTarget)
+      formData.set('hero_image_url', currentHero.trim())
+      formData.set('logo_url', currentLogo.trim())
+      formData.set('principal_image', currentImage.trim())
+      
+      const result = await updateSchoolAction(formData)
+      
+      if (result && 'error' in result) {
+        toast.error(result.error)
+      } else {
+        toast.success('School updated successfully!')
+        router.push('/dashboard/admin/schools')
+        router.refresh()
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to update school')
+    } finally {
+      setIsPending(false)
     }
-    setIsPending(false)
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-8">
       <input type="hidden" name="id" value={school.id} />
 
-      {/* School Name */}
-      <div>
-        <label className="block text-sm font-bold text-gray-900 mb-2">School Name</label>
-        <input 
-          name="name" 
-          type="text" 
-          defaultValue={school.name}
-          required
-          className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-black outline-none transition-all"
-        />
-      </div>
-      
-      {/* Subdomain Slug */}
-      <div>
-        <label className="block text-sm font-bold text-gray-900 mb-2">Subdomain Slug</label>
-        <div className="flex items-center">
-          <span className="px-4 py-3 bg-gray-100 border border-r-0 border-gray-200 text-gray-500 font-medium rounded-l-xl">
-            testexplorer.in/
-          </span>
+      {/* Section 1: Basic Information */}
+      <div className="space-y-4">
+        <h2 className="text-base font-bold text-gray-900 flex items-center gap-2 border-b border-gray-100 pb-2">
+          <Building className="w-5 h-5 text-blue-600" /> Basic School Information
+        </h2>
+
+        <div>
+          <label className="block text-sm font-bold text-gray-800 mb-1.5">School Name</label>
           <input 
-            name="slug" 
+            name="name" 
             type="text" 
-            defaultValue={school.slug}
+            defaultValue={school.name}
             required
-            className="flex-1 px-4 py-3 rounded-r-xl border border-gray-200 focus:ring-2 focus:ring-black outline-none transition-all"
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-black outline-none transition-all text-sm font-medium"
+            placeholder="e.g. Springfield Public School"
           />
         </div>
-        <p className="text-xs text-yellow-600 mt-2 font-medium">
-          Warning: Changing this will break existing bookmarks for students.
-        </p>
-      </div>
-
-      <div className="h-px bg-gray-100 my-6" />
-
-      {/* Hero / Banner Image */}
-      <div>
-        <label className="block text-sm font-bold text-gray-900 mb-2">Hero Banner Image URL</label>
-        {currentHero && (
-          <div className="mb-3 relative w-full h-40 rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
-             <img 
-               src={getValidImageUrl(currentHero)} 
-               alt="Hero Banner Preview" 
-               className="w-full h-full object-cover" 
-               onError={(e) => {
-                 (e.target as HTMLImageElement).src = '/images/placeholder-school.jpg'
-               }}
-             />
+        
+        {/* Subdomain Slug */}
+        <div>
+          <label className="block text-sm font-bold text-gray-800 mb-1.5">Subdomain Slug</label>
+          <div className="flex items-center">
+            <span className="px-4 py-3 bg-gray-100 border border-r-0 border-gray-200 text-gray-500 font-semibold text-sm rounded-l-xl select-none">
+              testexplorer.in/
+            </span>
+            <input 
+              name="slug" 
+              type="text" 
+              defaultValue={school.slug}
+              required
+              className="flex-1 px-4 py-3 rounded-r-xl border border-gray-200 focus:ring-2 focus:ring-black outline-none transition-all text-sm font-medium"
+            />
           </div>
-        )}
-        <input 
-          name="hero_image_url" 
-          type="text" 
-          value={currentHero}
-          onChange={(e) => setCurrentHero(e.target.value)}
-          className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-black outline-none transition-all"
-          placeholder="https://example.com/campus.jpg, /uploads/..., or Google Drive Link"
-        />
-        <p className="text-xs text-gray-500 mt-2 font-medium">
-          This image appears as the background banner on the school&apos;s home page. Supports direct image URLs, /uploads paths, and Google Drive links.
-        </p>
+          <p className="text-xs text-amber-600 mt-1.5 font-medium">
+            Warning: Changing this modifies the school&apos;s URL (e.g. /{school.slug}).
+          </p>
+        </div>
+
+        {/* Welcome Message */}
+        <div>
+          <label className="block text-sm font-bold text-gray-800 mb-1.5">Welcome Message</label>
+          <textarea 
+            name="welcome_message" 
+            defaultValue={school.welcome_message || ''}
+            rows={3}
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-black outline-none transition-all text-sm font-medium resize-none"
+            placeholder="Welcome message displayed on the school banner..."
+          />
+        </div>
       </div>
 
-      {/* School Logo */}
-      <div>
-        <label className="block text-sm font-bold text-gray-900 mb-2">School Logo URL</label>
-        {currentLogo && (
-          <div className="mb-3">
-             <img 
-               src={getValidImageUrl(currentLogo)} 
-               alt="School Logo Preview" 
-               className="w-20 h-20 rounded-xl object-contain border border-gray-200 bg-gray-50 p-1" 
-               onError={(e) => {
-                 (e.target as HTMLImageElement).src = 'https://ui-avatars.com/api/?name=School+Logo&background=f3f4f6&color=9ca3af'
-               }}
-             />
-          </div>
-        )}
-        <input 
-          name="logo_url" 
-          type="text" 
-          value={currentLogo}
-          onChange={(e) => setCurrentLogo(e.target.value)}
-          className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-black outline-none transition-all"
-          placeholder="https://example.com/logo.png, /uploads/..., or Google Drive Link"
-        />
+      {/* Section 2: Visual Branding & Images */}
+      <div className="space-y-6 pt-2">
+        <h2 className="text-base font-bold text-gray-900 flex items-center gap-2 border-b border-gray-100 pb-2">
+          <ImageIcon className="w-5 h-5 text-indigo-600" /> Branding & Hero Media
+        </h2>
+
+        {/* Hero / Banner Image */}
+        <div className="p-5 bg-gray-50/70 rounded-2xl border border-gray-200/80 space-y-2">
+          <ImageUpload 
+            label="Hero Banner Image"
+            value={currentHero}
+            onChange={setCurrentHero}
+          />
+          <p className="text-xs text-gray-500">
+            This banner displays across the top of the school&apos;s landing page. Click to upload an image from your device, or paste a direct image URL / Google Drive link.
+          </p>
+        </div>
+
+        {/* School Logo */}
+        <div className="p-5 bg-gray-50/70 rounded-2xl border border-gray-200/80 space-y-2">
+          <ImageUpload 
+            label="School Logo"
+            value={currentLogo}
+            onChange={setCurrentLogo}
+          />
+          <p className="text-xs text-gray-500">
+            Recommended: High-resolution PNG or JPG with transparent or clean background.
+          </p>
+        </div>
       </div>
 
-      <div className="h-px bg-gray-100 my-6" />
+      {/* Section 3: Principal's Desk */}
+      <div className="space-y-4 pt-2">
+        <h2 className="text-base font-bold text-gray-900 flex items-center gap-2 border-b border-gray-100 pb-2">
+          <User className="w-5 h-5 text-emerald-600" /> Principal&apos;s Desk
+        </h2>
 
-      {/* Principal Message */}
-      <div>
-        <label className="block text-sm font-bold text-gray-900 mb-2">Principal Message</label>
-        <textarea 
-          name="principal_message" 
-          defaultValue={school.principal_message}
-          rows={4}
-          className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-black outline-none transition-all"
-          placeholder="Message for the students..."
-        />
+        <div className="p-5 bg-gray-50/70 rounded-2xl border border-gray-200/80 space-y-2">
+          <ImageUpload 
+            label="Principal Photo"
+            value={currentImage}
+            onChange={setCurrentImage}
+          />
+          <p className="text-xs text-gray-500">
+            Upload the principal&apos;s portrait photo or paste an image link.
+          </p>
+        </div>
+
+        <div>
+          <label className="block text-sm font-bold text-gray-800 mb-1.5">Principal Message</label>
+          <textarea 
+            name="principal_message" 
+            defaultValue={school.principal_message || ''}
+            rows={5}
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-black outline-none transition-all text-sm font-medium"
+            placeholder="A message to students and parents from the principal..."
+          />
+        </div>
       </div>
 
-      {/* Principal Image */}
-      <div>
-        <label className="block text-sm font-bold text-gray-900 mb-2">Principal Image URL</label>
-        {currentImage && (
-          <div className="mb-3">
-             <img 
-               src={getValidImageUrl(currentImage)} 
-               alt="Principal" 
-               className="w-20 h-20 rounded-xl object-contain border border-gray-200 bg-gray-50 p-1" 
-               onError={(e) => {
-                 // Fallback if the image URL is broken or private
-                 (e.target as HTMLImageElement).src = 'https://ui-avatars.com/api/?name=Image+Error&background=f3f4f6&color=9ca3af'
-               }}
-             />
-          </div>
-        )}
-        <input 
-          name="principal_image" 
-          type="text" 
-          value={currentImage}
-          onChange={(e) => setCurrentImage(e.target.value)}
-          className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-black outline-none transition-all"
-          placeholder="https://example.com/principal.jpg or Google Drive Link"
-        />
-        <p className="text-xs text-gray-500 mt-2 font-medium">
-          If using a Google Drive link, ensure the file is set to <strong>&quot;Anyone with the link can view&quot;</strong>.
-        </p>
+      {/* Submit Button */}
+      <div className="pt-4">
+        <button 
+          type="submit" 
+          disabled={isPending} 
+          className="w-full py-4 bg-black text-white font-bold rounded-xl hover:bg-gray-800 transition-all flex items-center justify-center gap-2 shadow-lg shadow-black/10 disabled:opacity-60 cursor-pointer"
+        >
+          {isPending ? (
+            <>
+              <Loader2 className="w-5 h-5 animate-spin" /> Saving Changes...
+            </>
+          ) : (
+            <>
+              <Save className="w-5 h-5" /> Save Changes
+            </>
+          )}
+        </button>
       </div>
-
-      <div className="h-px bg-gray-100 my-6" />
-
-      {/* Welcome Message */}
-      <div>
-        <label className="block text-sm font-bold text-gray-900 mb-2">Welcome Message</label>
-        <textarea 
-          name="welcome_message" 
-          defaultValue={school.welcome_message}
-          rows={3}
-          className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-black outline-none transition-all"
-        />
-      </div>
-
-      <button type="submit" disabled={isPending} className="w-full py-4 bg-black text-white font-bold rounded-xl hover:bg-gray-800 transition-all mt-4 flex items-center justify-center gap-2 disabled:opacity-70">
-        {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-        Save Changes
-      </button>
     </form>
   )
 }

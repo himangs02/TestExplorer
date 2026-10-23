@@ -54,6 +54,7 @@ export default function HeroSchool({ school }: { school: any }) {
           priority
           onError={handleImageError}
           unoptimized={true}
+          referrerPolicy="no-referrer"
         />
         <div className="absolute inset-0 bg-black/15 bg-blend-overlay" />
       </div>

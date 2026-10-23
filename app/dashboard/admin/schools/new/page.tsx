@@ -12,6 +12,8 @@ export default function AddSchoolPage() {
     // 2. Extract Form Data
     const name = formData.get('name') as string
     const slug = (formData.get('slug') as string).toLowerCase().trim()
+    const heroImageUrlRaw = (formData.get('hero_image_url') as string)?.trim() || null
+    const logoUrlRaw = (formData.get('logo_url') as string)?.trim() || null
     const principalImageRaw = (formData.get('principal_image') as string)?.trim() || null
     const principalMessage = (formData.get('principal_message') as string)?.trim() || null
     const adminName = formData.get('adminName') as string
@@ -55,6 +57,8 @@ export default function AddSchoolPage() {
             name,
             slug,
             welcome_message: `Welcome to ${name}`,
+            hero_image_url: getValidImageUrl(heroImageUrlRaw),
+            logo_url: getValidImageUrl(logoUrlRaw),
             principal_image: getValidImageUrl(principalImageRaw),
             principal_message: principalMessage,
           }
@@ -125,6 +129,27 @@ export default function AddSchoolPage() {
               <div>
                 <label className="block text-xs font-bold text-gray-500 mb-1">Subdomain Slug</label>
                 <input name="slug" type="text" placeholder="springfield" required className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-black outline-none" />
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-bold text-gray-500 mb-1">Hero Banner Image URL</label>
+                <input 
+                  name="hero_image_url" 
+                  type="text" 
+                  placeholder="https://... /uploads/... or Google Drive" 
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-black outline-none" 
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-gray-500 mb-1">School Logo URL</label>
+                <input 
+                  name="logo_url" 
+                  type="text" 
+                  placeholder="https://... /uploads/... or Google Drive" 
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-black outline-none" 
+                />
               </div>
             </div>
 

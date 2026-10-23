@@ -82,6 +82,7 @@ export async function middleware(request: NextRequest) {
     path.startsWith('/auth') ||           
     path.startsWith('/api/auth') ||       
     path.startsWith('/api/predictor') ||
+    path.startsWith('/api/upload-image') ||
     path.includes('.') ||
     Boolean(isSchoolLanding);
 

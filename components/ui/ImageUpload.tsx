@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Upload, X, Loader2, Link as LinkIcon } from 'lucide-react'
+import { toast } from 'sonner'
 
 interface ImageUploadProps {
   label: string
@@ -48,13 +49,18 @@ export default function ImageUpload({
             body: formData,
         });
         if (!res.ok) {
-            throw new Error('Upload failed');
+            throw new Error(`Upload failed (status: ${res.status})`);
         }
         const data = await res.json();
-        onChange(data.url);
-    } catch (error) {
+        if (data.url) {
+          onChange(data.url);
+          toast.success('Image uploaded successfully');
+        } else {
+          throw new Error(data.error || 'Failed to upload image');
+        }
+    } catch (error: any) {
         console.error('Upload failed:', error);
-        alert('Error uploading image');
+        toast.error(error.message || 'Error uploading image');
     } finally {
         setUploading(false);
     }
@@ -95,6 +101,7 @@ export default function ImageUpload({
             src={displayUrl} 
             alt="Upload preview" 
             className="w-full h-full object-cover"
+            referrerPolicy="no-referrer"
             onError={(e) => {
               (e.target as HTMLImageElement).src = '/images/placeholder-school.jpg'
             }}
