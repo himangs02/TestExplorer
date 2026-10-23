@@ -31,16 +31,86 @@ interface TestInterfaceProps {
 export default function TestInterface({ 
   exam, 
   questions, 
+  courseId,
+  subjectId,
+  testType,
   submitAction 
 }: TestInterfaceProps) {
   const router = useRouter()
+  const storageKey = `course_test_progress_${exam?.id || `${courseId}_${subjectId}_${testType}`}`
+  const totalDurationSeconds = (exam.duration_minutes || 60) * 60
+
   const [currentQIndex, setCurrentQIndex] = useState(0)
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [markedForReview, setMarkedForReview] = useState<string[]>([])
-  const [timeLeft, setTimeLeft] = useState((exam.duration_minutes || 60) * 60) 
+  const [timeLeft, setTimeLeft] = useState(totalDurationSeconds) 
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isMobilePaletteOpen, setIsMobilePaletteOpen] = useState(false)
+  const [isHydrated, setIsHydrated] = useState(false)
+
+  // 1. Restore state from localStorage on page refresh / mount
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(storageKey)
+      if (raw) {
+        const saved = JSON.parse(raw)
+        if (saved && typeof saved === 'object') {
+          const now = Date.now()
+          const elapsed = saved.lastUpdated ? Math.floor((now - saved.lastUpdated) / 1000) : 0
+          const remainingSeconds = Math.max(0, (saved.timeLeft ?? totalDurationSeconds) - elapsed)
+
+          if (saved.answers && typeof saved.answers === 'object') {
+            setAnswers(saved.answers)
+          }
+          if (Array.isArray(saved.markedForReview)) {
+            setMarkedForReview(saved.markedForReview)
+          }
+          if (
+            typeof saved.currentQIndex === 'number' &&
+            saved.currentQIndex >= 0 &&
+            saved.currentQIndex < (questions?.length || 1)
+          ) {
+            setCurrentQIndex(saved.currentQIndex)
+          }
+
+          setTimeLeft(remainingSeconds)
+
+          const restoredCount = saved.answers ? Object.keys(saved.answers).length : 0
+          if (restoredCount > 0) {
+            toast.info(`Test session restored: ${restoredCount} saved answer${restoredCount > 1 ? 's' : ''} recovered.`)
+          }
+
+          if (remainingSeconds <= 0) {
+            toast.warning('Test time expired while offline. Submitting responses...')
+          }
+        }
+      }
+    } catch (e) {
+      console.error('Failed to restore test progress from localStorage:', e)
+    } finally {
+      setIsHydrated(true)
+    }
+  }, [storageKey, totalDurationSeconds, questions?.length])
+
+  // 2. Persist state to localStorage on any change (after hydration)
+  useEffect(() => {
+    if (!isHydrated || isSubmitting) return
+    try {
+      localStorage.setItem(
+        storageKey,
+        JSON.stringify({
+          answers,
+          markedForReview,
+          currentQIndex,
+          timeLeft,
+          lastUpdated: Date.now()
+        })
+      )
+    } catch (e) {
+      console.error('Failed to save test progress:', e)
+    }
+  }, [answers, markedForReview, currentQIndex, timeLeft, isHydrated, isSubmitting, storageKey])
 
   // --- SAFEGUARDS ---
   if (!questions || questions.length === 0) {
@@ -57,6 +127,8 @@ export default function TestInterface({
 
   // --- TIMER ---
   useEffect(() => {
+    if (!isHydrated) return
+
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
@@ -68,7 +140,7 @@ export default function TestInterface({
       })
     }, 1000)
     return () => clearInterval(timer)
-  }, [])
+  }, [isHydrated])
 
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60)
@@ -83,7 +155,7 @@ export default function TestInterface({
 
   const handleSubmit = async () => {
     setIsSubmitting(true)
-    const timeTaken = ((exam.duration_minutes || 60) * 60) - timeLeft
+    const timeTaken = totalDurationSeconds - timeLeft
     
     try {
       // 1. Call Action
@@ -96,6 +168,11 @@ export default function TestInterface({
       }
 
       if (result?.success) {
+        // Clear saved progress on successful submission
+        try {
+          localStorage.removeItem(storageKey)
+        } catch {}
+
         toast.success("Test submitted successfully!")
         if (result.redirectUrl) {
           router.push(result.redirectUrl)
