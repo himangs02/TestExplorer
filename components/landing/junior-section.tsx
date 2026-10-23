@@ -45,12 +45,12 @@ const JUNIOR_CLASSES: JuniorClassCard[] = [
 
 export default function JuniorSection() {
   return (
-    <section className="py-12 sm:py-16 bg-slate-50/80 relative border-t border-b border-slate-200/70">
+    <section className="py-12 sm:py-16 bg-slate-200/80 relative border-t border-b border-slate-300">
       <div className="container mx-auto px-4 sm:px-6">
-        
+
         {/* ================= SECTION HEADER ================= */}
         <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-10">
-          
+
           {/* Logo with green JR superscript as requested */}
           <div className="inline-flex items-center justify-center mb-2.5">
             <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-950 flex items-center">
@@ -96,7 +96,7 @@ export default function JuniorSection() {
                 >
                   {/* Subtle Thematic Background Graphic / Glow */}
                   <div className="absolute -right-8 -bottom-8 w-44 h-44 rounded-full bg-white/5 blur-xl pointer-events-none group-hover:scale-125 transition-transform duration-500" />
-                  
+
                   {/* Background Icon Watermark */}
                   <div className="absolute right-3 top-3 opacity-10 group-hover:opacity-20 transition-opacity duration-300 pointer-events-none">
                     <IconComp className="w-24 h-24 stroke-[1]" />
@@ -116,7 +116,7 @@ export default function JuniorSection() {
                     <h3 className="text-xl font-black text-white tracking-tight leading-snug group-hover:text-blue-100 transition-colors">
                       {cat.title}
                     </h3>
-                    
+
                     <p className="text-xs text-slate-300/90 font-medium line-clamp-3 mt-2 leading-relaxed">
                       {cat.desc}
                     </p>

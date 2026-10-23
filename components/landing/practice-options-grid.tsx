@@ -101,19 +101,38 @@ export default function PracticeOptionsGrid({ categories }: { categories?: Categ
   };
 
   return (
-    <section className="py-10 sm:py-14 bg-white relative">
+    <section className="py-12 sm:py-16 bg-white relative border-t border-slate-200">
       <div className="container mx-auto px-4 sm:px-6">
         
-        {/* Section Header with Editorial Navigation */}
+        {/* ================= BRAND HEADER (MATCHING TESTEXPLORER JUNIOR) ================= */}
+        <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-10">
+          
+          {/* Logo (2nd Screenshot Content) */}
+          <div className="inline-flex items-center justify-center mb-2.5">
+            <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-950 flex items-center">
+              <span>Test</span>
+              <span className="text-blue-600">Explorer</span>
+            </h2>
+          </div>
+
+          {/* Target classes pill (2nd Screenshot Content) */}
+          <div>
+            <span className="inline-block px-3.5 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200/80 shadow-2xs">
+              For Classes 11 • 12
+            </span>
+          </div>
+        </div>
+
+        {/* ================= HEADLINE ON THE LEFT SIDE (JUST LIKE EARLIER) ================= */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
           <div>
             <div className="flex items-center gap-2 text-blue-600 text-xs font-bold uppercase tracking-wider mb-1">
               <Layers className="w-4 h-4" />
               <span>Tailored Curriculums</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-black text-gray-950 tracking-tight">
+            <h3 className="text-2xl sm:text-3xl font-black text-gray-950 tracking-tight">
               Explore Exam Categories
-            </h2>
+            </h3>
             <p className="text-sm text-gray-500 font-medium mt-1">
               Choose your goal and start practicing with curated mock tests.
             </p>
