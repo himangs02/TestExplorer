@@ -1,87 +1,57 @@
 import { prisma } from '@/lib/prisma'
-import Link from 'next/link'
-import { ArrowUpRight, Layers } from 'lucide-react'
-import { getCategoryIcon } from '@/lib/icons'
+import { Suspense } from 'react'
+import { Layers, Loader2 } from 'lucide-react'
+import CategorySearchExplorer from '@/components/landing/CategorySearchExplorer'
 
 // Cache categories for 5 minutes (ISR)
 export const revalidate = 300;
 
+export const metadata = {
+  title: 'Explore Streams & Exams | TestExplorer',
+  description: 'Search and browse comprehensive mock tests across Engineering, Medical, CUET, Management, and Law.'
+}
+
 export default async function CategoriesPage() {
-  // 1. Fetch Categories
+  // 1. Fetch Categories and their published courses
   const categories = await prisma.categories.findMany({
-    orderBy: { order_index: 'asc' }
+    orderBy: { order_index: 'asc' },
+    include: {
+      courses: {
+        where: { is_published: true },
+        select: {
+          id: true,
+          title: true,
+          slug: true,
+          description: true
+        }
+      }
+    }
   })
 
   return (
     <div className="min-h-screen bg-white">
-
       <main className="container mx-auto px-6 py-16">
         
-        <div className="max-w-3xl mb-12">
+        <div className="max-w-3xl mb-10">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black text-white text-[11px] font-bold uppercase tracking-wider mb-5">
             <Layers className="w-3 h-3 text-blue-400" />
-            Select Your Stream
+            Select Your Stream & Exam
           </div>
           <h1 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter mb-4 leading-[0.95]">
             What are you <br/><span className="text-blue-600">aiming</span> for?
           </h1>
           <p className="text-lg text-gray-500 font-medium max-w-xl">
-            Choose your field to find the perfect exams and preparation material tailored for you.
+            Search any exam or select your field to find real NTA pattern mock tests and preparation material tailored for you.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {categories?.map((cat) => {
-            const Icon = getCategoryIcon(cat.icon_key)
-
-            // --- 3. DYNAMIC COLOR LOGIC ---
-            const rawBg = cat.bg_color || 'bg-gray-50'
-            // Check if it is a custom hex class like "bg-[#123456]"
-            const isArbitrary = rawBg.startsWith('bg-[#') && rawBg.endsWith(']')
-            // Extract the hex code if it is arbitrary, otherwise null
-            const hexColor = isArbitrary ? rawBg.slice(4, -1) : null
-            
-            // If we have a hex, remove the class. If not, keep the Tailwind class.
-            const finalClass = hexColor ? '' : rawBg
-            const finalStyle = hexColor ? { backgroundColor: hexColor } : undefined
-
-            return (
-              <Link 
-                key={cat.id} 
-                href={`/categories/${cat.id}`}
-                className="group relative block"
-              >
-                <div 
-                  className={`
-                    relative z-10 h-full p-7 rounded-[2rem] border-2 border-black 
-                    transition-all duration-300 ease-out
-                    group-hover:-translate-y-2 group-hover:translate-x-1 group-hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]
-                    ${finalClass} 
-                  `}
-                  style={finalStyle}
-                >
-                  <div className="flex justify-between items-start mb-6">
-                    <div className="w-12 h-12 bg-white border-2 border-black rounded-2xl flex items-center justify-center">
-                      <Icon className="w-6 h-6 text-black" />
-                    </div>
-                    <div className="bg-white rounded-full p-2.5 border-2 border-black transition-transform group-hover:rotate-45">
-                      <ArrowUpRight className="w-4 h-4 text-black" />
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="text-2xl font-black text-black mb-1.5 tracking-tight">
-                      {cat.title}
-                    </h3>
-                    <p className="text-black/70 font-bold text-xs sm:text-sm">
-                      {cat.description}
-                    </p>
-                  </div>
-                </div>
-              </Link>
-            )
-          })}
-        </div>
+        <Suspense fallback={
+          <div className="p-12 text-center flex items-center justify-center gap-2 text-gray-500 font-bold">
+            <Loader2 className="w-6 h-6 animate-spin text-blue-600" /> Loading streams and exams...
+          </div>
+        }>
+          <CategorySearchExplorer initialCategories={categories} />
+        </Suspense>
 
       </main>
     </div>

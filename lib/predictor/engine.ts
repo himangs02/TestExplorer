@@ -137,6 +137,20 @@ export function calculateAdmissionChance(
   }
 }
 
+function normalizeState(s?: string): string {
+  if (!s) return '';
+  const lower = s.trim().toLowerCase();
+  if (lower === 'delhi' || lower === 'nct of delhi' || lower === 'new delhi') return 'delhi';
+  if (lower === 'jammu & kashmir' || lower === 'jammu and kashmir' || lower === 'j&k') return 'jammu & kashmir';
+  if (lower === 'tripura') return 'tripura';
+  if (lower === 'uttar pradesh' || lower === 'up') return 'uttar pradesh';
+  if (lower === 'madhya pradesh' || lower === 'mp') return 'madhya pradesh';
+  if (lower === 'andhra pradesh' || lower === 'ap') return 'andhra pradesh';
+  if (lower === 'tamil nadu' || lower === 'tn') return 'tamil nadu';
+  if (lower === 'west bengal' || lower === 'wb') return 'west bengal';
+  return lower;
+}
+
 /**
  * Evaluates candidate profile against historical cutoff database and returns eligible colleges
  */
@@ -165,6 +179,27 @@ export function predictColleges(
     );
   }
 
+  // Apply strict Quota / Domicile Eligibility filter
+  if (homeState) {
+    const candidateStateNorm = normalizeState(homeState);
+    candidateCutoffs = candidateCutoffs.filter((c) => {
+      const recordStateNorm = normalizeState(c.state);
+      // Home State (HS): Candidate is ONLY eligible if college is located in their home state
+      if (c.quota === 'HS') {
+        return recordStateNorm === candidateStateNorm;
+      }
+      // Other State (OS): For candidates whose home state is NOT this institute's state
+      if (c.quota === 'OS') {
+        return recordStateNorm !== candidateStateNorm;
+      }
+      // All India (AI) and generic quotas: open to all candidates
+      return true;
+    });
+  } else {
+    // If no candidate home state specified, do not display state-restricted HS quota seats
+    candidateCutoffs = candidateCutoffs.filter((c) => c.quota !== 'HS');
+  }
+
   // Map into prediction items
   const results: CollegePredictionItem[] = candidateCutoffs.map((record) => {
     // Apply category multipliers if specific category cutoff isn't separately defined
@@ -180,7 +215,7 @@ export function predictColleges(
     }
 
     // Apply Home State Quota bonus if candidate is from the same state
-    if (homeState && record.state.toLowerCase() === homeState.toLowerCase() && record.quota === 'HS') {
+    if (homeState && normalizeState(record.state) === normalizeState(homeState) && record.quota === 'HS') {
       effectiveClosingRank = Math.round(effectiveClosingRank * 1.30);
     }
 

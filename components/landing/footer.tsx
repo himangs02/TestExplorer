@@ -111,15 +111,15 @@ export default function Footer({ school }: { school?: any }) {
             </p>
 
             <div className="flex gap-2.5">
-              <Link href="#" className="w-9 h-9 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-colors text-slate-400" aria-label="Twitter">
+              <a href="https://x.com/testexplorer_in" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-colors text-slate-400" aria-label="Twitter">
                 <Twitter className="w-4 h-4" />
-              </Link>
-              <Link href="#" className="w-9 h-9 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center hover:bg-pink-600 hover:text-white transition-colors text-slate-400" aria-label="Instagram">
+              </a>
+              <a href="https://instagram.com/testexplorer.in" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center hover:bg-pink-600 hover:text-white transition-colors text-slate-400" aria-label="Instagram">
                 <Instagram className="w-4 h-4" />
-              </Link>
-              <Link href="#" className="w-9 h-9 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center hover:bg-blue-700 hover:text-white transition-colors text-slate-400" aria-label="LinkedIn">
+              </a>
+              <a href="https://linkedin.com/company/testexplorer" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center hover:bg-blue-700 hover:text-white transition-colors text-slate-400" aria-label="LinkedIn">
                 <Linkedin className="w-4 h-4" />
-              </Link>
+              </a>
             </div>
           </div>
 

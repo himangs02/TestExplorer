@@ -15,11 +15,23 @@ export default async function MyExamsPage() {
     where: { user_id: user.id },
     orderBy: { started_at: 'desc' },
     include: {
+      mock_tests: {
+        select: {
+          id: true,
+          title: true,
+          subject_id: true,
+          course_id: true,
+          subjects: {
+            select: { id: true, course_id: true }
+          }
+        }
+      },
       exams: {
         select: {
           id: true,
           title: true,
           subject_id: true,
+          course_id: true,
           subjects: {
             select: { id: true, course_id: true }
           }
@@ -61,20 +73,15 @@ export default async function MyExamsPage() {
           <div className="divide-y divide-gray-100">
             {attempts.map((attempt) => {
               // Determine Type & Data
-              const isMock = !!attempt.exam_id
-              const testData = isMock ? (attempt as any).exams : (attempt as any).practice_tests
+              const isMock = !!attempt.mock_test_id || !!attempt.exam_id
+              const testData = (attempt as any).mock_tests || (attempt as any).exams || (attempt as any).practice_tests
               
-              // Safeguard if test was deleted
-              if (!testData) return null
-
-              const title = testData.title
-              // @ts-ignore - Prisma relations
-              const subjectId = testData.subject_id
-              // @ts-ignore
-              const courseId = testData.subjects?.course_id
+              const title = testData?.title || (isMock ? 'Full Mock Test' : 'Practice Session')
+              const subjectId = testData?.subject_id || testData?.subjects?.id || 'standalone'
+              const courseId = testData?.course_id || testData?.subjects?.course_id || 'standalone'
               
               const type = isMock ? 'mock' : 'practice'
-              const examId = isMock ? attempt.exam_id : attempt.practice_test_id
+              const examId = attempt.mock_test_id || attempt.exam_id || attempt.practice_test_id || attempt.id
 
               // Construct Links
               const returnPath = encodeURIComponent('/dashboard/exams')
@@ -111,7 +118,7 @@ export default async function MyExamsPage() {
                       <div className="flex gap-6 mr-4">
                         <div>
                           <div className="text-xs font-bold text-gray-400 uppercase tracking-wider">Score</div>
-                          <div className="text-lg font-black text-gray-900">{attempt.score} <span className="text-sm text-gray-400 font-medium">/ {attempt.total_marks}</span></div>
+                          <div className="text-lg font-black text-gray-900">{attempt.score ?? 0} <span className="text-sm text-gray-400 font-medium">/ {attempt.total_marks || 120}</span></div>
                         </div>
                         <div>
                           <div className="text-xs font-bold text-gray-400 uppercase tracking-wider">Accuracy</div>

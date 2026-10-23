@@ -137,6 +137,8 @@ export const PredictionForm: React.FC<PredictionFormProps> = ({
           <input
             type="number"
             step={inputMode === 'percentile' ? '0.01' : '1'}
+            min={inputMode === 'rank' ? 1 : 0}
+            max={inputMode === 'marks' ? exam.maxMarks : inputMode === 'percentile' ? 100 : undefined}
             placeholder={
               inputMode === 'marks'
                 ? `e.g. ${Math.round(exam.maxMarks * 0.7)}`
@@ -145,9 +147,28 @@ export const PredictionForm: React.FC<PredictionFormProps> = ({
                   : 'e.g. 15420'
             }
             value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
+            onChange={(e) => {
+              const val = e.target.value;
+              setInputValue(val);
+              const num = parseFloat(val);
+              if (!isNaN(num)) {
+                if (inputMode === 'marks' && num > exam.maxMarks) {
+                  setFormError(`Marks cannot exceed the maximum of ${exam.maxMarks} for ${exam.name}.`);
+                } else if (inputMode === 'percentile' && (num > 100 || num < 0)) {
+                  setFormError('Percentile must be between 0 and 100.');
+                } else if (inputMode === 'rank' && num < 1) {
+                  setFormError('Rank must be 1 or higher.');
+                } else {
+                  setFormError(null);
+                }
+              } else {
+                setFormError(null);
+              }
+            }}
             required
-            className="w-full h-14 px-5 text-xl font-bold text-gray-900 bg-gray-50 border-2 border-gray-200 rounded-2xl focus:bg-white focus:border-blue-600 focus:outline-hidden transition-all shadow-inner"
+            className={`w-full h-14 px-5 text-xl font-bold text-gray-900 bg-gray-50 border-2 rounded-2xl focus:bg-white focus:outline-hidden transition-all shadow-inner ${
+              formError ? 'border-rose-400 bg-rose-50/20 focus:border-rose-600' : 'border-gray-200 focus:border-blue-600'
+            }`}
           />
           <div className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-bold text-gray-400">
             {inputMode === 'marks'
@@ -159,7 +180,10 @@ export const PredictionForm: React.FC<PredictionFormProps> = ({
         </div>
 
         {formError && (
-          <p className="mt-2 text-xs font-semibold text-rose-600">{formError}</p>
+          <div className="mt-3 p-3 rounded-xl bg-rose-50 border border-rose-200 flex items-center gap-2 text-xs font-bold text-rose-700 animate-in fade-in">
+            <span className="w-1.5 h-1.5 rounded-full bg-rose-600 shrink-0" />
+            <span>{formError}</span>
+          </div>
         )}
       </div>
 

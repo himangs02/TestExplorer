@@ -24,15 +24,75 @@ export default function MockTestInterface({
   exam, questions, courseId, subjectId, examId, user
 }: MockInterfaceProps) {
   const router = useRouter()
+  const storageKey = `mock_progress_${examId}_${user?.id || 'guest'}`
+
+  const totalDurationSeconds = (exam?.duration_minutes || 60) * 60
   const [stage, setStage] = useState<'instructions' | 'consent' | 'test' | 'report'>('instructions')
-  const [timeLeft, setTimeLeft] = useState((exam?.duration_minutes || 180) * 60)
+  const [timeLeft, setTimeLeft] = useState(totalDurationSeconds)
   const [currentQIndex, setCurrentQIndex] = useState(0)
   const [answers, setAnswers] = useState<Record<string, string>>({}) 
   const [questionStatus, setQuestionStatus] = useState<Record<string, string>>({}) 
   const [reportData, setReportData] = useState<any>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isHydrated, setIsHydrated] = useState(false)
 
   const [reviewUrl, setReviewUrl] = useState<string | undefined>(undefined)
+
+  // 1. Hydrate state from localStorage on page refresh
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(storageKey)
+      if (raw) {
+        const saved = JSON.parse(raw)
+        if (saved && (saved.stage === 'test' || saved.stage === 'report')) {
+          const now = Date.now()
+          const elapsed = saved.lastUpdated ? Math.floor((now - saved.lastUpdated) / 1000) : 0
+          const remainingSeconds = Math.max(0, (saved.timeLeft ?? totalDurationSeconds) - elapsed)
+
+          if (saved.answers && typeof saved.answers === 'object') {
+            setAnswers(saved.answers)
+          }
+          if (saved.questionStatus && typeof saved.questionStatus === 'object') {
+            setQuestionStatus(saved.questionStatus)
+          }
+          if (typeof saved.currentQIndex === 'number' && saved.currentQIndex >= 0 && saved.currentQIndex < (questions?.length || 1)) {
+            setCurrentQIndex(saved.currentQIndex)
+          }
+
+          setTimeLeft(remainingSeconds)
+          setStage('test')
+
+          if (remainingSeconds <= 0) {
+            toast.warning('Exam time expired while offline. Submitting responses...')
+          } else {
+            toast.info('Test session restored. Timer and answers resumed.')
+          }
+        }
+      }
+    } catch (e) {
+      console.error('Failed to restore test session from localStorage:', e)
+    } finally {
+      setIsHydrated(true)
+    }
+  }, [storageKey, totalDurationSeconds, questions?.length])
+
+  // 2. Persist state to localStorage whenever in 'test' stage
+  useEffect(() => {
+    if (!isHydrated || stage !== 'test') return
+    try {
+      const stateToSave = {
+        stage: 'test',
+        answers,
+        questionStatus,
+        currentQIndex,
+        timeLeft,
+        lastUpdated: Date.now()
+      }
+      localStorage.setItem(storageKey, JSON.stringify(stateToSave))
+    } catch (e) {
+      console.error('Failed to save test session to localStorage:', e)
+    }
+  }, [isHydrated, stage, answers, questionStatus, currentQIndex, timeLeft, storageKey])
 
   // -- Empty State --
   if (!questions || questions.length === 0) {
@@ -44,6 +104,17 @@ export default function MockTestInterface({
           </div>
           <h2 className="text-xl font-bold text-gray-900 mb-2">No Questions Found</h2>
           <button onClick={() => router.back()} className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 font-bold">Go Back</button>
+        </div>
+      </div>
+    )
+  }
+
+  if (!isHydrated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 font-sans">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+          <p className="text-sm font-semibold text-gray-600">Loading Exam Portal...</p>
         </div>
       </div>
     )
@@ -94,7 +165,12 @@ export default function MockTestInterface({
     if (isSubmitting) return
     setIsSubmitting(true)
 
-    const timeTaken = ((exam.duration_minutes || 180) * 60) - timeLeft
+    // Clear saved progress on submission
+    try {
+      localStorage.removeItem(storageKey)
+    } catch (e) {}
+
+    const timeTaken = totalDurationSeconds - timeLeft
     
     try {
       const result: any = await submitExamAction(examId, courseId, subjectId, answers, timeTaken, 'mock')
@@ -109,22 +185,24 @@ export default function MockTestInterface({
       const attemptId = result.attemptId 
       
       if (attemptId) {
-        const returnPath = encodeURIComponent('/dashboard')
+        const returnPath = encodeURIComponent('/dashboard/exams')
         const url = `/courses/${courseId}/subjects/${subjectId}/test/mock/${examId}/review/${attemptId}?returnTo=${returnPath}`
         setReviewUrl(url)
       }
 
-      // 2. Set Report Data (Including Rank Prediction)
+      const computedTotalMarks = result.totalMarks || exam.total_marks || (questions.length * 4) || 120
+      const computedUnattempted = result.unattempted ?? Math.max(0, questions.length - ((result.correct ?? 0) + (result.incorrect ?? 0)))
+
+      // 2. Set Report Data (Including Rank Prediction and accurate score / marks)
       setReportData({
-        examTitle: result.examTitle || 'Test Result',
+        examTitle: result.examTitle || exam.title || 'Test Result',
         sections: result.sections || [],
         score: result.score ?? 0,            
-        totalMarks: result.totalMarks ?? 0,
+        totalMarks: computedTotalMarks,
         correctCount: result.correct ?? 0,
         incorrectCount: result.incorrect ?? 0,
-        unattemptedCount: result.unattempted ?? 0,
+        unattemptedCount: computedUnattempted,
         timeTaken: timeTaken,
-        // ✅ NEW: Capture Rank Data from Action
         predictedRank: result.predictedRank,
         predictedPercentile: result.predictedPercentile
       })
@@ -155,7 +233,14 @@ export default function MockTestInterface({
 
       {stage === 'consent' && (
         <ConsentStage 
-          exam={exam} 
+          exam={{
+            ...exam,
+            total_questions: questions?.length || exam?.total_questions || 30,
+            total_marks: exam?.total_marks || ((questions?.length || 30) * (Number(exam?.marks_correct) || 4)),
+            marks_correct: Number(exam?.marks_correct) || 4,
+            marks_incorrect: Math.abs(Number(exam?.marks_incorrect)) || 1,
+            negative_marking: true
+          }} 
           user={user} 
           onPrev={() => setStage('instructions')} 
           onStart={() => setStage('test')} 
@@ -164,7 +249,14 @@ export default function MockTestInterface({
 
       {stage === 'test' && (
         <TestStage 
-          exam={exam}
+          exam={{
+            ...exam,
+            total_questions: questions?.length || exam?.total_questions || 30,
+            total_marks: exam?.total_marks || ((questions?.length || 30) * (Number(exam?.marks_correct) || 4)),
+            marks_correct: Number(exam?.marks_correct) || 4,
+            marks_incorrect: Math.abs(Number(exam?.marks_incorrect)) || 1,
+            negative_marking: true
+          }}
           questions={questions}
           user={user}
           currentQIndex={currentQIndex}

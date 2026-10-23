@@ -83,10 +83,35 @@ export default function PredictorHeroSection() {
   const [homeState, setHomeState] = useState('Delhi');
   const [preferredBranch, setPreferredBranch] = useState('All');
 
+  const [inputError, setInputError] = useState<string | null>(null);
+
   const currentConfig = EXAM_CONFIGS[selectedExam];
 
   const handlePredictRedirect = (e: React.FormEvent) => {
     e.preventDefault();
+    setInputError(null);
+
+    const val = parseFloat(scoreVal);
+    if (isNaN(val) || val < 0) {
+      setInputError('Please enter a valid non-negative number.');
+      return;
+    }
+
+    if (inputMode === 'marks' && val > currentConfig.maxMarks) {
+      setInputError(`Marks cannot exceed ${currentConfig.maxMarks} for ${currentConfig.name}.`);
+      return;
+    }
+
+    if (inputMode === 'percentile' && (val > 100 || val < 0)) {
+      setInputError('Percentile must be between 0 and 100.');
+      return;
+    }
+
+    if (inputMode === 'rank' && val < 1) {
+      setInputError('Rank must be 1 or higher.');
+      return;
+    }
+
     const queryParams = new URLSearchParams();
     if (scoreVal) queryParams.set('score', scoreVal);
     queryParams.set('mode', inputMode);
@@ -296,8 +321,13 @@ export default function PredictorHeroSection() {
                         }
                         value={scoreVal}
                         onChange={(e) => setScoreVal(e.target.value)}
-                        required
-                        className="w-full h-11 px-4 bg-slate-950 border border-slate-700/80 rounded-xl text-sm font-bold text-white placeholder-slate-500 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 focus:outline-none"
+                        min={inputMode === 'rank' ? 1 : 0}
+                        max={inputMode === 'marks' ? currentConfig.maxMarks : inputMode === 'percentile' ? 100 : undefined}
+                        className={`w-full h-11 px-4 bg-slate-950 border rounded-xl text-sm font-bold text-white placeholder-slate-500 focus:ring-1 focus:outline-none transition-all ${
+                          inputError 
+                            ? 'border-rose-500 focus:border-rose-400 focus:ring-rose-400' 
+                            : 'border-slate-700/80 focus:border-cyan-400 focus:ring-cyan-400'
+                        }`}
                       />
                       <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">
                         {inputMode === 'marks'
@@ -307,6 +337,11 @@ export default function PredictorHeroSection() {
                             : 'AIR'}
                       </span>
                     </div>
+                    {inputError && (
+                      <p className="mt-1 text-[11px] font-bold text-rose-400 flex items-center gap-1">
+                        <span>•</span> {inputError}
+                      </p>
+                    )}
                   </div>
 
                   {/* Category */}

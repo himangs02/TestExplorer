@@ -23,10 +23,16 @@ export default async function MockExamPage({
   if (!userData) return notFound()
     
 
-  // 2. Fetch Mock Test Details
-  const mockTest = await prisma.exams.findUnique({
+  // 2. Fetch Mock Test Details (check exams or mock_tests)
+  let mockTest: any = await prisma.exams.findUnique({
     where: { id: examId, category: 'mock' }
   })
+
+  if (!mockTest) {
+    mockTest = await prisma.mock_tests.findUnique({
+      where: { id: examId }
+    })
+  }
 
   if (!mockTest) {
     console.error("Mock Test fetch error")
@@ -34,22 +40,48 @@ export default async function MockExamPage({
   }
 
   // 3. Fetch Questions linked to this Mock Test
-  const questionsData = await prisma.questions.findMany({
+  let questionsData = await prisma.questions.findMany({
     where: { exam_id: examId },
     include: {
       question_options: true
     }
   })
 
-  // 4. Transform Data (FIXED TYPE ERROR HERE)
+  if (!questionsData || questionsData.length === 0) {
+    const mockQs = await prisma.mock_test_questions.findMany({
+      where: { mock_test_id: examId },
+      include: {
+        questions: {
+          include: {
+            question_options: true
+          }
+        }
+      }
+    })
+    questionsData = mockQs.map(m => m.questions as any)
+  }
+
+  const marksCorrect = Number(mockTest.marks_correct) || 4
+  const marksIncorrect = Math.abs(Number(mockTest.marks_incorrect)) || 1
+  const totalQuestionsCount = questionsData?.length || 30
+  const totalMarks = mockTest.total_marks || (totalQuestionsCount * marksCorrect)
+
+  const examWithStats = {
+    ...mockTest,
+    total_questions: totalQuestionsCount,
+    total_marks: totalMarks,
+    marks_correct: marksCorrect,
+    marks_incorrect: marksIncorrect,
+    negative_marking: true
+  }
+
+  // 4. Transform Data
   const questions = questionsData?.map((q: any) => ({
     id: q.id,
-    // FIX 2: Map DB column 'text' to BOTH 'text' and 'question_text'
-    // This satisfies the TypeScript error requiring 'text'
     text: q.text, 
     question_text: q.text, 
     options: q.question_options,
-    marks: 4 // Default marks
+    marks: marksCorrect
   })) || []
 
   // 5. Get or Create Attempt (Session)
@@ -88,7 +120,7 @@ export default async function MockExamPage({
       courseId="standalone" 
       subjectId="standalone"
       questions={questions}
-      exam={mockTest as any}
+      exam={examWithStats as any}
       user={userData as any}
     />
   )

@@ -19,6 +19,7 @@ import { PredictionShareModal } from './PredictionShareModal';
 import { CsvImporter } from './admin/CsvImporter';
 import { Target, Database, ShieldCheck, FileSpreadsheet, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
+import { useSession } from 'next-auth/react';
 
 interface PredictorDashboardProps {
   defaultExam?: ExamId;
@@ -29,6 +30,9 @@ export const PredictorDashboard: React.FC<PredictorDashboardProps> = ({
   defaultExam = 'jee-main',
   initialQuery
 }) => {
+  const { data: session } = useSession();
+  const isAdmin = (session?.user as any)?.role === 'admin' || (session?.user as any)?.role === 'super_admin';
+
   const [selectedExam, setSelectedExam] = useState<ExamId>(defaultExam);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [predictionResult, setPredictionResult] = useState<PredictionResponse | null>(null);
@@ -44,9 +48,18 @@ export const PredictorDashboard: React.FC<PredictorDashboardProps> = ({
   // If initialQuery provided, auto-run prediction
   useEffect(() => {
     if (initialQuery?.inputValue !== undefined && initialQuery.inputValue > 0) {
+      const targetExam = initialQuery.exam || defaultExam;
+      const targetConfig = EXAM_CONFIGS[targetExam];
+      const targetMode = initialQuery.inputMode || 'marks';
+
+      if (targetMode === 'marks' && targetConfig && initialQuery.inputValue > targetConfig.maxMarks) {
+        toast.error(`Entered score (${initialQuery.inputValue}) exceeds maximum marks of ${targetConfig.maxMarks} for ${targetConfig.name}.`);
+        return;
+      }
+
       handlePredictionSubmit({
-        exam: initialQuery.exam || defaultExam,
-        inputMode: initialQuery.inputMode || 'marks',
+        exam: targetExam,
+        inputMode: targetMode,
         inputValue: initialQuery.inputValue,
         category: initialQuery.category || 'OPEN',
         homeState: initialQuery.homeState,
@@ -103,7 +116,7 @@ export const PredictorDashboard: React.FC<PredictorDashboardProps> = ({
       <div className="text-center max-w-3xl mx-auto mb-10">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold mb-4 shadow-2xs">
           <Target className="w-3.5 h-3.5 text-blue-600 animate-pulse" />
-          <span>Test Explorer Admissions Intelligence 2026</span>
+          <span>Test Explorer Admissions Intelligence 2026–2027</span>
         </div>
 
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 tracking-tight leading-[1.15] mb-4">
@@ -117,18 +130,11 @@ export const PredictorDashboard: React.FC<PredictorDashboardProps> = ({
           Enter your marks, rank or percentile to discover your estimated All India Rank, admission probability bands, and verified eligible institutions across India.
         </p>
 
-        {/* Quick Admin Access trigger */}
+        {/* Verified Datasets indicator */}
         <div className="mt-4 flex items-center justify-center gap-4 text-xs font-semibold text-gray-400">
-          <span className="flex items-center gap-1">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> Verified Historical Datasets
+          <span className="flex items-center gap-1.5 text-gray-500">
+            <ShieldCheck className="w-4 h-4 text-emerald-600" /> Verified Historical Cutoff Datasets (2024–2026)
           </span>
-          <span>•</span>
-          <button
-            onClick={() => setIsAdminCsvOpen(true)}
-            className="hover:text-gray-700 flex items-center gap-1 cursor-pointer transition-colors"
-          >
-            <FileSpreadsheet className="w-3.5 h-3.5" /> Admin CSV Importer
-          </button>
         </div>
       </div>
 
@@ -227,11 +233,6 @@ export const PredictorDashboard: React.FC<PredictorDashboardProps> = ({
           prediction={predictionResult}
           onClose={() => setIsShareModalOpen(false)}
         />
-      )}
-
-      {/* Admin CSV Importer Modal */}
-      {isAdminCsvOpen && (
-        <CsvImporter onClose={() => setIsAdminCsvOpen(false)} />
       )}
     </div>
   );

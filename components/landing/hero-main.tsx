@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, Play, Lightbulb, TrendingUp, CheckCircle2, Award, Clock, Target, BarChart2, ShieldCheck } from "lucide-react";
+import WatchDemoButton from "./WatchDemoButton";
 
 export default async function HeroMain() {
   return (
@@ -49,15 +50,7 @@ export default async function HeroMain() {
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </Link>
               
-              <Link
-                href="#features"
-                className="px-6 py-3.5 bg-white text-gray-800 border border-gray-200 rounded-full font-bold text-base hover:bg-gray-50 transition-all flex items-center justify-center gap-2 shadow-2xs"
-              >
-                <div className="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center text-gray-700">
-                  <Play className="w-2.5 h-2.5 fill-current ml-0.5" />
-                </div>
-                <span>Watch Demo</span>
-              </Link>
+              <WatchDemoButton />
             </div>
 
             {/* Social Proof */}

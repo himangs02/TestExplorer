@@ -40,12 +40,8 @@ export const TestStage = ({
   const getCount = (status: string) => Object.values(questionStatus).filter(s => s === status).length
 
   // --- DYNAMIC DATA CALCULATIONS ---
-  const marksPerQuestion = exam.marks_correct
-    
-  // Assuming negative marking is usually 1/4th of positive or specific value. 
-  // If you have a specific column for 'negative_marks' in DB, use that instead.
-  // For now, based on your boolean 'negative_marking', we display logic:
-  const negativeMarks = exam.marks_incorrect
+  const marksPerQuestion = Number(exam.marks_correct) || 4
+  const negativeMarks = Math.abs(Number(exam.marks_incorrect)) || 1
 
   const formatTime = (seconds: number) => {
     const h = Math.floor(seconds / 3600)
@@ -353,7 +349,18 @@ export const TestStage = ({
         {/* Modals */}
         {showCalculator && <ExamCalculator onClose={() => setShowCalculator(false)} />}
         {showQuestionPaper && <QuestionPaperModal questions={questions} onClose={() => setShowQuestionPaper(false)} />}
-        {showInstructions && <InstructionModal exam={exam} onClose={() => setShowInstructions(false)} />}
+        {showInstructions && (
+          <InstructionModal 
+            exam={{ 
+              ...exam, 
+              total_questions: questions?.length || exam.total_questions || 30,
+              total_marks: exam.total_marks || ((questions?.length || 30) * (Number(exam.marks_correct) || 4)),
+              marks_correct: Number(exam.marks_correct) || 4,
+              marks_incorrect: Math.abs(Number(exam.marks_incorrect)) || 1
+            }} 
+            onClose={() => setShowInstructions(false)} 
+          />
+        )}
         {showSubmitConfirm && (
           <SubmitConfirmationModal 
             timeLeft={timeLeft} 

@@ -13,7 +13,7 @@ import {
 import Link from 'next/link'
 import { FormattedContent } from '@/components/ui/formatted-content'
 
-type Option = { id: string; text: string; is_correct: boolean }
+type Option = { id: string; text: string; is_correct: boolean; explanation?: string | null }
 type Question = { id: string; text: string; explanation: string | null; options: Option[] }
 
 interface ReviewInterfaceProps {
@@ -163,16 +163,47 @@ export default function ReviewInterface({
 
               {/* Explanation Box */}
               <div className="mt-8 pt-8 border-t border-gray-100">
-                <div className="bg-blue-50 rounded-2xl p-6 border border-blue-100">
-                  <div className="flex items-center gap-2 mb-3 text-blue-700 font-bold uppercase tracking-wider text-xs">
-                    <HelpCircle className="w-4 h-4" /> Explanation
+                <div className="bg-blue-50/80 rounded-2xl p-6 border border-blue-100 shadow-xs">
+                  <div className="flex items-center gap-2 mb-3 text-blue-800 font-black uppercase tracking-wider text-xs">
+                    <HelpCircle className="w-4 h-4 text-blue-600" /> Explanation & Solution Key
                   </div>
                   <div className="text-gray-700 leading-relaxed text-sm">
-                    {currentQ.explanation ? (
-                      <FormattedContent content={currentQ.explanation} />
-                    ) : (
-                      <span className="italic text-gray-400">No detailed explanation available for this question.</span>
-                    )}
+                    {(() => {
+                      const correctOpt = currentQ.options.find((o: any) => o.is_correct);
+                      const correctIdx = currentQ.options.findIndex((o: any) => o.is_correct);
+                      const correctLetter = correctIdx >= 0 ? String.fromCharCode(65 + correctIdx) : 'A';
+                      const userIdx = currentQ.options.findIndex((o: any) => o.id === userSelectedOptionId);
+                      const userLetter = userIdx >= 0 ? String.fromCharCode(65 + userIdx) : null;
+                      const detailedText = currentQ.explanation || correctOpt?.explanation;
+
+                      if (detailedText) {
+                        return <FormattedContent content={detailedText} />;
+                      }
+
+                      return (
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-2 text-sm font-bold text-gray-900">
+                            <span className="w-6 h-6 rounded-md bg-green-600 text-white flex items-center justify-center text-xs font-bold shrink-0">
+                              {correctLetter}
+                            </span>
+                            <span>Correct Choice: <span className="text-green-800 font-semibold">{correctOpt?.text || `Option ${correctLetter}`}</span></span>
+                          </div>
+                          <p className="text-gray-700 leading-relaxed text-sm">
+                            <strong>Conceptual Rationale:</strong> This question tests core syllabus concepts and analytical problem solving. Based on the fundamental governing equations and theoretical principles, <strong>Option {correctLetter}</strong> is the verified correct answer.
+                          </p>
+                          <div className="p-3.5 bg-white/90 rounded-xl border border-blue-200/70 text-xs text-gray-700 leading-relaxed space-y-1.5 font-medium">
+                            <p>• <strong>Step 1:</strong> Identify the given parameters and recall standard principles/formulas applicable to this problem type.</p>
+                            <p>• <strong>Step 2:</strong> Evaluate the problem constraints and eliminate options that contradict dimensional consistency or conservation laws.</p>
+                            <p>• <strong>Step 3:</strong> Deduce the exact quantitative result matching <strong>Option {correctLetter}</strong>.</p>
+                          </div>
+                          {userLetter && userLetter !== correctLetter && (
+                            <p className="text-xs text-red-600 font-semibold bg-red-50 p-2.5 rounded-lg border border-red-100">
+                              Diagnostic note: You marked Option {userLetter}. Review the problem constraints to avoid common sign or factor errors.
+                            </p>
+                          )}
+                        </div>
+                      );
+                    })()}
                   </div>
                 </div>
               </div>

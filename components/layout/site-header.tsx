@@ -151,9 +151,9 @@ export function SiteHeader({ school, user, profile, schoolSlug }: SiteHeaderProp
         <div className="flex items-center gap-3">
           {/* Quick Search trigger link */}
           <Link
-            href={`${basePath}/categories`}
+            href={`${basePath}/categories?search=1`}
             className="hidden md:flex items-center justify-center w-9 h-9 rounded-full text-gray-500 hover:text-gray-950 hover:bg-gray-100 transition-colors"
-            title="Search exams"
+            title="Search exams and streams"
           >
             <Search className="w-4 h-4" />
           </Link>

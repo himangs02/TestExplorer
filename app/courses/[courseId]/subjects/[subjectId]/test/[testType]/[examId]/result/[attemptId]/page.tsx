@@ -77,9 +77,9 @@ export default async function ResultPage({
     }
   } else {
     // Mock
-    const examData = await prisma.mock_tests.findUnique({
+    let examData = await prisma.mock_tests.findUnique({
       where: { id: examId },
-      select: { title: true }
+      select: { title: true, total_marks: true }
     })
     if (examData) examTitle = examData.title
 
@@ -90,10 +90,24 @@ export default async function ResultPage({
       }
     })
     questions = mockQs.map(m => m.questions)
+
+    // Fallback if questions are linked via exam_id
+    if (!questions || questions.length === 0) {
+      const altExam = await prisma.exams.findUnique({
+        where: { id: examId },
+        select: { title: true, total_marks: true }
+      })
+      if (altExam) examTitle = altExam.title
+
+      questions = await prisma.questions.findMany({
+        where: { exam_id: examId },
+        select: { id: true, question_options: { select: { id: true, is_correct: true } } }
+      })
+    }
   }
 
   // 3. Calculate Detailed Stats
-  const totalQuestions = questions.length
+  const totalQuestions = questions.length || 30
   const parsedAnswers = typeof attempt.answers === 'string' ? JSON.parse(attempt.answers) : attempt.answers
   const userAnswers = (parsedAnswers as Record<string, string>) || {}
   
@@ -103,7 +117,7 @@ export default async function ResultPage({
 
   questions.forEach((q: any) => {
     const selectedOptionId = userAnswers[q.id]
-    const correctOption = q.question_options.find((o: any) => o.is_correct)
+    const correctOption = q.question_options?.find((o: any) => o.is_correct)
 
     if (!selectedOptionId) {
       skippedCount++
@@ -129,14 +143,15 @@ export default async function ResultPage({
     : '#E5E7EB'
 
   // Basic Stats
-  const score = attempt.score ?? correctCount
-  const percentage = totalQuestions > 0 ? ((score / totalQuestions) * 100).toFixed(1) : "0.0"
+  const maxMarks = attempt.total_marks || (totalQuestions * 4) || 120
+  const score = attempt.score ?? ((correctCount * 4) - incorrectCount)
+  const percentage = maxMarks > 0 ? ((Math.max(0, score) / maxMarks) * 100).toFixed(1) : "0.0"
   const timeTaken = attempt.time_taken_seconds ?? 0
   const timeUsed = `${Math.floor(timeTaken / 60)}m ${timeTaken % 60}s`
   const isPass = Number(percentage) >= 40
 
   // Topper Reference Data
-  const topperScore = Math.min(totalQuestions, Math.max(score + 2, Math.round(totalQuestions * 0.95)))
+  const topperScore = Math.min(maxMarks, Math.max(score + 10, Math.round(maxMarks * 0.92)))
   const topperTime = `${Math.max(1, Math.floor((timeTaken * 0.75) / 60))}m`
 
   const retakeUrl = testType === 'chapter-practice'
@@ -172,16 +187,16 @@ export default async function ResultPage({
                 <Target className="w-4 h-4" />
                 <span className="text-[11px] font-black uppercase tracking-wider text-gray-500">MARKS</span>
               </div>
-              <div className="text-2xl font-black text-gray-900 tracking-tight">{score}/{totalQuestions}</div>
+              <div className="text-2xl font-black text-gray-900 tracking-tight">{score}/{maxMarks}</div>
             </div>
 
             {/* QUESTIONS */}
             <div className="p-5 rounded-2xl bg-orange-50/70 border border-orange-100 shadow-xs space-y-2">
               <div className="flex items-center gap-2 text-orange-600">
                 <Trophy className="w-4 h-4" />
-                <span className="text-[11px] font-black uppercase tracking-wider text-gray-500">QUESTIONS</span>
+                <span className="text-[11px] font-black uppercase tracking-wider text-gray-500">ATTEMPTED</span>
               </div>
-              <div className="text-2xl font-black text-gray-900 tracking-tight">{score}/{totalQuestions}</div>
+              <div className="text-2xl font-black text-gray-900 tracking-tight">{correctCount + incorrectCount}/{totalQuestions}</div>
             </div>
 
             {/* TIME */}

@@ -38,7 +38,8 @@ export default async function DashboardLayout({
   const basePath = ""
 
   const rawNavItems = [
-    { label: 'My Stats', href: '/dashboard', iconName: 'LayoutDashboard', roles: ['student'] },
+    { label: 'Overview', href: '/dashboard', iconName: 'LayoutDashboard', roles: ['student'] },
+    { label: 'My Stats', href: '/dashboard/stats', iconName: 'BarChart3', roles: ['student'] },
     { label: 'My Courses', href: '/dashboard/my-courses', iconName: 'GraduationCap', roles: ['student'] },
     { label: 'My Exams', href: '/dashboard/exams', iconName: 'FileText', roles: ['student'] },
 

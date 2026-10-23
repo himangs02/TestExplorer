@@ -228,8 +228,8 @@ export const CollegePredictionList: React.FC<CollegePredictionListProps> = ({
 
   return (
     <div className="w-full mt-6 sm:mt-8">
-      {/* 1. TOP SUMMARY CARDS STRIP */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-3.5 mb-6">
+      {/* 1. TOP SUMMARY CARDS STRIP - RECONCILED TO 100% OF TOTAL */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3 mb-6">
         {/* Total */}
         <button
           type="button"
@@ -264,7 +264,7 @@ export const CollegePredictionList: React.FC<CollegePredictionListProps> = ({
             <Check className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-700 stroke-[3]" />
           </div>
           <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider block opacity-90">
-            ✓ Safe Options
+            ✓ Safe
           </span>
         </button>
 
@@ -283,7 +283,7 @@ export const CollegePredictionList: React.FC<CollegePredictionListProps> = ({
             <Target className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
           </div>
           <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider block opacity-90">
-            Target Options
+            Target
           </span>
         </button>
 
@@ -302,7 +302,26 @@ export const CollegePredictionList: React.FC<CollegePredictionListProps> = ({
             <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600" />
           </div>
           <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider block opacity-90">
-            ↑ Ambitious Options
+            ↑ Ambitious
+          </span>
+        </button>
+
+        {/* Reach / Low Chance */}
+        <button
+          type="button"
+          onClick={() => setSelectedChance('LOW')}
+          className={`p-3 sm:p-3.5 rounded-xl sm:rounded-2xl text-left border-2 transition-all cursor-pointer col-span-2 sm:col-span-1 ${
+            selectedChance === 'LOW'
+              ? 'bg-rose-600 text-white border-rose-600 shadow-md'
+              : 'bg-rose-50/70 text-rose-950 border-rose-200/80 hover:border-rose-300'
+          }`}
+        >
+          <div className="flex items-center justify-between mb-0.5">
+            <span className="text-xl sm:text-2xl font-black">{prediction.summary.lowChanceCount}</span>
+            <span className="text-xs font-bold text-rose-600">~15%</span>
+          </div>
+          <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider block opacity-90">
+            Reach / Low
           </span>
         </button>
       </div>

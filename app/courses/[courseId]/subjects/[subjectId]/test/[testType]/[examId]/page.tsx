@@ -90,17 +90,8 @@ export default async function TestPage({
      }
   } else {
      // MOCK
-     const mockExam = await prisma.mock_tests.findUnique({ where: { id: examId } })
-     if(mockExam) {
-        // Strip Decimals to avoid Client Component serialization errors
-        examData = {
-          id: mockExam.id,
-          title: mockExam.title,
-          description: mockExam.description,
-          duration_minutes: mockExam.duration_minutes,
-          total_marks: mockExam.total_marks
-        }
-
+     let mockExam = await prisma.mock_tests.findUnique({ where: { id: examId } })
+     if (mockExam) {
         const q = await prisma.mock_test_questions.findMany({
           where: { mock_test_id: examId },
           orderBy: { created_at: 'asc' },
@@ -119,6 +110,77 @@ export default async function TestPage({
           ...mockQ.questions,
           options: mockQ.questions.question_options
         }))
+
+        // Fallback if questions are assigned directly via questions table
+        if (!questionsData || questionsData.length === 0) {
+          const directQs = await prisma.questions.findMany({
+            where: { exam_id: examId },
+            orderBy: { order_index: 'asc' },
+            select: {
+              id: true,
+              text: true,
+              direction: true,
+              question_options: { select: { id: true, text: true } }
+            }
+          })
+          questionsData = directQs.map(dq => ({
+            ...dq,
+            options: dq.question_options
+          }))
+        }
+
+        const totalQs = questionsData?.length || 30
+        const marksCorrect = Number(mockExam.marks_correct) || 4
+        const marksIncorrect = Math.abs(Number(mockExam.marks_incorrect)) || 1
+        const maxMarks = mockExam.total_marks || (totalQs * marksCorrect)
+
+        examData = {
+          id: mockExam.id,
+          title: mockExam.title,
+          description: mockExam.description,
+          duration_minutes: mockExam.duration_minutes || 60,
+          total_marks: maxMarks,
+          total_questions: totalQs,
+          marks_correct: marksCorrect,
+          marks_incorrect: marksIncorrect,
+          negative_marking: true
+        }
+     } else {
+        // Fallback to exams table
+        const altExam = await prisma.exams.findUnique({ where: { id: examId } })
+        if (altExam) {
+          const directQs = await prisma.questions.findMany({
+            where: { exam_id: examId },
+            orderBy: { order_index: 'asc' },
+            select: {
+              id: true,
+              text: true,
+              direction: true,
+              question_options: { select: { id: true, text: true } }
+            }
+          })
+          questionsData = directQs.map(dq => ({
+            ...dq,
+            options: dq.question_options
+          }))
+
+          const totalQs = questionsData?.length || 30
+          const marksCorrect = Number(altExam.marks_correct) || 4
+          const marksIncorrect = Math.abs(Number(altExam.marks_incorrect)) || 1
+          const maxMarks = altExam.total_marks || (totalQs * marksCorrect)
+
+          examData = {
+            id: altExam.id,
+            title: altExam.title,
+            description: altExam.description,
+            duration_minutes: altExam.duration_minutes || 60,
+            total_marks: maxMarks,
+            total_questions: totalQs,
+            marks_correct: marksCorrect,
+            marks_incorrect: marksIncorrect,
+            negative_marking: true
+          }
+        }
      }
   }
 

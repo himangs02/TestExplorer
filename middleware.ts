@@ -67,6 +67,9 @@ export async function middleware(request: NextRequest) {
     path.startsWith('/cookie-policy') ||
     path.startsWith('/security') ||
     path.startsWith('/faqs') ||
+    path.startsWith('/exams') ||
+    path.startsWith('/getting-started') ||
+    path.startsWith('/library') ||
     path.startsWith('/predictor') ||
     path.startsWith('/jee-main-college-predictor') ||
     path.startsWith('/jee-advanced-college-predictor') ||

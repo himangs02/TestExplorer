@@ -35,7 +35,7 @@ export default async function ReviewPage({
         id: true,
         text: true,
         explanation: true,
-        question_options: { select: { id: true, text: true, is_correct: true } }
+        question_options: { select: { id: true, text: true, is_correct: true, explanation: true } }
       }
     })
   } else if (testType === 'chapter-practice') {
@@ -52,7 +52,7 @@ export default async function ReviewPage({
           id: true,
           text: true,
           explanation: true,
-          question_options: { select: { id: true, text: true, is_correct: true } }
+          question_options: { select: { id: true, text: true, is_correct: true, explanation: true } }
         }
       })
     } else {
@@ -68,7 +68,7 @@ export default async function ReviewPage({
           id: true,
           text: true,
           explanation: true,
-          question_options: { select: { id: true, text: true, is_correct: true } }
+          question_options: { select: { id: true, text: true, is_correct: true, explanation: true } }
         }
       })
     }
@@ -85,12 +85,29 @@ export default async function ReviewPage({
             id: true,
             text: true,
             explanation: true,
-            question_options: { select: { id: true, text: true, is_correct: true } }
+            question_options: { select: { id: true, text: true, is_correct: true, explanation: true } }
           }
         }
       }
     })
     questions = mockQs.map(m => m.questions)
+
+    // Fallback if questions are mapped via exams table
+    if (!questions || questions.length === 0) {
+      const examTableData = await prisma.exams.findUnique({ where: { id: examId }, select: { title: true } })
+      if (examTableData) examTitle = examTableData.title
+
+      questions = await prisma.questions.findMany({
+        where: { exam_id: examId },
+        orderBy: { order_index: 'asc' },
+        select: {
+          id: true,
+          text: true,
+          explanation: true,
+          question_options: { select: { id: true, text: true, is_correct: true, explanation: true } }
+        }
+      })
+    }
   }
 
   if (!questions) return <div>Failed to load questions.</div>

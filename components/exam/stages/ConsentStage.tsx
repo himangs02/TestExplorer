@@ -28,18 +28,18 @@ export const ConsentStage = ({ exam, user, onPrev, onStart }: Props) => {
 
                         <div className="flex justify-between items-center py-1.5 font-bold text-black text-xs md:text-sm bg-white">
                             <span>Duration: {exam.duration_minutes || 60} Mins</span>
-                            <span>Maximum Marks : {exam.total_marks || 200}</span>
+                            <span>Maximum Marks : {exam.total_marks || ((exam.total_questions || 30) * 4)}</span>
                         </div>
 
                         <h3 className="font-bold text-black mb-4">Read the following instructions carefully.</h3>
 
                         <ol className="list-decimal pl-5 space-y-2 mb-6 text-black">
-                            <li>The Test contains {exam.total_questions || '50'} questions.</li>
+                            <li>The Test contains {exam.total_questions || 30} questions.</li>
                             <li>Each question has 4 options out of which only one is correct.</li>
-                            <li>You have to finish the test in {exam.duration_minutes || 60} minutes.</li>
-                            <li>You will be awarded marks for correct answers. There is {exam.negative_marking ? 'negative marking' : 'no penalty'} for incorrect answers.</li>
-                            <li>There is no penalty for the questions that you have not attempted.</li>
-                            <li>Once you start the test, you will not be allowed to reattempt it. Make sure that you complete the test before you submit the test and/or close the browser.</li>
+                            <li>You have {exam.duration_minutes || 60} minutes to complete the test.</li>
+                            <li>Marking Scheme: <strong>+{exam.marks_correct || 4} marks</strong> for each correct answer; <strong>-{exam.marks_incorrect || 1} mark</strong> deducted for each incorrect answer.</li>
+                            <li>There is zero penalty (0 marks) for unattempted questions.</li>
+                            <li>Once you start the test, your progress is safely recorded. You may submit whenever you finish or let the timer auto-submit.</li>
                         </ol>
 
                         <h3 className="font-bold text-black mb-2 underline">About Question Paper:</h3>
@@ -79,12 +79,12 @@ export const ConsentStage = ({ exam, user, onPrev, onStart }: Props) => {
 
                             <div className="flex gap-2">
                                 <span>6.</span>
-                                <p>On the completion of the test duration, even if the candidate does not click on an answer or does not click on the <span className="border border-gray-400 bg-gray-100 px-1 text-xs mx-1 font-bold">Submit Test</span> button, a NIL result will be saved automatically by the computer.</p>
+                                <p>You may submit the exam at any time by clicking the <span className="border border-gray-400 bg-gray-100 px-1 text-xs mx-1 font-bold">Submit Test</span> button after confirming your responses.</p>
                             </div>
 
                             <div className="flex gap-2">
                                 <span>7.</span>
-                                <p>The candidate will only be able to submit the test on completion of the stipulated {exam.duration_minutes || 60} Minutes. In case a candidate not completed his/her test at the completion of stipulated {exam.duration_minutes || 60} Minutes, the system shall automatically submit the test.</p>
+                                <p>In case the timer reaches 00:00 before you click Submit, the computer system will automatically save and submit all your responses without loss of work.</p>
                             </div>
 
                             <div className="text-center font-bold mt-8 mb-4">
