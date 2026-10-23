@@ -15,7 +15,6 @@ import {
   ShieldCheck,
   Building,
   TrendingUp,
-  Zap,
   Layers,
   Award,
   CheckCircle2,
@@ -175,7 +174,7 @@ export default function PredictorHeroSection() {
               </div>
               <div>
                 <div className="text-xl sm:text-2xl font-black text-white">5 Major Exams</div>
-                <div className="text-xs text-slate-400 font-medium">JEE, NEET, CUET, CLAT & BITSAT</div>
+                <div className="text-xs text-slate-400 font-medium">JEE Main, JEE ADV, NEET, CLAT, CUET</div>
               </div>
             </div>
 
@@ -214,9 +213,8 @@ export default function PredictorHeroSection() {
           <div className="lg:col-span-8 relative">
             
             {/* Playful Floating Tag */}
-            <div className="hidden sm:flex absolute -top-5 right-6 z-20 items-center gap-1.5 text-xs font-bold font-mono tracking-tight bg-teal-950 text-teal-300 px-3 py-1 rounded-full border border-teal-500/30 shadow-md">
-              <Zap className="w-3.5 h-3.5 text-teal-400" />
-              <span>Get AI-powered College Predictions instantly!</span>
+            <div className="hidden sm:flex absolute -top-5 right-6 z-20 items-center text-xs font-bold font-mono tracking-tight bg-teal-950 text-teal-300 px-3.5 py-1 rounded-full border border-teal-500/30 shadow-md">
+              <span>JoSAA and AI based College Predictions Instantly</span>
             </div>
 
             <div className="bg-slate-900/90 rounded-3xl border border-slate-800/90 p-5 sm:p-8 shadow-2xl backdrop-blur-xl">

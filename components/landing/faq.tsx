@@ -9,7 +9,7 @@ export const faqs = [
   },
   { 
     q: "Can I prepare for JEE, NEET, CUET, and CLAT from one account, or do I need separate signups?", 
-    a: "The platform supports five major exams: JEE Main, JEE Advanced, NEET UG, CUET UG, and CLAT UG. You choose an exam card on the home page and start a mock in that stream, so one login can cover more than one exam. The paper pattern, timer, marking scheme, and college map are different for each exam. Do not apply the CUET three-section MCQ pattern to JEE Advanced or NEET. The clean way to use it: pick one primary exam, finish its mocks and analytics, and run the predictor on that exam's counselling system only. If you add a second exam, start a separate mock stream and keep the weak-area data apart. School and coaching batches should also be grouped exam-wise, or the All India Rank comparison becomes meaningless." 
+    a: "The platform supports five major exams: JEE Main, JEE ADV, NEET, CLAT, and CUET. You choose an exam card on the home page and start a mock in that stream, so one login can cover more than one exam. The paper pattern, timer, marking scheme, and college map are different for each exam. The clean way to use it: pick one primary exam, finish its mocks and analytics, and run the predictor on that exam's counselling system only. If you add a second exam, start a separate mock stream and keep the weak-area data apart. School and coaching batches should also be grouped exam-wise, or the All India Rank comparison becomes meaningless." 
   },
   { 
     q: "What does “real exam interface” mean? Does the timer, navigation, and marking feel like the NTA paper?", 

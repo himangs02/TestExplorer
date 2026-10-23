@@ -43,12 +43,12 @@ export default function Testimonials({ data }: { data?: any[] }) {
       accent: "border-t-purple-600"
     },
     {
-      name: "S.K Malhotra",
-      role: "Director, SKM Academy",
-      score: "Educator Partner",
-      text: "I have been running coaching successfully for more than 2 decades. Test Explorer is by far the most reliable mock test platform for my batches.",
+      name: "Kabir Malhotra",
+      role: "Student, Modern School Delhi",
+      score: "AIR 412 (CLAT)",
+      text: "The timed sectional tests and real-time rank predictions gave me immense confidence on exam day. Test Explorer is by far the most reliable platform.",
       rating: 5,
-      image: "/testimonials/sk_malhotra.jpg",
+      image: "/testimonials/kabir.jpg",
       accent: "border-t-amber-500"
     },
     {
@@ -75,7 +75,7 @@ export default function Testimonials({ data }: { data?: any[] }) {
     "/testimonials/manish.jpg",
     "/testimonials/priya.jpg",
     "/testimonials/varun.jpg",
-    "/testimonials/sk_malhotra.jpg",
+    "/testimonials/kabir.jpg",
     "/testimonials/ananya.jpg",
     "/testimonials/rohan.jpg"
   ];

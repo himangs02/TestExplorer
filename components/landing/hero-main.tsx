@@ -85,13 +85,6 @@ export default async function HeroMain() {
 
           {/* ================= RIGHT COLUMN: PRODUCT DASHBOARD MOCKUP ================= */}
           <div className="lg:col-span-7 relative">
-            
-            {/* Playful Handwritten Tag */}
-            <div className="hidden sm:flex absolute -top-7 left-6 sm:left-10 z-20 items-center gap-1.5 text-gray-700 text-xs font-bold font-mono tracking-tight transform -rotate-2 bg-amber-50 px-3 py-1 rounded-full border border-amber-200/70 shadow-xs">
-              <span>Practice • Predict • Perform</span>
-              <span className="text-amber-600 text-sm">↳</span>
-            </div>
-
             {/* Laptop / Browser Container Frame */}
             <div className="relative mx-auto rounded-2xl sm:rounded-3xl border border-gray-300/80 bg-gray-900 p-2 sm:p-2.5 shadow-2xl shadow-blue-950/20">
               

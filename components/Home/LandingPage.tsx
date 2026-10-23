@@ -12,6 +12,8 @@ import Testimonials from "@/components/landing/testimonials";
 import Faq from "@/components/landing/faq";
 import PracticeOptionsGrid from "@/components/landing/practice-options-grid";
 
+import JuniorSection from "@/components/landing/junior-section";
+
 export default async function LandingPage() {
   const categories = await prisma.categories.findMany({
     orderBy: { order_index: 'asc' }
@@ -24,6 +26,9 @@ export default async function LandingPage() {
 
       {/* === SECTION 2: STREAM / COURSE CARDS === */}
       <PracticeOptionsGrid categories={categories} />
+
+      {/* === SECTION: TEST EXPLORER JUNIOR (BETWEEN EXAM CATEGORIES & RANK PREDICTOR) === */}
+      <JuniorSection />
 
       {/* === SECTION 3: EXAM RANK & COLLEGE PREDICTOR === */}
       <PredictorHeroSection />

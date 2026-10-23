@@ -3,7 +3,7 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
-import { Search, X, ArrowUpRight, BookOpen, Sparkles, Filter, ChevronRight } from 'lucide-react'
+import { Search, X, ArrowUpRight, BookOpen, Filter, ChevronRight } from 'lucide-react'
 import { getCategoryIcon } from '@/lib/icons'
 
 interface CourseItem {

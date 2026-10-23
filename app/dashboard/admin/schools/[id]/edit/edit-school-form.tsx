@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import { Save, Loader2, Building, Image as ImageIcon, User, Sparkles } from 'lucide-react'
+import { Save, Loader2, Building, Image as ImageIcon, User } from 'lucide-react'
 import { updateSchoolAction } from '../../actions'
 import ImageUpload from '@/components/ui/ImageUpload'
 
