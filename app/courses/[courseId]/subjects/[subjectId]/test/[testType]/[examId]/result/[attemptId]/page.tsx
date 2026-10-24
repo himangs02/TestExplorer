@@ -265,8 +265,8 @@ export default async function ResultPage({
                   <tbody className="divide-y divide-gray-100 font-medium">
                     <tr>
                       <td className="p-3.5 text-gray-600">Marks Scored</td>
-                      <td className="p-3.5 font-bold text-gray-900">{score} / {totalQuestions}</td>
-                      <td className="p-3.5 text-gray-500">{topperScore} / {totalQuestions}</td>
+                      <td className="p-3.5 font-bold text-gray-900">{score} / {maxMarks}</td>
+                      <td className="p-3.5 text-gray-500">{topperScore} / {maxMarks}</td>
                     </tr>
                     <tr>
                       <td className="p-3.5 text-gray-600">Time Taken</td>

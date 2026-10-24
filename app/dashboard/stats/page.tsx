@@ -115,9 +115,11 @@ export default async function StudentStatsPage() {
     }
   }).sort((a, b) => b.accuracy - a.accuracy)
 
-  // AI Readiness Index
+  // AI Readiness Index & Estimated Percentile (Harmonized with Test Submission formula)
   let readinessScore = Math.min(99, Math.max(15, Math.round(avgAccuracy * 0.9 + Math.min(20, totalCount * 2))))
-  let projectedPercentile = totalCount > 0 ? `${Math.min(99.5, Math.max(35, Math.round((avgAccuracy * 0.85 + 15) * 10) / 10))}%` : 'N/A'
+  const overallRatio = totalMaxMarks > 0 ? Math.max(0, Math.min(1, totalScore / totalMaxMarks)) : 0
+  const harmonizedPercentile = Math.min(99.9, Math.max(10, Math.round((overallRatio * 80 + 19) * 10) / 10))
+  let projectedPercentile = totalCount > 0 ? `${harmonizedPercentile}%` : 'N/A'
 
   return (
     <div className="max-w-5xl mx-auto space-y-10 pb-16">

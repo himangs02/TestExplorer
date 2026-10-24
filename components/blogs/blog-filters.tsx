@@ -5,11 +5,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useDebouncedCallback } from "use-debounce"; 
 
 const AVAILABLE_TAGS = [
-  "Physics", "History", "Business Studies", "Geography", "Biology", 
-  "Chemistry", "Domain Subjects", "Universities", "Class 12 Boards", 
-  "Students", "Syllabus", "Counselling", "English", "Mathematics", 
-  "GK and Current Affairs", "Agriculture", "Strategic Guide", 
-  "Entrepreneurship", "General Test", "Computer Challenge"
+  "Revision Notes", "Formula Sheet", "Short Tricks", "Cheat Sheet",
+  "Physics", "Chemistry", "Biology", "Mathematics", "DILR",
+  "Quantitative Aptitude", "Domain Subjects", "Class 12 Boards", 
+  "Students", "Syllabus", "English", "General Test"
 ];
 
 export default function BlogFilters() {

@@ -1600,7 +1600,7 @@ export default async function ExamLandingPage({ params }: PageProps) {
       <div className="divide-y divide-gray-100">
          {upcomingExamsList.length > 0 ? (
             upcomingExamsList.map((exam, i) => (
-               <Link href={`/exams/${exam.slug}`} key={i} className="flex items-center gap-3 p-4 hover:bg-gray-50 transition-colors cursor-pointer group">
+               <Link href={`/exams/${exam.slug || exam.id}`} key={i} className="flex items-center gap-3 p-4 hover:bg-gray-50 transition-colors cursor-pointer group">
                   <div className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 font-bold bg-white group-hover:border-blue-500 group-hover:text-blue-600 uppercase">
                      {exam.title.charAt(0)}
                   </div>
@@ -1722,7 +1722,7 @@ export default async function ExamLandingPage({ params }: PageProps) {
          <div className="divide-y divide-gray-100">
             {similarExamsList.length > 0 ? (
                similarExamsList.map((exam, i) => (
-                  <Link href={`/exams/${exam.slug}`} key={i} className="p-3 flex items-center justify-between hover:bg-gray-50 cursor-pointer group">
+                  <Link href={`/exams/${exam.slug || exam.id}`} key={i} className="p-3 flex items-center justify-between hover:bg-gray-50 cursor-pointer group">
                      <span className="text-sm font-medium text-gray-700 group-hover:text-blue-600">{exam.title}</span>
                      <ChevronRight className="w-4 h-4 text-gray-400" />
                   </Link>

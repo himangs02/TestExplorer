@@ -88,10 +88,15 @@ export default async function MyExamsPage() {
               const resultLink = `/courses/${courseId}/subjects/${subjectId}/test/${type}/${examId}/result/${attempt.id}?returnTo=${returnPath}`
               const reviewLink = `/courses/${courseId}/subjects/${subjectId}/test/${type}/${examId}/review/${attempt.id}?returnTo=${returnPath}`
 
-              const date = new Date(attempt.started_at || new Date()).toLocaleDateString('en-US', { 
-                weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' 
+              const attemptTimestamp = attempt.completed_at || attempt.started_at || new Date()
+              const date = new Date(attemptTimestamp).toLocaleDateString('en-IN', { 
+                weekday: 'short', year: 'numeric', month: 'short', day: 'numeric',
+                timeZone: 'Asia/Kolkata'
               })
-              const time = new Date(attempt.started_at || new Date()).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+              const time = new Date(attemptTimestamp).toLocaleTimeString('en-IN', { 
+                hour: '2-digit', minute: '2-digit', hour12: true,
+                timeZone: 'Asia/Kolkata' 
+              })
 
               return (
                 <div key={attempt.id} className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:bg-gray-50 transition-colors">

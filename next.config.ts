@@ -20,6 +20,25 @@ const nextConfig: NextConfig = {
   },
 
   serverExternalPackages: ['@prisma/client', 'bcryptjs'],
+  async redirects() {
+    return [
+      {
+        source: '/jr',
+        destination: '/#junior',
+        permanent: false,
+      },
+      {
+        source: '/junior',
+        destination: '/#junior',
+        permanent: false,
+      },
+      {
+        source: '/exams',
+        destination: '/categories',
+        permanent: false,
+      },
+    ];
+  },
   experimental: {
     // Prevent Hostinger/Docker from spawning 63 workers and hitting OS thread limits (EAGAIN / os error 11)
     cpus: 1,

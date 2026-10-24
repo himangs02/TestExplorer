@@ -75,6 +75,11 @@ export function SiteHeader({ school, user, profile, schoolSlug }: SiteHeaderProp
       highlight: true 
     },
     { label: "Streams", href: `${basePath}/categories` },
+    { 
+      label: "TE Junior", 
+      href: `${basePath}/#junior`,
+      badge: "8-10",
+    },
     { label: "About", href: `${basePath}/about` },
     { label: "Blogs", href: `${basePath}/blogs` },
     { label: "Contact", href: `${basePath}/contact` },
