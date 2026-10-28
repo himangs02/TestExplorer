@@ -130,6 +130,7 @@ export default function Footer({ school }: { school?: any }) {
               <li><Link href="/getting-started" className="hover:text-cyan-400 transition-colors">Getting Started</Link></li>
               <li><Link href="/library" className="hover:text-cyan-400 transition-colors">Open Library</Link></li>
               <li><Link href="/categories" className="hover:text-cyan-400 transition-colors">Exam Streams</Link></li>
+              <li><Link href="/#junior" className="hover:text-emerald-400 text-slate-300 font-bold transition-colors flex items-center gap-1.5"><span>Test Explorer Junior</span><span className="px-1.5 py-0.2 rounded-full text-[9px] bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">8-10</span></Link></li>
               <li><Link href="/predictor" className="hover:text-cyan-400 transition-colors">Rank Predictor 2027</Link></li>
               <li><Link href="/login" className="hover:text-cyan-400 transition-colors">Student Login</Link></li>
             </ul>

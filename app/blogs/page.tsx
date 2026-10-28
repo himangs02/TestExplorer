@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { Calendar, Clock, ArrowRight, Tag, BookOpen } from "lucide-react";
 import BlogFilters, { BlogTags } from "@/components/blogs/blog-filters";
+import BlogImage from "@/components/blogs/blog-image";
 import {
   Pagination,
   PaginationContent,
@@ -33,11 +34,25 @@ function getFirstTag(tags: any, fallback = 'Article'): string {
   return fallback;
 }
 
+function parseTags(tags: any): string[] {
+  if (Array.isArray(tags)) return tags;
+  if (typeof tags === 'string') {
+    try {
+      const parsed = JSON.parse(tags);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    } catch {
+      const parts = tags.split(',').map((s: string) => s.trim()).filter(Boolean);
+      if (parts.length > 0) return parts;
+    }
+  }
+  return [];
+}
+
 function getReadingTime(content?: string | null): string {
   if (!content) return '5 min read';
   const clean = content.replace(/<[^>]*>?/gm, '');
   const words = clean.trim().split(/\s+/).filter(Boolean).length;
-  const minutes = Math.max(3, Math.ceil(words / 180));
+  const minutes = Math.max(3, Math.ceil(words / 200));
   return `${minutes} min read`;
 }
 
@@ -51,7 +66,7 @@ export default async function BlogsPage({
   const page = Number(params.page) || 1;
   const search = params.search || "";
   const tag = params.tag || "";
-  const itemsPerPage = 6;
+  const itemsPerPage = 12;
 
   // 1. Fetch Featured Blogs
   const featuredBlogs = await prisma.blogs.findMany({
@@ -117,8 +132,8 @@ export default async function BlogsPage({
                 <div key={post.id} className="bg-white rounded-3xl border border-slate-200/90 overflow-hidden shadow-xs hover:border-blue-300 hover:shadow-xl hover:shadow-blue-500/5 hover:-translate-y-1 transition-all duration-300 flex flex-col h-full group">
                   {/* Image Area */}
                   <div className="relative h-60 bg-slate-100 w-full overflow-hidden">
-                    <img 
-                      src={post.image_url || '/placeholder.jpg'} 
+                    <BlogImage 
+                      src={post.image_url} 
                       alt={post.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
@@ -188,57 +203,65 @@ export default async function BlogsPage({
                 <p className="text-slate-500 font-medium text-sm">No articles found matching your search criteria.</p>
               </div>
             ) : (
-              blogs?.map((post) => (
-                <div key={post.id} className="bg-white rounded-3xl border border-slate-200/90 overflow-hidden shadow-xs hover:border-blue-300 hover:shadow-xl hover:shadow-blue-500/5 hover:-translate-y-1 transition-all duration-300 flex flex-col h-full group">
-                  
-                  {/* Image */}
-                  <div className="relative h-44 bg-slate-100 overflow-hidden">
-                    <img 
-                       src={post.image_url || '/placeholder.jpg'} 
-                       alt={post.title}
-                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute top-3 left-3">
-                      <span className="px-2.5 py-0.5 bg-white/95 backdrop-blur-md text-slate-900 text-[10px] font-extrabold rounded-full uppercase tracking-wider border border-slate-200 shadow-2xs">
-                        {getFirstTag(post.tags, 'Article')}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  {/* Card Body */}
-                  <div className="p-5 flex flex-col flex-1 justify-between">
-                    <div>
-                      <div className="flex items-center gap-3 text-xs text-slate-400 font-semibold mb-2">
-                        <span className="flex items-center gap-1">
-                          <Calendar className="w-3 h-3 text-blue-600" /> {formatDate(post.created_at.toISOString())}
-                        </span>
-                        <span>•</span>
-                        <span className="flex items-center gap-1">
-                          <Clock className="w-3 h-3" /> {getReadingTime(post.content)}
+              blogs?.map((post) => {
+                const postTags = parseTags(post.tags);
+                return (
+                  <div key={post.id} className="bg-white rounded-3xl border border-slate-200/90 overflow-hidden shadow-xs hover:border-blue-300 hover:shadow-xl hover:shadow-blue-500/5 hover:-translate-y-1 transition-all duration-300 flex flex-col h-full group">
+                    
+                    {/* Header Image */}
+                    <div className="relative h-44 bg-slate-100 overflow-hidden">
+                      <BlogImage 
+                        src={post.image_url} 
+                        alt={post.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute top-3 left-3">
+                        <span className="px-2.5 py-0.5 bg-white/95 backdrop-blur-md text-slate-900 text-[10px] font-extrabold rounded-full uppercase tracking-wider border border-slate-200 shadow-2xs">
+                          {getFirstTag(post.tags, 'Article')}
                         </span>
                       </div>
-                      
-                      <h3 className="text-base font-extrabold text-slate-900 mb-2 leading-snug line-clamp-2 group-hover:text-blue-600 transition-colors">
-                        {post.title}
-                      </h3>
-                      
-                      <p className="text-slate-500 text-xs leading-relaxed line-clamp-2 mb-4 font-medium">
-                        {post.excerpt}
-                      </p>
                     </div>
                     
-                    <div className="pt-3 border-t border-slate-100">
-                      <Link 
-                        href={`/blogs/${post.slug}`} 
-                        className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 hover:text-blue-700 transition-colors"
-                      >
-                        <span>Read Article</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </Link>
+                    {/* Card Body */}
+                    <div className="p-5 flex flex-col flex-1 justify-between">
+                      <div>
+                        {/* Tags Pill Badges */}
+                        <div className="flex flex-wrap items-center gap-1.5 mb-3">
+                          {postTags.slice(0, 4).map((t, idx) => (
+                            <span 
+                              key={idx}
+                              className="px-2.5 py-0.5 bg-slate-50 border border-slate-200 text-slate-700 text-[11px] font-semibold rounded-full shadow-2xs"
+                            >
+                              {t}
+                            </span>
+                          ))}
+                        </div>
+                        
+                        <h3 className="text-base font-extrabold text-slate-900 mb-2 leading-snug line-clamp-2 group-hover:text-blue-600 transition-colors">
+                          <Link href={`/blogs/${post.slug}`}>
+                            {post.title}
+                          </Link>
+                        </h3>
+                        
+                        <p className="text-slate-500 text-xs leading-relaxed line-clamp-2 mb-4 font-medium">
+                          {post.excerpt}
+                        </p>
+                      </div>
+                      
+                      <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400 font-medium">
+                        <span>{getReadingTime(post.content)}</span>
+                        <Link 
+                          href={`/blogs/${post.slug}`} 
+                          className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 hover:text-blue-700 transition-colors"
+                        >
+                          <span>Read Article</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </Link>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
         </div>

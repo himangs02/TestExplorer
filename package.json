@@ -29,6 +29,7 @@
     "jsonwebtoken": "^9.0.3",
     "jszip": "^3.10.2",
     "lucide-react": "^0.556.0",
+    "marked": "^18.1.1",
     "mysql2": "^3.22.6",
     "next": "^16.4.2",
     "next-auth": "^4.24.14",

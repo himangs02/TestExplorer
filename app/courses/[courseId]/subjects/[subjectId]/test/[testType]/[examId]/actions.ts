@@ -84,13 +84,16 @@ export async function submitExamAction(
     }
   })
 
-  const unattemptedCount = Math.max(0, totalQuestions - (correctCount + incorrectCount))
+  const attemptedCount = correctCount + incorrectCount
+  const unattemptedCount = Math.max(0, totalQuestions - attemptedCount)
   const score = (correctCount * marksCorrect) - (incorrectCount * marksIncorrect)
   const totalMarks = examRecord?.total_marks || (totalQuestions * marksCorrect) || 120
 
   // 4. Save Attempt
   try {
-    const percentageCalc = totalMarks > 0 ? Math.max(0, Math.round((score / totalMarks) * 100)) : 0
+    // True Accuracy = (correct / attempted) * 100
+    const accuracyCalc = attemptedCount > 0 ? Math.round((correctCount / attemptedCount) * 100) : 0
+    const scorePercentage = totalMarks > 0 ? Math.max(0, Math.round((score / totalMarks) * 100)) : 0
 
     // Compute approximate rank / percentile
     let approxRank = null
@@ -121,7 +124,7 @@ export async function submitExamAction(
         user_id: user.id,
         score: score,
         total_marks: totalMarks,
-        percentage: percentageCalc,
+        percentage: accuracyCalc,
         time_taken_seconds: timeTaken,
         answers: JSON.stringify(answers),
         mock_test_id: isMockTest ? examId : undefined,
@@ -143,7 +146,8 @@ export async function submitExamAction(
       correct: correctCount,
       incorrect: incorrectCount,
       unattempted: unattemptedCount,
-      percentage: percentageCalc,
+      percentage: scorePercentage,
+      accuracy: accuracyCalc,
       predictedRank: approxRank,
       predictedPercentile: approxPercentile
     }

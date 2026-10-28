@@ -45,7 +45,8 @@ const JUNIOR_CLASSES: JuniorClassCard[] = [
 
 export default function JuniorSection() {
   return (
-    <section className="py-12 sm:py-16 bg-slate-200/80 relative border-t border-b border-slate-300">
+    <section id="junior" className="py-12 sm:py-16 bg-slate-200/80 relative border-t border-b border-slate-300 scroll-mt-20">
+      <div id="jr" className="absolute -top-20" />
       <div className="container mx-auto px-4 sm:px-6">
 
         {/* ================= SECTION HEADER ================= */}
