@@ -9,16 +9,16 @@ export default function Footer({ school }: { school?: any }) {
 
   return (
     <footer className="bg-slate-950 text-white pt-12 sm:pt-16 pb-10 mt-6 sm:mt-10 border-t border-slate-800/80 relative overflow-hidden">
-      
+
       {/* Ambient background glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-48 bg-blue-600/10 blur-3xl pointer-events-none" />
 
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
-        
+
         {/* ================= TOP CTA BANNER ================= */}
         <div className="rounded-3xl bg-linear-to-r from-slate-900 via-blue-950/70 to-slate-900 border border-slate-800 p-6 sm:p-10 mb-12 shadow-2xl">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            
+
             {/* Left Info */}
             <div className="lg:col-span-6">
               <div className="flex items-center gap-3 mb-3">
@@ -41,14 +41,14 @@ export default function Footer({ school }: { school?: any }) {
             <div className="lg:col-span-6 flex flex-col gap-6">
               <form onSubmit={(e) => e.preventDefault()} className="flex flex-col sm:flex-row gap-2.5">
                 <div className="relative flex-1">
-                  <input 
-                    type="email" 
-                    placeholder="Enter your email address" 
+                  <input
+                    type="email"
+                    placeholder="Enter your email address"
                     suppressHydrationWarning
                     className="w-full bg-slate-900 border border-slate-700/80 text-white text-xs sm:text-sm px-4 py-3 rounded-xl focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 placeholder-slate-500"
                   />
                 </div>
-                <button 
+                <button
                   type="submit"
                   suppressHydrationWarning
                   className="bg-linear-to-r from-cyan-500 to-teal-500 hover:from-cyan-400 hover:to-teal-400 text-slate-950 text-xs sm:text-sm px-6 py-3 rounded-xl font-black transition-all shrink-0 cursor-pointer shadow-md shadow-cyan-500/20 flex items-center justify-center gap-1.5"
@@ -84,15 +84,15 @@ export default function Footer({ school }: { school?: any }) {
 
         {/* ================= MIDDLE NAVIGATION LINKS ================= */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8 py-8 border-b border-slate-900">
-          
+
           {/* Col 1 & 2: Brand Info */}
           <div className="col-span-2">
             <div className="flex items-center gap-2.5 mb-4">
               {school && school.logo_url ? (
                 <div className="w-9 h-9 rounded-xl overflow-hidden">
-                  <img 
-                    src={school.logo_url} 
-                    alt={`${brandName} Logo`} 
+                  <img
+                    src={school.logo_url}
+                    alt={`${brandName} Logo`}
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -165,7 +165,7 @@ export default function Footer({ school }: { school?: any }) {
             &copy; {currentYear} {brandName}. All rights reserved.
           </p>
           <p className="flex items-center gap-1.5">
-            Made with <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500" /> by Geeta Technical Hub
+            Made with <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500" /> by TestExplorer.in
           </p>
         </div>
 
