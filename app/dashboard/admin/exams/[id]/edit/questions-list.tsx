@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { deleteQuestionAction, deleteAllQuestionsAction } from '../../actions'
+import { FormattedContent } from '@/components/ui/formatted-content'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -103,9 +104,9 @@ export default function QuestionsList({
               <span className="shrink-0 w-6 h-6 bg-gray-50 text-gray-400 text-xs font-bold flex items-center justify-center rounded-full border border-gray-100 group-hover:bg-blue-600 group-hover:text-white transition-colors">
                 {index + 1}
               </span>
-              <p className="text-sm text-gray-600 font-medium line-clamp-2 leading-relaxed group-hover:text-gray-900">
-                {q.text}
-              </p>
+              <div className="text-sm text-gray-600 font-medium line-clamp-2 leading-relaxed group-hover:text-gray-900">
+                <FormattedContent content={q.text} />
+              </div>
             </div>
 
             <form onSubmit={async (e) => {

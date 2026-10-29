@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 import { getSchoolBySubdomain } from "@/lib/db/school"; 
 import { SiteHeader } from "@/components/layout/site-header";
 import "./globals.css";
+import "katex/dist/katex.min.css";
 import { Toaster } from "@/components/ui/sonner";
 import { getServerSession } from "next-auth";
 import { authOptions } from '@/lib/auth';

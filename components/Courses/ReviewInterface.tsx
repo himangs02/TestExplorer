@@ -148,7 +148,7 @@ export default function ReviewInterface({
                     >
                       <div className="shrink-0">{icon}</div>
                       <span className="font-medium text-lg flex-1">
-                        <FormattedContent content={opt.text} />
+                        <FormattedContent content={opt.text} inline />
                       </span>
                       {isSelected && !isCorrect && (
                         <span className="ml-auto text-xs font-bold uppercase text-red-500 tracking-wider">Your Answer</span>
@@ -186,7 +186,7 @@ export default function ReviewInterface({
                             <span className="w-6 h-6 rounded-md bg-green-600 text-white flex items-center justify-center text-xs font-bold shrink-0">
                               {correctLetter}
                             </span>
-                            <span>Correct Choice: <span className="text-green-800 font-semibold">{correctOpt?.text || `Option ${correctLetter}`}</span></span>
+                            <span>Correct Choice: <span className="text-green-800 font-semibold"><FormattedContent content={correctOpt?.text || `Option ${correctLetter}`} inline /></span></span>
                           </div>
                           <p className="text-gray-700 leading-relaxed text-sm">
                             <strong>Conceptual Rationale:</strong> This question tests core syllabus concepts and analytical problem solving. Based on the fundamental governing equations and theoretical principles, <strong>Option {correctLetter}</strong> is the verified correct answer.

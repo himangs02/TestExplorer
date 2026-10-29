@@ -177,7 +177,7 @@ export const TestStage = ({
                     Direction:
                   </div>
                   <div className='text-gray-800 text-sm leading-relaxed whitespace-pre-wrap font-medium'>
-                    {currentQ.direction}
+                    <FormattedContent content={currentQ.direction} />
                   </div>
                 </div>
               )}

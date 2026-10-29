@@ -309,7 +309,7 @@ export default function TestInterface({
                         {labels[idx] || idx + 1}
                       </div>
                       <span className="text-sm sm:text-base md:text-lg font-medium flex-1">
-                        <FormattedContent content={opt.text} />
+                        <FormattedContent content={opt.text} inline />
                       </span>
                     </button>
                   )

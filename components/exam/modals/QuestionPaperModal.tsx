@@ -25,7 +25,7 @@ export const QuestionPaperModal = ({ questions, onClose }: { questions: Question
                      {q.direction && (
                        <div className="mb-2 italic text-gray-700 bg-gray-50 p-2 border-l-2 border-gray-300">
                          <span className="font-bold not-italic text-black text-xs block mb-1">Direction:</span>
-                         {q.direction}
+                         <FormattedContent content={q.direction} />
                        </div>
                      )}
                      <FormattedContent content={q.text} />

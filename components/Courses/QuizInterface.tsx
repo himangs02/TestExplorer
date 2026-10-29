@@ -110,7 +110,7 @@ export default function QuizInterface({ questions }: { questions: Question[] }) 
                     >
                       <div className="shrink-0">{icon}</div>
                       <span className={`font-medium flex-1 ${isSelected ? 'text-black' : 'text-gray-600'}`}>
-                        <FormattedContent content={opt.text} />
+                        <FormattedContent content={opt.text} inline />
                       </span>
                     </button>
                   )
