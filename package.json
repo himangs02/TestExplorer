@@ -49,7 +49,7 @@
     "svix": "^1.82.0",
     "tailwind-merge": "^3.4.0",
     "use-debounce": "^10.0.6",
-    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
