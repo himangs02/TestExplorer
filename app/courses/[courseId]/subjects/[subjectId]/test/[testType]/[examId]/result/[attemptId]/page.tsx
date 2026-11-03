@@ -7,7 +7,8 @@ import {
   BarChart2, 
   X,
   RotateCcw,
-  ListTodo
+  ListTodo,
+  Crown
 } from 'lucide-react'
 
 export default async function ResultPage({ 
@@ -142,21 +143,68 @@ export default async function ResultPage({
       )`
     : '#E5E7EB'
 
-  // Basic Stats
-  const maxMarks = attempt.total_marks || (totalQuestions * 4) || 120
-  const score = attempt.score ?? ((correctCount * 4) - incorrectCount)
-  const percentage = maxMarks > 0 ? ((Math.max(0, score) / maxMarks) * 100).toFixed(1) : "0.0"
+  // Basic Stats (Shared rounding with ResultReportModal)
+  const maxMarks = Number(attempt.total_marks || (totalQuestions * 4) || 120)
+  const score = Number(attempt.score ?? ((correctCount * 4) - incorrectCount))
+  const percentage = maxMarks > 0 ? Math.round((Math.max(0, score) / maxMarks) * 100) : 0
   const timeTaken = attempt.time_taken_seconds ?? 0
   const timeUsed = `${Math.floor(timeTaken / 60)}m ${timeTaken % 60}s`
-  const isPass = Number(percentage) >= 40
 
-  // Topper Reference Data
-  const topperScore = Math.min(maxMarks, Math.max(score + 10, Math.round(maxMarks * 0.92)))
-  const topperTime = `${Math.max(1, Math.floor((timeTaken * 0.75) / 60))}m`
+  // Approx Rank & Percentile (Align with actions.ts and ResultReportModal)
+  let approxRank: string | null = null
+  let approxPercentile: string | null = null
+  try {
+    const rankPred = await prisma.exam_rank_predictions.findFirst({
+      where: {
+        exam_id: examId,
+        min_score: { lte: score },
+        max_score: { gte: score }
+      }
+    })
+    if (rankPred) {
+      approxRank = rankPred.approx_rank
+      approxPercentile = rankPred.approx_percentile
+    } else {
+      const ratio = maxMarks > 0 ? Math.max(0, Math.min(1, score / maxMarks)) : 0
+      const p = Math.min(99.9, Math.max(10, Math.round((ratio * 80 + 19) * 10) / 10))
+      approxPercentile = `${p}%`
+      approxRank = `~${Math.max(100, Math.round((1 - p / 100) * 1200000)).toLocaleString('en-IN')}`
+    }
+  } catch (e) {
+    console.error('Rank prediction lookup failed:', e)
+  }
+
+  // Realistic Benchmark Data from Database
+  let topperScore = score
+  let topperTime = timeUsed
+  let topperAccuracy = `${Number(attempt.percentage || 0)}%`
+
+  try {
+    const realTopper = await prisma.exam_attempts.findFirst({
+      where: {
+        OR: [
+          { mock_test_id: examId },
+          { exam_id: examId },
+          { practice_test_id: examId }
+        ],
+        status: 'completed'
+      },
+      orderBy: { score: 'desc' }
+    })
+
+    if (realTopper && realTopper.score !== null) {
+      topperScore = Math.max(score, Number(realTopper.score))
+      const topSecs = realTopper.time_taken_seconds ?? 0
+      topperTime = `${Math.floor(topSecs / 60)}m ${topSecs % 60}s`
+      topperAccuracy = `${realTopper.percentage ?? 0}%`
+    }
+  } catch (e) {
+    console.error('Topper benchmark lookup failed:', e)
+  }
 
   const retakeUrl = testType === 'chapter-practice'
-    ? `/subject-practice/${courseId}/${courseId}/${subjectId}/practice?chapterId=${examId}`
-    : `/courses/${courseId}/subjects/${subjectId}/test/${testType}/${examId}`
+    ? `/subject-practice/${courseId}/${courseId}/${subjectId}/practice?chapterId=${examId}&retake=true`
+    : `/courses/${courseId}/subjects/${subjectId}/test/${testType}/${examId}?retake=true`
 
   return (
     <div className="min-h-screen bg-black/50 flex items-center justify-center p-4 backdrop-blur-xs fixed inset-0 z-50 overflow-y-auto">
@@ -178,6 +226,40 @@ export default async function ResultPage({
               {examTitle} Report
             </span>
           </div>
+
+          {/* Gamified AI Performance Insight Card (Consistent with Post-Submit Modal) */}
+          {(approxRank || approxPercentile) && (
+            <div className="bg-gradient-to-r from-indigo-600 to-purple-700 rounded-3xl p-6 md:p-8 text-white shadow-xl relative overflow-hidden">
+              <div className="absolute -right-4 -bottom-8 opacity-10 rotate-12">
+                <Crown size={140} />
+              </div>
+
+              <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+                <div>
+                  <div className="flex items-center gap-2 mb-2 text-indigo-200 font-bold uppercase tracking-wider text-xs">
+                    AI Performance Insight
+                  </div>
+                  <h3 className="text-2xl font-black leading-tight">Great Effort! Here is your standing.</h3>
+                  <p className="text-indigo-100 text-sm opacity-90 mt-1">Projected based on historical cut-offs for this score range.</p>
+                </div>
+
+                <div className="flex gap-4">
+                  {approxRank && (
+                    <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 min-w-[130px] border border-white/20 text-center shadow-lg">
+                      <div className="text-[10px] text-indigo-200 font-bold uppercase mb-1 tracking-wider">Approx Rank</div>
+                      <div className="text-2xl md:text-3xl font-black text-white">{approxRank}</div>
+                    </div>
+                  )}
+                  {approxPercentile && (
+                    <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 min-w-[130px] border border-white/20 text-center shadow-lg">
+                      <div className="text-[10px] text-indigo-200 font-bold uppercase mb-1 tracking-wider">Percentile</div>
+                      <div className="text-2xl md:text-3xl font-black text-white">{approxPercentile}</div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* 4 Stats Cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -252,14 +334,14 @@ export default async function ResultPage({
                </div>
              </div>
 
-             {/* Right: Comparative Table */}
+             {/* Right: Comparative Table (Realistic Platform Benchmarks) */}
              <div className="flex-1 w-full bg-white rounded-2xl overflow-hidden shadow-xs border border-orange-100">
                 <table className="w-full text-left text-xs md:text-sm">
                   <thead className="bg-[#FFE8CC] text-amber-950">
                     <tr>
                       <th className="p-3.5 font-bold">Metric</th>
                       <th className="p-3.5 font-bold">You</th>
-                      <th className="p-3.5 font-bold">Topper (Avg)</th>
+                      <th className="p-3.5 font-bold">Top Benchmark</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100 font-medium">
@@ -273,10 +355,15 @@ export default async function ResultPage({
                       <td className="p-3.5 font-bold text-gray-900">{timeUsed}</td>
                       <td className="p-3.5 text-gray-500">{topperTime}</td>
                     </tr>
+                    <tr>
+                      <td className="p-3.5 text-gray-600">Accuracy</td>
+                      <td className="p-3.5 font-bold text-gray-900">{Number(attempt.percentage || 0)}%</td>
+                      <td className="p-3.5 text-gray-500">{topperAccuracy}</td>
+                    </tr>
                     <tr className="bg-[#FFF4E5]">
-                      <td className="p-3.5 font-bold text-amber-950">Result</td>
-                      <td className="p-3.5 font-black text-amber-950">{isPass ? 'PASS' : 'FAIL'}</td>
-                      <td className="p-3.5 font-bold text-amber-950">PASS</td>
+                      <td className="p-3.5 font-bold text-amber-950">Percentile</td>
+                      <td className="p-3.5 font-black text-amber-950">{approxPercentile || 'N/A'}</td>
+                      <td className="p-3.5 font-bold text-amber-950">99.9%</td>
                     </tr>
                   </tbody>
                 </table>

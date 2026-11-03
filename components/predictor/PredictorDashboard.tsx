@@ -153,6 +153,7 @@ export const PredictorDashboard: React.FC<PredictorDashboardProps> = ({
           key={selectedExam}
           exam={currentExamConfig}
           onSubmit={handlePredictionSubmit}
+          onResetResult={() => setPredictionResult(null)}
           isLoading={isLoading}
           initialValues={initialQuery}
         />

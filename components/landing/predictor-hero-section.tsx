@@ -319,6 +319,10 @@ export default function PredictorHeroSection() {
                       <input
                         type="number"
                         suppressHydrationWarning
+                        onWheel={(e) => {
+                          e.preventDefault();
+                          (e.target as HTMLElement).blur();
+                        }}
                         step={inputMode === 'percentile' ? '0.01' : '1'}
                         placeholder={
                           inputMode === 'marks'

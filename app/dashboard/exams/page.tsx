@@ -77,8 +77,8 @@ export default async function MyExamsPage() {
               const testData = (attempt as any).mock_tests || (attempt as any).exams || (attempt as any).practice_tests
               
               const title = testData?.title || (isMock ? 'Full Mock Test' : 'Practice Session')
-              const subjectId = testData?.subject_id || testData?.subjects?.id || 'standalone'
-              const courseId = testData?.course_id || testData?.subjects?.course_id || 'standalone'
+              const subjectId = testData?.subject_id || testData?.subjects?.id || 'general'
+              const courseId = testData?.course_id || testData?.subjects?.course_id || 'general'
               
               const type = isMock ? 'mock' : 'practice'
               const examId = attempt.mock_test_id || attempt.exam_id || attempt.practice_test_id || attempt.id
@@ -131,6 +131,19 @@ export default async function MyExamsPage() {
                             {String(attempt.percentage || 0)}%
                           </div>
                         </div>
+                        {isMock && (
+                          <div>
+                            <div className="text-xs font-bold text-gray-400 uppercase tracking-wider">Percentile</div>
+                            <div className="text-lg font-black text-indigo-600">
+                              {(() => {
+                                const maxMarks = attempt.total_marks || 120
+                                const ratio = maxMarks > 0 ? Math.max(0, Math.min(1, (attempt.score ?? 0) / maxMarks)) : 0
+                                const p = Math.min(99.9, Math.max(10, Math.round((ratio * 80 + 19) * 10) / 10))
+                                return `${p}%`
+                              })()}
+                            </div>
+                          </div>
+                        )}
                       </div>
 
                       {/* Action Buttons */}

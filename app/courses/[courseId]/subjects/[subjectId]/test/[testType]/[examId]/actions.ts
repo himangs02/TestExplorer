@@ -4,18 +4,67 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
+export async function checkAttemptStatusAction(examId: string) {
+  const session = await getServerSession(authOptions)
+  const user = session?.user
+  if (!user) return { isCompleted: false }
+
+  const completed = await prisma.exam_attempts.findFirst({
+    where: {
+      user_id: user.id,
+      status: 'completed',
+      OR: [
+        { mock_test_id: examId },
+        { practice_test_id: examId },
+        { exam_id: examId }
+      ]
+    },
+    orderBy: { completed_at: 'desc' },
+    select: { id: true }
+  })
+
+  return { isCompleted: !!completed, attemptId: completed?.id }
+}
+
 export async function submitExamAction(
   examId: string, 
   courseId: string,
   subjectId: string,
   answers: Record<string, string>, 
   timeTaken: number,
-  testType: string
+  testType: string,
+  isRetake?: boolean
 ) {
   // 1. Check User Session
   const session = await getServerSession(authOptions)
   const user = session?.user
   if (!user) throw new Error('Unauthorized')
+
+  // 1b. Check if user already submitted this test (Anti-duplicate guard)
+  const existingAttempt = await prisma.exam_attempts.findFirst({
+    where: {
+      user_id: user.id,
+      status: 'completed',
+      OR: [
+        { mock_test_id: examId },
+        { practice_test_id: examId },
+        { exam_id: examId }
+      ]
+    },
+    orderBy: { completed_at: 'desc' }
+  })
+
+  // If already submitted and NOT an explicit retake, reject duplicate creation!
+  if (existingAttempt && !isRetake) {
+    return { 
+      success: true, 
+      redirectUrl: `/courses/${courseId}/subjects/${subjectId}/test/${testType}/${examId}/result/${existingAttempt.id}`,
+      attemptId: existingAttempt.id,
+      score: existingAttempt.score ?? 0,
+      totalMarks: existingAttempt.total_marks || 120,
+      alreadySubmitted: true
+    }
+  }
 
   // 2. Fetch Exam & Questions
   let questions: any = []
@@ -119,21 +168,50 @@ export async function submitExamAction(
       console.error('Rank prediction lookup failed:', e)
     }
 
-    const attempt = await prisma.exam_attempts.create({
-      data: {
+    let attempt
+    if (existingAttempt && isRetake) {
+      attempt = await prisma.exam_attempts.update({
+        where: { id: existingAttempt.id },
+        data: {
+          score: score,
+          total_marks: totalMarks,
+          percentage: accuracyCalc,
+          time_taken_seconds: timeTaken,
+          answers: JSON.stringify(answers),
+          status: 'completed',
+          completed_at: new Date()
+        }
+      })
+    } else {
+      attempt = await prisma.exam_attempts.create({
+        data: {
+          user_id: user.id,
+          score: score,
+          total_marks: totalMarks,
+          percentage: accuracyCalc,
+          time_taken_seconds: timeTaken,
+          answers: JSON.stringify(answers),
+          mock_test_id: isMockTest ? examId : undefined,
+          practice_test_id: testType === 'practice' ? examId : undefined,
+          exam_id: isExam ? examId : undefined,
+          status: 'completed',
+          completed_at: new Date()
+        }
+      })
+    }
+
+    // Clean up any stale in-progress attempts for this exam and user
+    await prisma.exam_attempts.deleteMany({
+      where: {
         user_id: user.id,
-        score: score,
-        total_marks: totalMarks,
-        percentage: accuracyCalc,
-        time_taken_seconds: timeTaken,
-        answers: JSON.stringify(answers),
-        mock_test_id: isMockTest ? examId : undefined,
-        practice_test_id: testType === 'practice' ? examId : undefined,
-        exam_id: isExam ? examId : undefined,
-        status: 'completed',
-        completed_at: new Date()
+        status: 'in_progress',
+        OR: [
+          { mock_test_id: examId },
+          { practice_test_id: examId },
+          { exam_id: examId }
+        ]
       }
-    })
+    }).catch(() => {})
 
     // 5. RETURN Data with Complete Stats
     return { 

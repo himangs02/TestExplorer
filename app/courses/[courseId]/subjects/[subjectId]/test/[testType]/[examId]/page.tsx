@@ -9,16 +9,42 @@ import TestInterface from '@/components/Courses/TestInterface'
 import { submitExamAction } from './actions' 
 
 export default async function TestPage({ 
-  params 
+  params,
+  searchParams 
 }: { 
-  params: Promise<{ courseId: string; subjectId: string; testType: string; examId: string }> 
+  params: Promise<{ courseId: string; subjectId: string; testType: string; examId: string }>
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   const { courseId, subjectId, testType, examId } = await params
+  const resolvedSearchParams = searchParams ? await searchParams : {}
+  const isRetake = resolvedSearchParams?.retake === 'true'
 
   // 1. AUTHENTICATE USER
   const session = await getServerSession(authOptions)
   const user = session?.user
   if (!user) return redirect('/login')
+
+  // 1b. GUARD: If user already submitted this test, redirect to the result page (unless explicit retake)
+  if (!isRetake) {
+    const completedAttempt = await prisma.exam_attempts.findFirst({
+      where: {
+        user_id: user.id,
+        status: 'completed',
+        OR: [
+          { mock_test_id: examId },
+          { practice_test_id: examId },
+          { exam_id: examId }
+        ]
+      },
+      orderBy: { completed_at: 'desc' },
+      select: { id: true }
+    })
+
+    if (completedAttempt) {
+      const returnPath = encodeURIComponent(`/courses/${courseId}/subjects/${subjectId}`)
+      return redirect(`/courses/${courseId}/subjects/${subjectId}/test/${testType}/${examId}/result/${completedAttempt.id}?returnTo=${returnPath}`)
+    }
+  }
 
   // 2. FETCH USER PROFILE (For Role Check & Mock Interface)
   const userData = await prisma.profiles.findUnique({
@@ -196,6 +222,7 @@ export default async function TestPage({
          subjectId={subjectId}
          examId={examId}
          user={JSON.parse(JSON.stringify(userData || { id: user.id, email: user.email, full_name: user.name }))} 
+         isRetake={isRetake}
       />
     )
   }
@@ -203,7 +230,7 @@ export default async function TestPage({
   // 6. RENDER STANDARD PRACTICE INTERFACE
   const bindedSubmitAction = async (answers: Record<string, string>, timeTaken: number) => {
     'use server'
-    return await submitExamAction(examId, courseId, subjectId, answers, timeTaken, testType)
+    return await submitExamAction(examId, courseId, subjectId, answers, timeTaken, testType, isRetake)
   }
 
   return (
@@ -214,6 +241,7 @@ export default async function TestPage({
       subjectId={subjectId}
       testType={testType}
       submitAction={bindedSubmitAction}
+      isRetake={isRetake}
     />
   )
 }

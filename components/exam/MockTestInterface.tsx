@@ -18,13 +18,15 @@ interface MockInterfaceProps {
   subjectId: string
   examId: string
   user: any
+  isRetake?: boolean
 }
 
 export default function MockTestInterface({ 
-  exam, questions, courseId, subjectId, examId, user
+  exam, questions, courseId, subjectId, examId, user, isRetake
 }: MockInterfaceProps) {
   const router = useRouter()
   const storageKey = `mock_progress_${examId}_${user?.id || 'guest'}`
+  const completedKey = `mock_completed_${examId}_${user?.id || 'guest'}`
 
   const totalDurationSeconds = (exam?.duration_minutes || 60) * 60
   const [stage, setStage] = useState<'instructions' | 'consent' | 'test' | 'report'>('instructions')
@@ -38,13 +40,38 @@ export default function MockTestInterface({
 
   const [reviewUrl, setReviewUrl] = useState<string | undefined>(undefined)
 
+  const clearSessionStorage = () => {
+    try {
+      localStorage.removeItem(storageKey)
+      localStorage.removeItem(`mock_progress_${examId}`)
+      localStorage.removeItem(`course_test_progress_${examId}`)
+      localStorage.setItem(completedKey, 'true')
+    } catch (e) {}
+  }
+
   // 1. Hydrate state from localStorage on page refresh
   useEffect(() => {
     try {
+      if (isRetake) {
+        localStorage.removeItem(storageKey)
+        localStorage.removeItem(`mock_progress_${examId}`)
+        localStorage.removeItem(completedKey)
+        setIsHydrated(true)
+        return
+      }
+
+      const isCompleted = localStorage.getItem(completedKey)
+      if (isCompleted) {
+        localStorage.removeItem(storageKey)
+        localStorage.removeItem(`mock_progress_${examId}`)
+        setIsHydrated(true)
+        return
+      }
+
       const raw = localStorage.getItem(storageKey) || localStorage.getItem(`mock_progress_${examId}`)
       if (raw) {
         const saved = JSON.parse(raw)
-        if (saved && (saved.stage === 'test' || saved.stage === 'report')) {
+        if (saved && saved.stage === 'test') {
           const now = Date.now()
           const elapsed = saved.lastUpdated ? Math.floor((now - saved.lastUpdated) / 1000) : 0
           const remainingSeconds = Math.max(0, (saved.timeLeft ?? totalDurationSeconds) - elapsed)
@@ -62,11 +89,14 @@ export default function MockTestInterface({
           setTimeLeft(remainingSeconds)
           setStage(saved.stage)
 
-          if (remainingSeconds <= 0 && saved.stage === 'test') {
+          if (remainingSeconds <= 0) {
             toast.warning('Exam time expired while offline. Submitting responses...')
           } else {
             toast.info('Test session restored. Timer and answers resumed.')
           }
+        } else {
+          localStorage.removeItem(storageKey)
+          localStorage.removeItem(`mock_progress_${examId}`)
         }
       }
     } catch (e) {
@@ -74,11 +104,11 @@ export default function MockTestInterface({
     } finally {
       setIsHydrated(true)
     }
-  }, [storageKey, totalDurationSeconds, questions?.length, examId])
+  }, [storageKey, totalDurationSeconds, questions?.length, examId, isRetake, completedKey])
 
-  // 2. Persist state to localStorage whenever in 'test' stage
+  // 2. Persist state to localStorage whenever in 'test' stage (and not submitting)
   useEffect(() => {
-    if (!isHydrated || stage !== 'test') return
+    if (!isHydrated || stage !== 'test' || isSubmitting) return
     try {
       const stateToSave = {
         stage: 'test',
@@ -93,14 +123,14 @@ export default function MockTestInterface({
     } catch (e) {
       console.error('Failed to save test session to localStorage:', e)
     }
-  }, [isHydrated, stage, answers, questionStatus, currentQIndex, timeLeft, storageKey, examId])
+  }, [isHydrated, stage, answers, questionStatus, currentQIndex, timeLeft, storageKey, examId, isSubmitting])
 
   // Ref to hold handleSubmit function to avoid stale closure or hook order violation
   const handleSubmitRef = useRef<() => void>(() => {})
 
   // 3. Timer Hook - MUST BE CALLED UNCONDITIONALLY BEFORE ANY RETURNS
   useEffect(() => {
-    if (stage !== 'test') return
+    if (stage !== 'test' || isSubmitting) return
     const timer = setInterval(() => {
       setTimeLeft(prev => {
         if (prev <= 1) {
@@ -112,7 +142,7 @@ export default function MockTestInterface({
       })
     }, 1000)
     return () => clearInterval(timer)
-  }, [stage])
+  }, [stage, isSubmitting])
 
   // -- Handlers --
   const handleAnswer = (qId: string, optId: string) => {
@@ -144,20 +174,27 @@ export default function MockTestInterface({
     if (isSubmitting) return
     setIsSubmitting(true)
 
-    // Clear saved progress on submission
-    try {
-      localStorage.removeItem(storageKey)
-      localStorage.removeItem(`mock_progress_${examId}`)
-    } catch (e) {}
+    // Clear saved progress on submission immediately
+    clearSessionStorage()
 
     const timeTaken = totalDurationSeconds - timeLeft
     
     try {
-      const result: any = await submitExamAction(examId, courseId, subjectId, answers, timeTaken, 'mock')
+      const result: any = await submitExamAction(examId, courseId, subjectId, answers, timeTaken, 'mock', isRetake)
       
+      // Ensure storage remains cleared after response
+      clearSessionStorage()
+
       if (result && 'error' in result) {
         toast.error(result.error)
         setIsSubmitting(false)
+        return
+      }
+
+      // If already submitted (rejected duplicate):
+      if (result?.alreadySubmitted) {
+        toast.info('Exam already submitted. Loading result...')
+        router.push(result.redirectUrl)
         return
       }
 
@@ -291,10 +328,12 @@ export default function MockTestInterface({
           unattemptedCount={reportData.unattemptedCount}
           timeTaken={reportData.timeTaken}
           reviewUrl={reviewUrl} 
-          // ✅ NEW: Pass Rank Data to Modal
           predictedRank={reportData.predictedRank}
           predictedPercentile={reportData.predictedPercentile}
-          onClose={() => router.push('/dashboard')} 
+          onClose={() => {
+            clearSessionStorage()
+            router.push('/dashboard')
+          }} 
         />
       )}
     </>

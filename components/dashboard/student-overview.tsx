@@ -1,6 +1,6 @@
 // components/dashboard/student-overview.tsx
 import Link from 'next/link'
-import { TrendingUp, Clock, Target, Calendar, ArrowRight, PlayCircle, Trophy, Timer } from 'lucide-react'
+import { TrendingUp, Clock, Target, Calendar, ArrowRight, PlayCircle, Trophy, Timer, Award } from 'lucide-react'
 
 interface StudentOverviewProps {
   profile: any
@@ -14,31 +14,32 @@ export default function StudentOverview({ profile, attempts = [] }: StudentOverv
   const completedAttempts = safeAttempts.filter(a => a.status === 'completed' || a.score != null)
   const totalTests = completedAttempts.length
 
-  // 1. AVG SCORE (Only from completed tests)
-  const avgScore = totalTests > 0 
+  // 1. AVG ACCURACY (True accuracy from tests)
+  const avgAccuracy = totalTests > 0 
     ? Math.round(
         completedAttempts.reduce((acc, curr) => {
-          // Use percentage column, fallback to manual calc
-          const p = curr.percentage ?? ((curr.score / curr.total_marks) * 100)
-          return acc + (Number(p) || 0)
+          return acc + (Number(curr.percentage) || 0)
         }, 0) / totalTests
       )
     : 0
 
-  // 2. TIME SPENT (Only from completed tests)
+  // 2. PROJECTED PERCENTILE (Based on latest completed test to match test result)
+  const latestAttempt = completedAttempts.length > 0 ? completedAttempts[0] : null
+  const latestRatio = latestAttempt && (latestAttempt.total_marks || 120) > 0
+    ? Math.max(0, Math.min(1, (latestAttempt.score ?? 0) / (latestAttempt.total_marks || 120)))
+    : 0
+  const projectedPercentile = totalTests > 0
+    ? `${Math.min(99.9, Math.max(10, Math.round((latestRatio * 80 + 19) * 10) / 10))}%`
+    : 'N/A'
+
+  // 3. TIME SPENT (Only from completed tests)
   const totalSeconds = completedAttempts.reduce((acc, curr) => {
     const seconds = Number(curr.time_taken_seconds) || 0
-    
-    // If we have real data, use it
     if (seconds > 0) return acc + seconds
-
-    // FALLBACK: If time is 0 (due to old bugs), use the exam's total duration
-    // This ensures your dashboard doesn't say "0h" for valid tests
     const durationMins = Number(curr.duration_minutes) || 0
     return acc + (durationMins * 60)
   }, 0)
   
-  // Calculate hours (e.g., 1.5h)
   const hoursSpent = (totalSeconds / 3600).toFixed(1)
   
   // Show all attempts in recent activity (even in-progress ones)
@@ -59,34 +60,44 @@ export default function StudentOverview({ profile, attempts = [] }: StudentOverv
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
-          <div className="w-14 h-14 rounded-xl flex items-center justify-center bg-blue-50 text-blue-600">
-            <Target className="w-7 h-7" />
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-10">
+        <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-blue-50 text-blue-600 shrink-0">
+            <Target className="w-6 h-6" />
           </div>
           <div>
-            <div className="text-3xl font-bold text-gray-900">{totalTests}</div>
-            <div className="text-sm text-gray-500 font-medium">Completed Tests</div>
+            <div className="text-2xl font-bold text-gray-900">{totalTests}</div>
+            <div className="text-xs text-gray-500 font-medium">Completed Tests</div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
-          <div className="w-14 h-14 rounded-xl flex items-center justify-center bg-green-50 text-green-600">
-            <TrendingUp className="w-7 h-7" />
+        <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-emerald-50 text-emerald-600 shrink-0">
+            <TrendingUp className="w-6 h-6" />
           </div>
           <div>
-            <div className="text-3xl font-bold text-gray-900">{avgScore}%</div>
-            <div className="text-sm text-gray-500 font-medium">Avg. Score</div>
+            <div className="text-2xl font-bold text-gray-900">{avgAccuracy}%</div>
+            <div className="text-xs text-gray-500 font-medium">Avg. Accuracy</div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
-          <div className="w-14 h-14 rounded-xl flex items-center justify-center bg-orange-50 text-orange-600">
-            <Clock className="w-7 h-7" />
+        <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-indigo-50 text-indigo-600 shrink-0">
+            <Award className="w-6 h-6" />
           </div>
           <div>
-            <div className="text-3xl font-bold text-gray-900">{hoursSpent}h</div>
-            <div className="text-sm text-gray-500 font-medium">Hours Spent</div>
+            <div className="text-2xl font-bold text-gray-900">{projectedPercentile}</div>
+            <div className="text-xs text-gray-500 font-medium">Estimated %ile</div>
+          </div>
+        </div>
+
+        <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-orange-50 text-orange-600 shrink-0">
+            <Clock className="w-6 h-6" />
+          </div>
+          <div>
+            <div className="text-2xl font-bold text-gray-900">{hoursSpent}h</div>
+            <div className="text-xs text-gray-500 font-medium">Hours Spent</div>
           </div>
         </div>
       </div>

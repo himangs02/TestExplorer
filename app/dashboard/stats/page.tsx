@@ -78,10 +78,22 @@ export default async function StudentStatsPage() {
     : 0
   const totalSeconds = completed.reduce((sum, a) => sum + (a.time_taken_seconds || 0), 0)
   const totalHours = (totalSeconds / 3600).toFixed(1)
-  const bestScoreAttempt = completed.reduce((max, a) => {
-    const acc = Number(a.percentage) || 0
-    return acc > (Number(max?.percentage) || 0) ? a : max
-  }, completed[0] || null)
+  // Best Mock Score: Strictly MAX(score) over all completed attempts
+  const mockAttempts = completed.filter(a => a.mock_test_id || a.exam_id)
+  const candidateAttempts = mockAttempts.length > 0 ? mockAttempts : completed
+
+  const bestScoreAttempt = candidateAttempts.reduce((best, a) => {
+    const aScore = a.score ?? -Infinity
+    const bestScore = best?.score ?? -Infinity
+    if (aScore > bestScore) return a
+    if (aScore === bestScore) {
+      // Tie breaker: higher accuracy, then more recent
+      const aAcc = Number(a.percentage) || 0
+      const bestAcc = Number(best?.percentage) || 0
+      if (aAcc > bestAcc) return a
+    }
+    return best
+  }, candidateAttempts[0] || null)
 
   // Subject Categorization
   const subjectStats: Record<string, { attempts: number; scoreSum: number; maxMarksSum: number; title: string }> = {}
@@ -117,9 +129,13 @@ export default async function StudentStatsPage() {
 
   // AI Readiness Index & Estimated Percentile (Harmonized with Test Submission formula)
   let readinessScore = Math.min(99, Math.max(15, Math.round(avgAccuracy * 0.9 + Math.min(20, totalCount * 2))))
-  const overallRatio = totalMaxMarks > 0 ? Math.max(0, Math.min(1, totalScore / totalMaxMarks)) : 0
-  const harmonizedPercentile = Math.min(99.9, Math.max(10, Math.round((overallRatio * 80 + 19) * 10) / 10))
-  let projectedPercentile = totalCount > 0 ? `${harmonizedPercentile}%` : 'N/A'
+  // Latest attempt percentile (matches recent full mock like Set 40)
+  const latestAttempt = completed.length > 0 ? completed[completed.length - 1] : null
+  const latestRatio = latestAttempt && (latestAttempt.total_marks || 120) > 0
+    ? Math.max(0, Math.min(1, (latestAttempt.score ?? 0) / (latestAttempt.total_marks || 120)))
+    : 0
+  const latestPercentile = Math.min(99.9, Math.max(10, Math.round((latestRatio * 80 + 19) * 10) / 10))
+  let projectedPercentile = totalCount > 0 ? `${latestPercentile}%` : 'N/A'
 
   return (
     <div className="max-w-5xl mx-auto space-y-10 pb-16">
@@ -171,7 +187,7 @@ export default async function StudentStatsPage() {
             <Award className="w-5 h-5 text-indigo-600" />
           </div>
           <div className="text-3xl font-black text-gray-900">{projectedPercentile}</div>
-          <span className="text-xs text-indigo-600 font-bold">AIR Benchmark model</span>
+          <span className="text-xs text-indigo-600 font-bold">Latest mock test standing</span>
         </div>
 
         <div className="p-5 rounded-2xl bg-white border border-gray-200 shadow-xs">

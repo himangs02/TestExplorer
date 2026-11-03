@@ -3,17 +3,58 @@ import { prisma } from '@/lib/prisma'
 import { notFound, redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-// FIX 1: Ensure this imports from the correct components folder
 
 export default async function MockExamPage({ 
-  params 
+  params,
+  searchParams
 }: { 
-  params: Promise<{ examId: string }> 
+  params: Promise<{ examId: string }>
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   const { examId } = await params
+  const resolvedSearchParams = searchParams ? await searchParams : {}
+  const isRetake = resolvedSearchParams?.retake === 'true'
   
   const session = await getServerSession(authOptions)
   if (!session?.user) return redirect('/login')
+
+  // 1. GUARD: If test is already submitted, redirect to result page (unless explicit retake)
+  if (!isRetake) {
+    const completedAttempt = await prisma.exam_attempts.findFirst({
+      where: {
+        user_id: session.user.id,
+        status: 'completed',
+        OR: [
+          { mock_test_id: examId },
+          { exam_id: examId }
+        ]
+      },
+      orderBy: { completed_at: 'desc' },
+      include: {
+        mock_tests: {
+          select: {
+            subject_id: true,
+            course_id: true,
+            subjects: { select: { course_id: true } }
+          }
+        },
+        exams: {
+          select: {
+            subject_id: true,
+            course_id: true,
+            subjects: { select: { course_id: true } }
+          }
+        }
+      }
+    })
+
+    if (completedAttempt) {
+      const mockData = completedAttempt.mock_tests || completedAttempt.exams
+      const subjectId = mockData?.subject_id || 'general'
+      const courseId = mockData?.course_id || (mockData as any)?.subjects?.course_id || 'standalone'
+      return redirect(`/courses/${courseId}/subjects/${subjectId}/test/mock/${examId}/result/${completedAttempt.id}`)
+    }
+  }
 
   // 2. FETCH USER PROFILE (For Role Check & Mock Interface)
   const userData = await prisma.users.findUnique({
@@ -21,9 +62,8 @@ export default async function MockExamPage({
   })
 
   if (!userData) return notFound()
-    
 
-  // 2. Fetch Mock Test Details (check exams or mock_tests)
+  // 3. Fetch Mock Test Details (check exams or mock_tests)
   let mockTest: any = await prisma.exams.findUnique({
     where: { id: examId, category: 'mock' }
   })
@@ -39,7 +79,7 @@ export default async function MockExamPage({
     return notFound()
   }
 
-  // 3. Fetch Questions linked to this Mock Test
+  // 4. Fetch Questions linked to this Mock Test
   let questionsData = await prisma.questions.findMany({
     where: { exam_id: examId },
     include: {
@@ -75,7 +115,7 @@ export default async function MockExamPage({
     negative_marking: true
   }
 
-  // 4. Transform Data
+  // 5. Transform Data
   const questions = questionsData?.map((q: any) => ({
     id: q.id,
     text: q.text, 
@@ -84,44 +124,18 @@ export default async function MockExamPage({
     marks: marksCorrect
   })) || []
 
-  // 5. Get or Create Attempt (Session)
-  let attempt = await prisma.exam_attempts.findFirst({
-    where: {
-      user_id: session.user.id,
-      mock_test_id: examId,
-      status: 'in_progress'
-    },
-    orderBy: { started_at: 'desc' }
-  })
+  const subjectId = mockTest.subject_id || 'standalone'
+  const courseId = mockTest.course_id || 'standalone'
 
-  if (!attempt) {
-    try {
-      const newAttempt = await prisma.exam_attempts.create({
-        data: {
-          user_id: session.user.id,
-          mock_test_id: examId,
-          status: 'in_progress',
-          score: 0,
-          duration_minutes: mockTest.duration_minutes || 0,
-          answers: '{}',
-          started_at: new Date()
-        }
-      })
-      attempt = newAttempt
-    } catch (attemptError) {
-      console.error("Attempt creation failed:", attemptError)
-      return redirect('/dashboard?error=Failed to start test session')
-    }
-  }
-  
   return (
     <MockTestInterface
       examId={examId}
-      courseId="standalone" 
-      subjectId="standalone"
+      courseId={courseId} 
+      subjectId={subjectId}
       questions={questions}
       exam={examWithStats as any}
       user={userData as any}
+      isRetake={isRetake}
     />
   )
 }

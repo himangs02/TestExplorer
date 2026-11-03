@@ -16,6 +16,7 @@ import { toast } from 'sonner';
 interface PredictionFormProps {
   exam: ExamConfig;
   onSubmit: (data: PredictionRequest) => void;
+  onResetResult?: () => void;
   isLoading: boolean;
   initialValues?: Partial<PredictionRequest>;
 }
@@ -23,6 +24,7 @@ interface PredictionFormProps {
 export const PredictionForm: React.FC<PredictionFormProps> = ({
   exam,
   onSubmit,
+  onResetResult,
   isLoading,
   initialValues
 }) => {
@@ -61,6 +63,7 @@ export const PredictionForm: React.FC<PredictionFormProps> = ({
       const msg = 'Please enter a valid number.';
       setFormError(msg);
       toast.error(msg);
+      onResetResult?.();
       return;
     }
 
@@ -68,6 +71,7 @@ export const PredictionForm: React.FC<PredictionFormProps> = ({
       const msg = `Marks cannot exceed the maximum of ${exam.maxMarks} for ${exam.name}.`;
       setFormError(msg);
       toast.error(msg);
+      onResetResult?.();
       return;
     }
 
@@ -75,6 +79,7 @@ export const PredictionForm: React.FC<PredictionFormProps> = ({
       const msg = 'Percentile must be between 0 and 100.';
       setFormError(msg);
       toast.error(msg);
+      onResetResult?.();
       return;
     }
 
@@ -82,6 +87,7 @@ export const PredictionForm: React.FC<PredictionFormProps> = ({
       const msg = 'Rank must be at least 1.';
       setFormError(msg);
       toast.error(msg);
+      onResetResult?.();
       return;
     }
 
@@ -156,9 +162,14 @@ export const PredictionForm: React.FC<PredictionFormProps> = ({
                   : 'e.g. 15420'
             }
             value={inputValue}
+            onWheel={(e) => {
+              e.preventDefault();
+              (e.target as HTMLElement).blur();
+            }}
             onChange={(e) => {
               const val = e.target.value;
               setInputValue(val);
+              onResetResult?.();
               const num = parseFloat(val);
               if (!isNaN(num)) {
                 if (inputMode === 'marks' && num > exam.maxMarks) {

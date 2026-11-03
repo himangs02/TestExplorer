@@ -24,8 +24,9 @@ interface TestInterfaceProps {
   courseId: string
   subjectId: string
   testType: string
+  isRetake?: boolean
   // We pass the action as a prop to avoid import path issues
-  submitAction: (answers: Record<string, string>, timeTaken: number) => Promise<{ error?: string; success?: boolean; redirectUrl?: string }>
+  submitAction: (answers: Record<string, string>, timeTaken: number) => Promise<{ error?: string; success?: boolean; redirectUrl?: string; alreadySubmitted?: boolean }>
 }
 
 export default function TestInterface({ 
@@ -34,7 +35,8 @@ export default function TestInterface({
   courseId,
   subjectId,
   testType,
-  submitAction 
+  submitAction,
+  isRetake
 }: TestInterfaceProps) {
   const router = useRouter()
   const storageKey = `course_test_progress_${exam?.id || `${courseId}_${subjectId}_${testType}`}`
@@ -52,6 +54,11 @@ export default function TestInterface({
   // 1. Restore state from localStorage on page refresh / mount
   useEffect(() => {
     try {
+      if (isRetake) {
+        localStorage.removeItem(storageKey)
+        setIsHydrated(true)
+        return
+      }
       const raw = localStorage.getItem(storageKey)
       if (raw) {
         const saved = JSON.parse(raw)
@@ -127,7 +134,7 @@ export default function TestInterface({
 
   // --- TIMER ---
   useEffect(() => {
-    if (!isHydrated) return
+    if (!isHydrated || isSubmitting) return
 
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
@@ -140,7 +147,7 @@ export default function TestInterface({
       })
     }, 1000)
     return () => clearInterval(timer)
-  }, [isHydrated])
+  }, [isHydrated, isSubmitting])
 
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60)
@@ -155,6 +162,9 @@ export default function TestInterface({
 
   const handleSubmit = async () => {
     setIsSubmitting(true)
+    try {
+      localStorage.removeItem(storageKey)
+    } catch {}
     const timeTaken = totalDurationSeconds - timeLeft
     
     try {
