@@ -15,10 +15,12 @@ export async function completeProfileAction(formData: FormData): Promise<any> {
   const fullName = formData.get('full_name') as string
   const phone = formData.get('phone') as string
   const stream = formData.get('stream') as string
+  const studentClass = (formData.get('student_class') || formData.get('class')) as string
   const state = formData.get('state') as string
   const city = formData.get('city') as string
 
-  if (!fullName || !phone || !stream || !state || !city) {
+  const validClasses = ['8th', '9th', '10th', '11th', '12th'];
+  if (!fullName || !phone || !studentClass || !validClasses.includes(studentClass.trim()) || !stream || !state || !city) {
     return { error: 'Please fill in all required fields to continue.' }
   }
 
@@ -29,6 +31,8 @@ export async function completeProfileAction(formData: FormData): Promise<any> {
         full_name: fullName,
         phone_no: phone,
         stream: stream,
+        student_class: studentClass.trim(),
+        class: studentClass.trim(),
         state: state,
         city: city,
         updated_at: new Date(),

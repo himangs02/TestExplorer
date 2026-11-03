@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import { signup } from '@/app/auth/actions'
 import { useState } from 'react'
-import { Eye, EyeOff, Loader2, GraduationCap, MapPin, Building } from 'lucide-react'
+import { Eye, EyeOff, Loader2, GraduationCap, MapPin, Building, BookOpen } from 'lucide-react'
 import Image from 'next/image'
 import SearchSchoolInput from '@/components/signup/schoolSearchInput'
 import { toast } from "sonner"
@@ -22,6 +22,7 @@ export default function SignupForm({ school, redirectTo, prefilledEmail }: Signu
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
   
+  const [selectedClass, setSelectedClass] = useState<string>("")
   const [selectedStream, setSelectedStream] = useState<string>("") 
   const [selectedStateIso, setSelectedStateIso] = useState<string>("")
   const [selectedCity, setSelectedCity] = useState<string>("")
@@ -33,6 +34,70 @@ export default function SignupForm({ school, redirectTo, prefilledEmail }: Signu
     setError(null)
     
     const formData = new FormData(event.currentTarget)
+
+    const fullName = (formData.get('fullName') as string)?.trim()
+    const email = (formData.get('email') as string)?.trim()
+    const schoolName = (formData.get('schoolName') as string)?.trim()
+    const schoolId = (formData.get('schoolId') as string)?.trim()
+    const studentClass = (formData.get('class') as string)?.trim()
+    const stream = (formData.get('stream') as string)?.trim()
+    const phone = (formData.get('phone') as string)?.trim()
+    const password = (formData.get('password') as string)
+
+    if (!fullName) {
+      toast.error('Full Name is required.')
+      setError('Full Name is required.')
+      setLoading(false)
+      return
+    }
+    if (!email) {
+      toast.error('Email Address is required.')
+      setError('Email Address is required.')
+      setLoading(false)
+      return
+    }
+    if (!school && !schoolName && !schoolId) {
+      toast.error('School / Institute is required.')
+      setError('School / Institute is required.')
+      setLoading(false)
+      return
+    }
+    if (!studentClass) {
+      toast.error('Class is required (8th, 9th, 10th, 11th, or 12th).')
+      setError('Class is required.')
+      setLoading(false)
+      return
+    }
+    if (!stream) {
+      toast.error('Stream is required.')
+      setError('Stream is required.')
+      setLoading(false)
+      return
+    }
+    if (!phone) {
+      toast.error('Contact Number is required.')
+      setError('Contact Number is required.')
+      setLoading(false)
+      return
+    }
+    if (!selectedStateIso) {
+      toast.error('State is required.')
+      setError('State is required.')
+      setLoading(false)
+      return
+    }
+    if (!selectedCity) {
+      toast.error('City is required.')
+      setError('City is required.')
+      setLoading(false)
+      return
+    }
+    if (!password || password.length < 8) {
+      toast.error('Password must be at least 8 characters.')
+      setError('Password must be at least 8 characters.')
+      setLoading(false)
+      return
+    }
     
     // FIX 4: Convert State ISO Code (e.g. "HR") to Name (e.g. "Haryana")
     // The select input returns the Code, but database usually wants the Name.
@@ -99,7 +164,7 @@ export default function SignupForm({ school, redirectTo, prefilledEmail }: Signu
             )}
             
             <div>
-              <label className="block text-sm font-bold text-gray-900 mb-2">Full Name</label>
+              <label className="block text-sm font-bold text-gray-900 mb-2">Full Name <span className="text-red-500">*</span></label>
               <input 
                 name="fullName"
                 type="text" 
@@ -110,7 +175,7 @@ export default function SignupForm({ school, redirectTo, prefilledEmail }: Signu
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-gray-900 mb-2">Email Address</label>
+              <label className="block text-sm font-bold text-gray-900 mb-2">Email Address <span className="text-red-500">*</span></label>
               <input 
                 name="email" 
                 type="email" 
@@ -133,8 +198,41 @@ export default function SignupForm({ school, redirectTo, prefilledEmail }: Signu
                  />
             </div>
 
+            {/* Class Selection - MANDATORY (8th, 9th, 10th, 11th, 12th) */}
             <div>
-              <label className="block text-sm font-bold text-gray-900 mb-2">Stream</label>
+              <label className="block text-sm font-bold text-gray-900 mb-2">
+                Class <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <BookOpen className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
+                <select
+                  name="class"
+                  value={selectedClass}
+                  onChange={(e) => {
+                    const val = e.target.value
+                    setSelectedClass(val)
+                    if (['8th', '9th', '10th'].includes(val) && !selectedStream) {
+                      setSelectedStream('Foundation')
+                    }
+                  }}
+                  className="w-full pl-12 pr-10 py-4 rounded-xl bg-gray-100 border-2 border-transparent focus:bg-white focus:border-orange-500 outline-none transition-all appearance-none cursor-pointer font-medium text-gray-700"
+                  required
+                >
+                  <option value="" disabled>Select your class</option>
+                  <option value="8th">8th</option>
+                  <option value="9th">9th</option>
+                  <option value="10th">10th</option>
+                  <option value="11th">11th</option>
+                  <option value="12th">12th</option>
+                </select>
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                  <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-bold text-gray-900 mb-2">Stream <span className="text-red-500">*</span></label>
               <div className="relative">
                 <GraduationCap className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
                 <select
@@ -145,6 +243,7 @@ export default function SignupForm({ school, redirectTo, prefilledEmail }: Signu
                   required
                 >
                   <option value="" disabled>Select your stream</option>
+                  <option value="Foundation">Foundation (Class 8-10)</option>
                   <option value="Non-Medical">Non-Medical (PCM)</option>
                   <option value="Medical">Medical (PCB)</option>
                   <option value="Commerce">Commerce</option>
@@ -157,7 +256,7 @@ export default function SignupForm({ school, redirectTo, prefilledEmail }: Signu
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-gray-900 mb-2">Contact Number</label>
+              <label className="block text-sm font-bold text-gray-900 mb-2">Contact Number <span className="text-red-500">*</span></label>
               <input 
                 name="phone" 
                 type="text" 
@@ -169,7 +268,7 @@ export default function SignupForm({ school, redirectTo, prefilledEmail }: Signu
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-bold text-gray-900 mb-2">State</label>
+                <label className="block text-sm font-bold text-gray-900 mb-2">State <span className="text-red-500">*</span></label>
                 <div className="relative">
                   <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
                   <select
@@ -196,7 +295,7 @@ export default function SignupForm({ school, redirectTo, prefilledEmail }: Signu
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-gray-900 mb-2">City</label>
+                <label className="block text-sm font-bold text-gray-900 mb-2">City <span className="text-red-500">*</span></label>
                 <div className="relative">
                   <Building className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
                   <select
@@ -220,7 +319,7 @@ export default function SignupForm({ school, redirectTo, prefilledEmail }: Signu
             </div>
 
             <div className="relative">
-              <label className="block text-sm font-bold text-gray-900 mb-2">Password</label>
+              <label className="block text-sm font-bold text-gray-900 mb-2">Password <span className="text-red-500">*</span></label>
               <input 
                 name="password" 
                 type={showPassword ? "text" : "password"} 

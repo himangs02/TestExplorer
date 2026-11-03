@@ -5,7 +5,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import { Loader2, User, Phone, GraduationCap, MapPin, Building2, ArrowRight, ChevronDown } from 'lucide-react'
+import { Loader2, User, Phone, GraduationCap, MapPin, Building2, ArrowRight, ChevronDown, BookOpen } from 'lucide-react'
 import { completeProfileAction } from '@/app/complete-profile/actions'
 import { State, City } from 'country-state-city'
 
@@ -83,6 +83,31 @@ export default function CompleteProfileForm({ profile }: { profile: any }) {
             placeholder="98765 43210"
             className={inputStyle}
           />
+        </div>
+      </div>
+
+      {/* Class Selection - MANDATORY (8th, 9th, 10th, 11th, 12th) */}
+      <div>
+        <label htmlFor="student_class" className={labelStyle}>Your Class <span className="text-red-500">*</span></label>
+        <div className={inputWrapperStyle}>
+          <BookOpen className={iconStyle} />
+          <select
+            id="student_class"
+            name="student_class"
+            required
+            defaultValue={profile?.student_class || profile?.class || ''}
+            className={`${inputStyle} appearance-none cursor-pointer`}
+          >
+            <option value="" disabled>Select your class</option>
+            <option value="8th">8th</option>
+            <option value="9th">9th</option>
+            <option value="10th">10th</option>
+            <option value="11th">11th</option>
+            <option value="12th">12th</option>
+          </select>
+          <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 group-hover:text-purple-500 transition-colors">
+            <ChevronDown className="w-5 h-5" />
+          </div>
         </div>
       </div>
 

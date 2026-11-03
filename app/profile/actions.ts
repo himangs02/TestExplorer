@@ -15,6 +15,7 @@ export async function updateProfileAction(formData: FormData) {
 
   const fullName = formData.get('fullName') as string
   const phone = formData.get('phone') as string
+  const studentClass = (formData.get('student_class') || formData.get('class')) as string
   const state = formData.get('state') as string
   const city = formData.get('city') as string
   
@@ -25,6 +26,7 @@ export async function updateProfileAction(formData: FormData) {
       data: { 
         full_name: fullName,
         phone: phone,
+        ...(studentClass ? { student_class: studentClass.trim(), class: studentClass.trim() } : {}),
         state: state,
         city: city,
         updated_at: new Date()

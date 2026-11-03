@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { updateProfileAction } from './actions'
-import { Save, Loader2, User, Phone, Mail, AlertCircle, CheckCircle2, MapPin, Building } from 'lucide-react'
+import { Save, Loader2, User, Phone, Mail, AlertCircle, CheckCircle2, MapPin, Building, BookOpen } from 'lucide-react'
 import { toast } from "sonner"
 import { State, City } from 'country-state-city'
 
@@ -80,6 +80,26 @@ export default function ProfileForm({ profile, email }: { profile: any, email?: 
             placeholder="+91..."
             className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-black outline-none transition-all"
           />
+        </div>
+      </div>
+
+      {/* Class */}
+      <div>
+        <label className="block text-sm font-bold text-gray-700 mb-2">Class</label>
+        <div className="relative">
+          <BookOpen className="absolute left-3 top-3.5 w-5 h-5 text-gray-400" />
+          <select 
+            name="student_class" 
+            defaultValue={profile?.student_class || profile?.class || ''}
+            className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-black outline-none transition-all appearance-none bg-white cursor-pointer"
+          >
+            <option value="" disabled>Select Class</option>
+            <option value="8th">8th</option>
+            <option value="9th">9th</option>
+            <option value="10th">10th</option>
+            <option value="11th">11th</option>
+            <option value="12th">12th</option>
+          </select>
         </div>
       </div>
 

@@ -6,14 +6,48 @@ import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
 
 export async function signup(formData: FormData) {
-  const email = formData.get('email') as string
+  const email = (formData.get('email') as string)?.trim()
   const password = formData.get('password') as string
-  const fullName = formData.get('fullName') as string
-  const phone = formData.get('phone') as string
+  const fullName = (formData.get('fullName') as string)?.trim()
+  const phone = (formData.get('phone') as string)?.trim()
   const address = formData.get('address') as string 
-  const stream = formData.get('stream') as string
+  const stream = (formData.get('stream') as string)?.trim()
+  const studentClass = ((formData.get('class') || formData.get('student_class')) as string)?.trim()
+  const state = (formData.get('state') as string)?.trim()
+  const city = (formData.get('city') as string)?.trim()
   
-  const schoolId = formData.get('schoolId') as string
+  const schoolId = (formData.get('schoolId') as string)?.trim()
+  const schoolName = (formData.get('schoolName') as string)?.trim()
+
+  // ALL DETAILS MANDATORY VALIDATION
+  if (!fullName) {
+    return { error: 'Full Name is required.' }
+  }
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return { error: 'A valid Email Address is required.' }
+  }
+  if (!schoolId && !schoolName) {
+    return { error: 'School / Institute is required.' }
+  }
+  const validClasses = ['8th', '9th', '10th', '11th', '12th']
+  if (!studentClass || !validClasses.includes(studentClass)) {
+    return { error: 'Please select a valid class (8th, 9th, 10th, 11th, or 12th).' }
+  }
+  if (!stream) {
+    return { error: 'Stream is required.' }
+  }
+  if (!phone || phone.length < 10) {
+    return { error: 'A valid Contact Number (min 10 digits) is required.' }
+  }
+  if (!state) {
+    return { error: 'State is required.' }
+  }
+  if (!city) {
+    return { error: 'City is required.' }
+  }
+  if (!password || password.length < 8) {
+    return { error: 'Password must be at least 8 characters long.' }
+  }
   
   let organizationId = null
   if (schoolId && schoolId.trim() !== '') {
@@ -45,11 +79,18 @@ export async function signup(formData: FormData) {
     await prisma.profiles.create({
       data: {
         id: user.id, // Foreign key to users
+        email: email,
         full_name: fullName,
         phone,
+        phone_no: phone,
         role: 'student',
         organization_id: organizationId,
         stream,
+        student_class: studentClass,
+        class: studentClass,
+        school_name: schoolName || null,
+        state: state,
+        city: city,
       }
     })
 

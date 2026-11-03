@@ -15,6 +15,8 @@ interface Student {
   phone_no?: string | null;
   address?: string | null;
   stream?: string | null;
+  student_class?: string | null;
+  class?: string | null;
   created_at?: string | Date | null;
   organizations?: {
     name: string;
@@ -176,7 +178,11 @@ export default function StudentInteractiveList({
                     <td className="px-3 py-3.5 whitespace-nowrap">
                       <div className="flex items-center gap-1.5 text-xs font-semibold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-full w-fit border border-blue-100">
                         <GraduationCap className="w-3.5 h-3.5 text-blue-500 shrink-0" />
-                        <span>{student.stream || "N/A"}</span>
+                        <span>
+                          {student.student_class || student.class ? `Class ${student.student_class || student.class}` : ''}
+                          {(student.student_class || student.class) && student.stream ? ' • ' : ''}
+                          {student.stream || (!student.student_class && !student.class ? 'N/A' : '')}
+                        </span>
                       </div>
                     </td>
 
@@ -273,7 +279,11 @@ export default function StudentInteractiveList({
                     </div>
                     <div className="mt-1 flex items-center gap-1.5 text-[11px] font-semibold text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full w-fit border border-blue-100">
                       <GraduationCap className="w-3 h-3 text-blue-500 shrink-0" />
-                      <span>{student.stream || "N/A"}</span>
+                      <span>
+                        {student.student_class || student.class ? `Class ${student.student_class || student.class}` : ''}
+                        {(student.student_class || student.class) && student.stream ? ' • ' : ''}
+                        {student.stream || (!student.student_class && !student.class ? 'N/A' : '')}
+                      </span>
                     </div>
                   </div>
                 </div>

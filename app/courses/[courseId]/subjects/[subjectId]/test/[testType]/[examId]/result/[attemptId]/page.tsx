@@ -1,21 +1,21 @@
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
-import { 
-  Trophy, 
-  Clock, 
-  Target, 
-  BarChart2, 
+import {
+  Trophy,
+  Clock,
+  Target,
+  BarChart2,
   X,
   RotateCcw,
   ListTodo,
   Crown
 } from 'lucide-react'
 
-export default async function ResultPage({ 
+export default async function ResultPage({
   params,
   searchParams
-}: { 
-  params: Promise<{ courseId: string; subjectId: string; testType: string; examId: string; attemptId: string }> 
+}: {
+  params: Promise<{ courseId: string; subjectId: string; testType: string; examId: string; attemptId: string }>
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   const { examId, attemptId, courseId, subjectId, testType } = await params
@@ -111,7 +111,7 @@ export default async function ResultPage({
   const totalQuestions = questions.length || 30
   const parsedAnswers = typeof attempt.answers === 'string' ? JSON.parse(attempt.answers) : attempt.answers
   const userAnswers = (parsedAnswers as Record<string, string>) || {}
-  
+
   let correctCount = 0
   let incorrectCount = 0
   let skippedCount = 0
@@ -135,7 +135,7 @@ export default async function ResultPage({
   const skippedPercent = totalQuestions > 0 ? (skippedCount / totalQuestions) * 100 : 0
 
   // Conic Gradient String for Donut Chart
-  const chartGradient = totalQuestions > 0 
+  const chartGradient = totalQuestions > 0
     ? `conic-gradient(
         #22C55E 0% ${correctPercent}%, 
         #EF4444 ${correctPercent}% ${correctPercent + incorrectPercent}%, 
@@ -209,17 +209,17 @@ export default async function ResultPage({
   return (
     <div className="min-h-screen bg-black/50 flex items-center justify-center p-4 backdrop-blur-xs fixed inset-0 z-50 overflow-y-auto">
       <div className="bg-[#FFFDF9] w-full max-w-4xl max-h-[92vh] rounded-[2.5rem] overflow-y-auto relative shadow-2xl border border-orange-100/60 my-auto animate-in fade-in zoom-in-95 duration-200">
-        
+
         {/* Close Button */}
-        <Link 
-          href={closeLink} 
+        <Link
+          href={closeLink}
           className="absolute top-6 right-6 p-2.5 bg-[#FF6B35] rounded-full text-white hover:bg-[#E85D2E] transition-all shadow-md shadow-orange-500/30 z-20"
         >
           <X className="w-5 h-5" />
         </Link>
 
         <div className="p-6 md:p-10 space-y-8">
-          
+
           {/* Header Title Badge */}
           <div className="text-center pt-2">
             <span className="inline-block bg-[#FF6B35] text-white px-8 py-3 rounded-2xl font-black text-base md:text-lg shadow-lg shadow-orange-500/20 tracking-tight">
@@ -302,85 +302,85 @@ export default async function ResultPage({
 
           {/* Detailed Distribution Card */}
           <div className="bg-[#EAF4FF] rounded-[2.2rem] p-6 md:p-10 flex flex-col md:flex-row gap-8 lg:gap-12 items-center border border-blue-100/80 shadow-xs">
-             
-             {/* Left: Donut Chart */}
-             <div className="flex flex-col items-center shrink-0">
-               <h4 className="font-extrabold text-sm md:text-base text-gray-900 mb-5">Answer Distribution</h4>
-               
-               <div 
-                 className="relative w-44 h-44 rounded-full flex items-center justify-center bg-white shadow-md transition-all"
-                 style={{ background: chartGradient }}
-               >
-                 <div className="w-28 h-28 bg-white rounded-full flex items-center justify-center flex-col z-10 shadow-xs">
-                   <span className="text-[10px] text-gray-400 uppercase font-black tracking-wider">TOTAL QUESTIONS</span>
-                   <span className="text-2xl md:text-3xl font-black text-gray-900">{totalQuestions}</span>
-                 </div>
-               </div>
 
-               {/* Legend */}
-               <div className="flex items-center gap-3 md:gap-4 mt-5 text-xs font-bold text-gray-600">
-                 <div className="flex items-center gap-1.5">
-                   <div className="w-2.5 h-2.5 rounded-full bg-[#22C55E]" /> 
-                   <span>{correctCount} Correct</span>
-                 </div>
-                 <div className="flex items-center gap-1.5">
-                   <div className="w-2.5 h-2.5 rounded-full bg-[#EF4444]" /> 
-                   <span>{incorrectCount} Wrong</span>
-                 </div>
-                 <div className="flex items-center gap-1.5">
-                   <div className="w-2.5 h-2.5 rounded-full bg-[#F59E0B]" /> 
-                   <span>{skippedCount} Skipped</span>
-                 </div>
-               </div>
-             </div>
+            {/* Left: Donut Chart */}
+            <div className="flex flex-col items-center shrink-0">
+              <h4 className="font-extrabold text-sm md:text-base text-gray-900 mb-5">Answer Distribution</h4>
 
-             {/* Right: Comparative Table (Realistic Platform Benchmarks) */}
-             <div className="flex-1 w-full bg-white rounded-2xl overflow-hidden shadow-xs border border-orange-100">
-                <table className="w-full text-left text-xs md:text-sm">
-                  <thead className="bg-[#FFE8CC] text-amber-950">
-                    <tr>
-                      <th className="p-3.5 font-bold">Metric</th>
-                      <th className="p-3.5 font-bold">You</th>
-                      <th className="p-3.5 font-bold">Top Benchmark</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-100 font-medium">
-                    <tr>
-                      <td className="p-3.5 text-gray-600">Marks Scored</td>
-                      <td className="p-3.5 font-bold text-gray-900">{score} / {maxMarks}</td>
-                      <td className="p-3.5 text-gray-500">{topperScore} / {maxMarks}</td>
-                    </tr>
-                    <tr>
-                      <td className="p-3.5 text-gray-600">Time Taken</td>
-                      <td className="p-3.5 font-bold text-gray-900">{timeUsed}</td>
-                      <td className="p-3.5 text-gray-500">{topperTime}</td>
-                    </tr>
-                    <tr>
-                      <td className="p-3.5 text-gray-600">Accuracy</td>
-                      <td className="p-3.5 font-bold text-gray-900">{Number(attempt.percentage || 0)}%</td>
-                      <td className="p-3.5 text-gray-500">{topperAccuracy}</td>
-                    </tr>
-                    <tr className="bg-[#FFF4E5]">
-                      <td className="p-3.5 font-bold text-amber-950">Percentile</td>
-                      <td className="p-3.5 font-black text-amber-950">{approxPercentile || 'N/A'}</td>
-                      <td className="p-3.5 font-bold text-amber-950">99.9%</td>
-                    </tr>
-                  </tbody>
-                </table>
-             </div>
+              <div
+                className="relative w-44 h-44 rounded-full flex items-center justify-center bg-white shadow-md transition-all"
+                style={{ background: chartGradient }}
+              >
+                <div className="w-28 h-28 bg-white rounded-full flex items-center justify-center flex-col z-10 shadow-xs">
+                  <span className="text-[10px] text-gray-400 uppercase font-black tracking-wider">TOTAL QUESTIONS</span>
+                  <span className="text-2xl md:text-3xl font-black text-gray-900">{totalQuestions}</span>
+                </div>
+              </div>
+
+              {/* Legend */}
+              <div className="flex items-center gap-3 md:gap-4 mt-5 text-xs font-bold text-gray-600">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#22C55E]" />
+                  <span>{correctCount} Correct</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#EF4444]" />
+                  <span>{incorrectCount} Wrong</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#F59E0B]" />
+                  <span>{skippedCount} Skipped</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Right: Comparative Table (Realistic Platform Benchmarks) */}
+            <div className="flex-1 w-full bg-white rounded-2xl overflow-hidden shadow-xs border border-orange-100">
+              <table className="w-full text-left text-xs md:text-sm">
+                <thead className="bg-[#FFE8CC] text-amber-950">
+                  <tr>
+                    <th className="p-3.5 font-bold">Metric</th>
+                    <th className="p-3.5 font-bold">You</th>
+                    <th className="p-3.5 font-bold">Top Benchmark</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100 font-medium">
+                  <tr>
+                    <td className="p-3.5 text-gray-600">Marks Scored</td>
+                    <td className="p-3.5 font-bold text-gray-900">{score} / {maxMarks}</td>
+                    <td className="p-3.5 text-gray-500">{topperScore} / {maxMarks}</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3.5 text-gray-600">Time Taken</td>
+                    <td className="p-3.5 font-bold text-gray-900">{timeUsed}</td>
+                    <td className="p-3.5 text-gray-500">{topperTime}</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3.5 text-gray-600">Accuracy</td>
+                    <td className="p-3.5 font-bold text-gray-900">{Number(attempt.percentage || 0)}%</td>
+                    <td className="p-3.5 text-gray-500">{topperAccuracy}</td>
+                  </tr>
+                  <tr className="bg-[#FFF4E5]">
+                    <td className="p-3.5 font-bold text-amber-950">Percentile</td>
+                    <td className="p-3.5 font-black text-amber-950">{approxPercentile || 'N/A'}</td>
+                    <td className="p-3.5 font-bold text-amber-950">99.9%</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
 
           {/* Footer Action Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
-            <Link 
-               href={retakeUrl} 
-               className="w-full sm:w-auto px-7 py-3 bg-[#2F80ED] hover:bg-blue-600 text-white font-bold text-sm rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
+            <Link
+              href={retakeUrl}
+              className="w-full sm:w-auto px-7 py-3 bg-[#2F80ED] hover:bg-blue-600 text-white font-bold text-sm rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
             >
               <RotateCcw className="w-4 h-4" /> Retake Test
             </Link>
 
-            <Link 
-              href={`/courses/${courseId}/subjects/${subjectId}/test/${testType}/${examId}/review/${attemptId}?returnTo=${encodeURIComponent(closeLink)}`} 
+            <Link
+              href={`/courses/${courseId}/subjects/${subjectId}/test/${testType}/${examId}/review/${attemptId}?returnTo=${encodeURIComponent(closeLink)}`}
               className="w-full sm:w-auto px-7 py-3 bg-[#00C853] hover:bg-emerald-600 text-white font-bold text-sm rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
             >
               <ListTodo className="w-4 h-4" /> Review Solutions

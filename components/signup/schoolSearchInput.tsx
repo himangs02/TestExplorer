@@ -61,19 +61,21 @@ export default function SchoolSearchInput({ prefilledSchool, readOnly = false }:
       
       {/* If ReadOnly (Subdomain), show label indicating it's fixed */}
       <div className="flex justify-between items-center mb-1">
-        <label className="block text-sm font-bold text-gray-900">School / Institute</label>
+        <label className="block text-sm font-bold text-gray-900">School / Institute <span className="text-red-500">*</span></label>
         {readOnly && <span className="text-xs font-medium text-orange-600 flex items-center gap-1"><Lock className="w-3 h-3"/> Locked to Institute</span>}
       </div>
       
       <div className="relative">
         <input
+          name="schoolName"
           type="text"
+          required
           className={`w-full px-5 py-4 rounded-xl border-2 outline-none transition-all font-medium
             ${readOnly 
               ? 'bg-orange-50/50 border-orange-100 text-gray-500 cursor-not-allowed' 
               : 'bg-gray-100 border-transparent focus:bg-white focus:border-orange-500 placeholder-gray-400'
             }`}
-          placeholder={readOnly ? "" : "Search your school (Optional)..."}
+          placeholder={readOnly ? "" : "Search partner school or enter your school / institute"}
           value={selectedSchool ? selectedSchool.name : query}
           onChange={(e) => {
             if (readOnly) return; // Prevent typing
@@ -111,7 +113,7 @@ export default function SchoolSearchInput({ prefilledSchool, readOnly = false }:
               </>
             ) : (
                 <div className="p-4 text-sm text-gray-500 text-center">
-                   No schools found. Leave blank if independent.
+                   No partner school found. Your entered school will be used.
                 </div>
             )}
           </div>

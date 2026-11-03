@@ -291,6 +291,9 @@ model profiles {
   phone                                                         String?
   updated_at                                                    DateTime?             @default(now())
   stream                                                        String?
+  student_class                                                 String?
+  class                                                         String?
+  school_name                                                   String?
   state                                                         String?
   city                                                          String?
   blogs                                                         blogs[]
