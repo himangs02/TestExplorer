@@ -7,7 +7,7 @@ import Image from 'next/image'
 import SearchSchoolInput from '@/components/signup/schoolSearchInput'
 import { toast } from "sonner"
 import { State, City } from 'country-state-city'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { signIn } from 'next-auth/react'
 
 interface SignupFormProps {
@@ -21,6 +21,8 @@ export default function SignupForm({ school, redirectTo, prefilledEmail }: Signu
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const effectiveRedirect = redirectTo || searchParams.get('callbackUrl') || searchParams.get('redirectTo') || searchParams.get('redirect') || undefined
   
   const [selectedClass, setSelectedClass] = useState<string>("")
   const [selectedStream, setSelectedStream] = useState<string>("") 
@@ -131,7 +133,7 @@ export default function SignupForm({ school, redirectTo, prefilledEmail }: Signu
           redirect: false
         })
 
-        const destination = redirectTo || (result as any)?.redirectUrl || '/categories'
+        const destination = effectiveRedirect || (result as any)?.redirectUrl || '/categories'
         router.push(destination)
       }
     } catch (err) {
@@ -357,7 +359,7 @@ export default function SignupForm({ school, redirectTo, prefilledEmail }: Signu
               <p className="text-base font-semibold text-gray-700">
                 Already have an account?{' '}
                 <Link 
-                  href="/login" 
+                  href={effectiveRedirect ? `/login?callbackUrl=${encodeURIComponent(effectiveRedirect)}` : "/login"} 
                   className="inline-block ml-2 text-orange-600 hover:text-orange-700 font-bold transition-colors"
                 >
                   Log In →

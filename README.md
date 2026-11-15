@@ -231,5 +231,3 @@ npm run start
 
 ## 🛡️ License
 Private and Confidential. Proprietary intellectual property of TestExplorer. All rights reserved.
-
-****

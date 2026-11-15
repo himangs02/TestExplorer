@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { ExamId } from '@/lib/predictor/types';
 import { EXAM_CONFIGS, INDIAN_STATES } from '@/lib/predictor/data/exams-config';
 import {
@@ -77,6 +78,7 @@ const EXAM_THEMES: Record<
 
 export default function PredictorHeroSection() {
   const router = useRouter();
+  const { data: session, status } = useSession();
   const [selectedExam, setSelectedExam] = useState<ExamId>('jee-main');
   const [scoreVal, setScoreVal] = useState('');
   const [inputMode, setInputMode] = useState<'marks' | 'percentile' | 'rank'>('marks');
@@ -128,7 +130,16 @@ export default function PredictorHeroSection() {
     if (currentConfig.hasHomeState) queryParams.set('state', homeState);
     if (preferredBranch !== 'All') queryParams.set('branch', preferredBranch);
 
-    router.push(`/predictor/${selectedExam}?${queryParams.toString()}`);
+    const targetUrl = `/predictor/${selectedExam}?${queryParams.toString()}`;
+
+    // If user is not logged in, redirect to signup page first with callbackUrl
+    if (status !== 'authenticated') {
+      toast.info('Please create an account or log in to view your predicted rank & colleges.');
+      router.push(`/signup?callbackUrl=${encodeURIComponent(targetUrl)}`);
+      return;
+    }
+
+    router.push(targetUrl);
   };
 
   return (

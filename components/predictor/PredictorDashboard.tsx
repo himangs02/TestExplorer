@@ -20,6 +20,7 @@ import { CsvImporter } from './admin/CsvImporter';
 import { Target, Database, ShieldCheck, FileSpreadsheet, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 interface PredictorDashboardProps {
   defaultExam?: ExamId;
@@ -30,7 +31,8 @@ export const PredictorDashboard: React.FC<PredictorDashboardProps> = ({
   defaultExam = 'jee-main',
   initialQuery
 }) => {
-  const { data: session } = useSession();
+  const router = useRouter();
+  const { data: session, status } = useSession();
   const isAdmin = (session?.user as any)?.role === 'admin' || (session?.user as any)?.role === 'super_admin';
 
   const [selectedExam, setSelectedExam] = useState<ExamId>(defaultExam);
@@ -45,12 +47,31 @@ export const PredictorDashboard: React.FC<PredictorDashboardProps> = ({
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isAdminCsvOpen, setIsAdminCsvOpen] = useState(false);
 
-  // If initialQuery provided, auto-run prediction
+  // If initialQuery provided, auto-run prediction once authenticated
   useEffect(() => {
+    if (status === 'loading') return;
+
     if (initialQuery?.inputValue !== undefined && initialQuery.inputValue > 0) {
       const targetExam = initialQuery.exam || defaultExam;
       const targetConfig = EXAM_CONFIGS[targetExam];
       const targetMode = initialQuery.inputMode || 'marks';
+
+      const queryParams = new URLSearchParams();
+      queryParams.set('score', initialQuery.inputValue.toString());
+      queryParams.set('mode', targetMode);
+      if (initialQuery.category) queryParams.set('category', initialQuery.category);
+      if (initialQuery.homeState) queryParams.set('state', initialQuery.homeState);
+      if (initialQuery.gender) queryParams.set('gender', initialQuery.gender);
+      if (initialQuery.preferredBranch && initialQuery.preferredBranch !== 'All') {
+        queryParams.set('branch', initialQuery.preferredBranch);
+      }
+      const targetUrl = `/predictor/${targetExam}?${queryParams.toString()}`;
+
+      if (status === 'unauthenticated') {
+        toast.info('Please create an account or log in to view your predictions.');
+        router.push(`/signup?callbackUrl=${encodeURIComponent(targetUrl)}`);
+        return;
+      }
 
       if (targetMode === 'marks' && targetConfig && initialQuery.inputValue > targetConfig.maxMarks) {
         toast.error(`Entered score (${initialQuery.inputValue}) exceeds maximum marks of ${targetConfig.maxMarks} for ${targetConfig.name}.`);
@@ -67,7 +88,7 @@ export const PredictorDashboard: React.FC<PredictorDashboardProps> = ({
         preferredBranch: initialQuery.preferredBranch
       });
     }
-  }, []);
+  }, [status]);
 
   const handleSelectExam = (examId: ExamId) => {
     setSelectedExam(examId);
@@ -76,6 +97,23 @@ export const PredictorDashboard: React.FC<PredictorDashboardProps> = ({
   };
 
   const handlePredictionSubmit = async (request: PredictionRequest) => {
+    // If student is not logged in, redirect to signup/login page first with target callback
+    if (status !== 'authenticated') {
+      const queryParams = new URLSearchParams();
+      if (request.inputValue) queryParams.set('score', request.inputValue.toString());
+      if (request.inputMode) queryParams.set('mode', request.inputMode);
+      if (request.category) queryParams.set('category', request.category);
+      if (request.homeState) queryParams.set('state', request.homeState);
+      if (request.gender) queryParams.set('gender', request.gender);
+      if (request.preferredBranch && request.preferredBranch !== 'All') {
+        queryParams.set('branch', request.preferredBranch);
+      }
+      const targetUrl = `/predictor/${request.exam}?${queryParams.toString()}`;
+      toast.info('Please create an account or log in to view your predictions.');
+      router.push(`/signup?callbackUrl=${encodeURIComponent(targetUrl)}`);
+      return;
+    }
+
     setIsLoading(true);
 
     try {
