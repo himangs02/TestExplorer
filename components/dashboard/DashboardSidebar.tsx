@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { 
   LayoutDashboard, BookOpen, Settings, Users, FileText, Building2, 
-  TagIcon, Megaphone, GraduationCap, Newspaper, Trophy, Map, Pen, BarChart3, Globe, Database, Mail, 
+  TagIcon, Megaphone, GraduationCap, Newspaper, Trophy, Map, Pen, BarChart3, Globe, Database, Mail, Target
 } from 'lucide-react'
 
 // Map string names to actual components
@@ -28,6 +28,7 @@ const IconMap: Record<string, any> = {
   Globe,
   Database,
   Mail,
+  Target,
 }
 
 interface SidebarProps {

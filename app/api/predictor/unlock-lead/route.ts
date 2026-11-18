@@ -23,6 +23,17 @@ export async function POST(req: Request) {
     const cleanPhone = phone.replace(/\D/g, '');
     const leadEmail = email?.trim() || `${cleanPhone}@lead.testexplorer.com`;
 
+    const leadPayload = {
+      name: name.trim(),
+      phone: cleanPhone,
+      studentClass: studentClass.trim(),
+      schoolName: schoolName.trim(),
+      address: address?.trim() || '',
+      email: email?.trim() || '',
+      exam: exam || '',
+      estimatedRank: estimatedRank || ''
+    };
+
     const messageLines = [
       `📱 Student Mobile: ${phone.trim()}`,
       `🎓 Class: Class ${studentClass.trim()}`,
@@ -30,7 +41,8 @@ export async function POST(req: Request) {
       address?.trim() ? `📍 Address / Location: ${address.trim()}` : null,
       exam ? `🎯 Target Exam: ${exam}` : null,
       estimatedRank ? `📊 Estimated Rank: ${estimatedRank}` : null,
-      `⏰ Captured At: ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}`
+      `⏰ Captured At: ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}`,
+      `__LEAD_JSON__:${JSON.stringify(leadPayload)}`
     ].filter(Boolean).join('\n');
 
     // Save lead inquiry to contact_messages so it is immediately visible in Admin Inbox
