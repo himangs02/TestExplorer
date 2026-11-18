@@ -2,16 +2,13 @@
 
 import Link from 'next/link'
 import { signIn } from 'next-auth/react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { useState, Suspense } from 'react'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 import { Eye, EyeOff, Loader2, Trophy, Zap, CheckCircle2, ArrowRight, ShieldCheck } from 'lucide-react'
 import { toast } from 'sonner'
 
-function LoginFormContent() {
+export default function LoginPage() {
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const callbackUrl = searchParams.get('callbackUrl') || searchParams.get('redirect') || searchParams.get('redirectTo')
-
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -39,8 +36,7 @@ function LoginFormContent() {
       toast.error(result.error === 'CredentialsSignin' ? 'Invalid email or password' : result.error)
     } else {
       toast.success('Signed in successfully!')
-      const destination = callbackUrl || '/dashboard'
-      router.push(destination)
+      router.push('/dashboard')
       router.refresh()
     }
   }
@@ -230,7 +226,7 @@ function LoginFormContent() {
               <div className="pt-4 text-center text-sm font-medium text-gray-600 border-t border-gray-100">
                 Don&apos;t have an account?{' '}
                 <Link 
-                  href={callbackUrl ? `/signup?callbackUrl=${encodeURIComponent(callbackUrl)}` : "/signup"} 
+                  href="/signup" 
                   className="font-bold text-orange-600 hover:text-orange-700 hover:underline inline-flex items-center gap-1"
                 >
                   Create an account
@@ -243,17 +239,5 @@ function LoginFormContent() {
 
       </div>
     </div>
-  )
-}
-
-export default function LoginPage() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-orange-500" />
-      </div>
-    }>
-      <LoginFormContent />
-    </Suspense>
   )
 }

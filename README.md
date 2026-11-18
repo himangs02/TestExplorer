@@ -231,3 +231,8 @@ npm run start
 
 ## 🛡️ License
 Private and Confidential. Proprietary intellectual property of TestExplorer. All rights reserved.
+
+<<<<<<< HEAD
+****
+=======
+>>>>>>> 308e9d6 (feat: add auth check and redirect for college predictor and add project README)
