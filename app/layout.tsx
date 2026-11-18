@@ -1,5 +1,5 @@
 import { headers, cookies } from "next/headers";
-import { Plus_Jakarta_Sans } from "next/font/google";
+
 import { getSchoolBySubdomain } from "@/lib/db/school"; 
 import { SiteHeader } from "@/components/layout/site-header";
 import "./globals.css";
@@ -11,12 +11,6 @@ import { prisma } from "@/lib/prisma";
 import { NextAuthProvider } from "@/components/providers/NextAuthProvider";
 import { Metadata } from "next";
 
-const plusJakarta = Plus_Jakarta_Sans({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
-  variable: "--font-plus-jakarta",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: "Test Explorer - Turn Your Preparation Into Real Possibilities",
@@ -86,8 +80,16 @@ export default async function RootLayout({
   }
 
   return (
-    <html lang="en" className={plusJakarta.variable} suppressHydrationWarning>
-      <body className={`min-h-screen bg-white text-gray-900 ${plusJakarta.className} antialiased`} suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body className="min-h-screen bg-white text-gray-900 antialiased font-sans" suppressHydrationWarning>
         <NextAuthProvider>
           <SiteHeader 
             school={schoolData} 
