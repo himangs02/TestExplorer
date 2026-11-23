@@ -127,15 +127,37 @@ export default async function StudentStatsPage() {
     }
   }).sort((a, b) => b.accuracy - a.accuracy)
 
-  // AI Readiness Index & Estimated Percentile (Harmonized with Test Submission formula)
-  let readinessScore = Math.min(99, Math.max(15, Math.round(avgAccuracy * 0.9 + Math.min(20, totalCount * 2))))
+  // AI Readiness Index & Estimated Percentile (Strictly usage-based, no filler values)
+  let readinessScore: number | null = null
+  if (totalCount > 0) {
+    readinessScore = Math.min(99, Math.round(avgAccuracy * 0.85 + Math.min(15, totalCount * 2)))
+  }
+
   // Latest attempt percentile (matches recent full mock like Set 40)
   const latestAttempt = completed.length > 0 ? completed[completed.length - 1] : null
   const latestRatio = latestAttempt && (latestAttempt.total_marks || 120) > 0
     ? Math.max(0, Math.min(1, (latestAttempt.score ?? 0) / (latestAttempt.total_marks || 120)))
     : 0
-  const latestPercentile = Math.min(99.9, Math.max(10, Math.round((latestRatio * 80 + 19) * 10) / 10))
-  let projectedPercentile = totalCount > 0 ? `${latestPercentile}%` : 'N/A'
+  const latestPercentile = latestRatio > 0 ? Math.min(99.9, Math.round((latestRatio * 80 + 19) * 10) / 10) : 0
+  let projectedPercentile = totalCount > 0 && latestAttempt && latestAttempt.score !== null ? `${latestPercentile}%` : 'N/A'
+
+  // Speed Efficiency: Dynamically calculated based on actual test time taken vs expected duration
+  let speedEfficiency = 'N/A'
+  if (totalCount > 0 && totalSeconds > 0) {
+    const totalAllocatedMinutes = completed.reduce((sum, a) => {
+      const dur = a.mock_tests?.duration_minutes || a.exams?.duration_minutes || a.practice_tests?.duration_minutes || 30
+      return sum + dur
+    }, 0)
+    const totalAllocatedSeconds = totalAllocatedMinutes * 60
+    const paceRatio = totalAllocatedSeconds > 0 ? totalSeconds / totalAllocatedSeconds : 0.7
+    if (paceRatio < 0.5) {
+      speedEfficiency = 'Fast (Ahead of pace)'
+    } else if (paceRatio <= 0.85) {
+      speedEfficiency = 'Normal (Exam standard)'
+    } else {
+      speedEfficiency = 'Paced (Needs speed focus)'
+    }
+  }
 
   return (
     <div className="max-w-5xl mx-auto space-y-10 pb-16">
@@ -267,22 +289,32 @@ export default async function StudentStatsPage() {
               <Flame className="w-4 h-4 text-orange-400" /> Readiness Score
             </div>
             <div>
-              <div className="text-5xl font-black tracking-tight">{readinessScore}/100</div>
+              <div className="text-5xl font-black tracking-tight">
+                {readinessScore !== null ? `${readinessScore}/100` : 'N/A'}
+              </div>
               <p className="text-slate-300 text-xs mt-1">
-                {readinessScore >= 75 ? 'Excellent preparation pace. Focus on high-weightage weak chapters.' :
-                 readinessScore >= 50 ? 'Steady progression. Increase timed full-syllabus mock attempts.' :
-                 'Foundational stage. Consistent revision and formula practice advised.'}
+                {readinessScore === null
+                  ? 'No test attempts recorded yet. Complete a test session to unlock AI readiness insights.'
+                  : readinessScore >= 75
+                    ? 'Excellent preparation pace. Focus on high-weightage weak chapters.'
+                    : readinessScore >= 50
+                      ? 'Steady progression. Increase timed full-syllabus mock attempts.'
+                      : 'Foundational stage. Consistent revision and formula practice advised.'}
               </p>
             </div>
 
             <div className="pt-4 border-t border-white/10 space-y-2 text-xs text-slate-300 font-medium">
               <div className="flex items-center justify-between">
                 <span>Speed Efficiency:</span>
-                <strong className="text-white">Normal (NTA standard)</strong>
+                <strong className="text-white">{speedEfficiency}</strong>
               </div>
               <div className="flex items-center justify-between">
                 <span>Best Mock Score:</span>
-                <strong className="text-white">{bestScoreAttempt ? `${bestScoreAttempt.score}/${bestScoreAttempt.total_marks}` : 'N/A'}</strong>
+                <strong className="text-white">
+                  {bestScoreAttempt && bestScoreAttempt.score !== null
+                    ? `${bestScoreAttempt.score}/${bestScoreAttempt.total_marks || 120}`
+                    : 'N/A'}
+                </strong>
               </div>
             </div>
           </div>

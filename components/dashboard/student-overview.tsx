@@ -1,6 +1,10 @@
 // components/dashboard/student-overview.tsx
 import Link from 'next/link'
 import { TrendingUp, Clock, Target, Calendar, ArrowRight, PlayCircle, Trophy, Timer, Award } from 'lucide-react'
+import { calculateLearningTier } from '@/lib/learning-tier'
+import { calculateStudentMotivation } from '@/lib/student-motivation'
+import StudentLearningTierCard from '@/components/dashboard/StudentLearningTierCard'
+import StudentMotivationCard from '@/components/dashboard/StudentMotivationCard'
 
 interface StudentOverviewProps {
   profile: any
@@ -28,8 +32,10 @@ export default function StudentOverview({ profile, attempts = [] }: StudentOverv
   const latestRatio = latestAttempt && (latestAttempt.total_marks || 120) > 0
     ? Math.max(0, Math.min(1, (latestAttempt.score ?? 0) / (latestAttempt.total_marks || 120)))
     : 0
-  const projectedPercentile = totalTests > 0
-    ? `${Math.min(99.9, Math.max(10, Math.round((latestRatio * 80 + 19) * 10) / 10))}%`
+  const projectedPercentile = totalTests > 0 && latestAttempt && latestAttempt.score !== null
+    ? latestRatio > 0
+      ? `${Math.min(99.9, Math.round((latestRatio * 80 + 19) * 10) / 10)}%`
+      : '0.0%'
     : 'N/A'
 
   // 3. TIME SPENT (Only from completed tests)
@@ -41,6 +47,12 @@ export default function StudentOverview({ profile, attempts = [] }: StudentOverv
   }, 0)
   
   const hoursSpent = (totalSeconds / 3600).toFixed(1)
+  
+  // 4. LEARNING TIER (Adaptive Performance Analysis)
+  const learningTier = calculateLearningTier(completedAttempts)
+  
+  // 5. STUDENT MOTIVATION (Streaks, Badges, Milestones)
+  const motivation = calculateStudentMotivation(safeAttempts, avgAccuracy)
   
   // Show all attempts in recent activity (even in-progress ones)
   const recentActivity = safeAttempts.slice(0, 3)
@@ -101,6 +113,12 @@ export default function StudentOverview({ profile, attempts = [] }: StudentOverv
           </div>
         </div>
       </div>
+
+      {/* Personalized Learning Tier & Adaptive Performance */}
+      <StudentLearningTierCard tier={learningTier} />
+
+      {/* Student Motivation, Streak & Milestone Badges */}
+      <StudentMotivationCard motivation={motivation} />
 
       {/* Recent Activity */}
       <div className="bg-white rounded-3xl border border-gray-200 p-8 shadow-sm">

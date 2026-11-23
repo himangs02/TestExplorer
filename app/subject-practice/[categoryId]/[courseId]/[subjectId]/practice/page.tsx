@@ -3,6 +3,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { notFound, redirect } from 'next/navigation'
 import TestInterface from '@/components/Courses/TestInterface'
+import { orderQuestionsAdaptively } from '@/lib/adaptive-difficulty'
 
 export default async function ChapterPracticePage({
   params,
@@ -45,14 +46,39 @@ export default async function ChapterPracticePage({
     }
   }
 
-  // Fetch questions for this chapter
-  const questions = await prisma.questions.findMany({
+  // 1. Fetch Student's Recent Performance for Adaptive Personalization
+  const recentAttempts = await prisma.exam_attempts.findMany({
+    where: { user_id: user.id, status: 'completed' },
+    select: { score: true, total_marks: true, percentage: true },
+    orderBy: { completed_at: 'desc' },
+    take: 5
+  })
+
+  let avgAccuracy = 0
+  if (recentAttempts.length > 0) {
+    const sum = recentAttempts.reduce((acc, curr) => {
+      if (curr.percentage != null && !isNaN(Number(curr.percentage))) {
+        return acc + Number(curr.percentage)
+      }
+      const score = Number(curr.score) || 0
+      const totalMarks = Number(curr.total_marks) || 120
+      return acc + (totalMarks > 0 ? (score / totalMarks) * 100 : 0)
+    }, 0)
+    avgAccuracy = Math.round(sum / recentAttempts.length)
+  }
+
+  const isFoundation = recentAttempts.length === 0 || avgAccuracy < 60
+
+  // 2. Fetch questions for this chapter
+  const rawQuestions = await prisma.questions.findMany({
     where: whereClause,
     orderBy: { order_index: 'asc' },
     select: {
       id: true,
       text: true,
       direction: true,
+      difficulty: true,
+      order_index: true,
       question_options: {
         select: {
           id: true,
@@ -62,11 +88,15 @@ export default async function ChapterPracticePage({
     }
   })
 
+  // 3. Adaptive Difficulty Ordering (<60% starts with easy/foundation, >=60% starts with challenging/multi-step)
+  const { orderedQuestions: adaptiveQuestions, track } = orderQuestionsAdaptively(rawQuestions, avgAccuracy)
+
   // Format questions for TestInterface
-  const formattedQuestions = questions.map((q) => ({
+  const formattedQuestions = adaptiveQuestions.map((q) => ({
     id: q.id,
     text: q.text,
     direction: q.direction,
+    difficulty: q.difficulty,
     options: q.question_options.map((opt) => ({
       id: opt.id,
       text: opt.text
@@ -75,7 +105,7 @@ export default async function ChapterPracticePage({
 
   const examData = {
     id: chapterId || subjectId,
-    title: practiceTitle,
+    title: `${practiceTitle} (${track.badgeText})`,
     duration_minutes: Math.max(15, Math.ceil(formattedQuestions.length * 1.5)) || 30,
     total_marks: formattedQuestions.length
   }

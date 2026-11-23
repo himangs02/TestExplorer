@@ -7,6 +7,7 @@ import AccessDenied from '@/components/ui/access-denied'
 import MockTestInterface from '@/components/exam/MockTestInterface' 
 import TestInterface from '@/components/Courses/TestInterface' 
 import { submitExamAction } from './actions' 
+import { orderQuestionsAdaptively } from '@/lib/adaptive-difficulty' 
 
 export default async function TestPage({ 
   params,
@@ -99,6 +100,27 @@ export default async function TestPage({
   if (testType === 'practice') {
      examData = await prisma.practice_tests.findUnique({ where: { id: examId } })
      if(examData) {
+        // Fetch recent student performance for adaptive difficulty
+        const recentAttempts = await prisma.exam_attempts.findMany({
+          where: { user_id: user.id, status: 'completed' },
+          select: { score: true, total_marks: true, percentage: true },
+          orderBy: { completed_at: 'desc' },
+          take: 5
+        })
+
+        let avgAccuracy = 0
+        if (recentAttempts.length > 0) {
+          const sum = recentAttempts.reduce((acc, curr) => {
+            if (curr.percentage != null && !isNaN(Number(curr.percentage))) {
+              return acc + Number(curr.percentage)
+            }
+            const score = Number(curr.score) || 0
+            const totalMarks = Number(curr.total_marks) || 120
+            return acc + (totalMarks > 0 ? (score / totalMarks) * 100 : 0)
+          }, 0)
+          avgAccuracy = Math.round(sum / recentAttempts.length)
+        }
+
         const q = await prisma.questions.findMany({
           where: { practice_test_id: examId },
           orderBy: { order_index: 'asc' },
@@ -106,13 +128,25 @@ export default async function TestPage({
             id: true,
             text: true,
             direction: true,
+            difficulty: true,
             question_options: { select: { id: true, text: true } }
           }
         })
-        questionsData = q.map(question => ({
+
+        const mappedQs = q.map(question => ({
           ...question,
           options: question.question_options
         }))
+
+        const { orderedQuestions, track } = orderQuestionsAdaptively(mappedQs, avgAccuracy)
+        questionsData = orderedQuestions
+
+        if (examData && track) {
+          examData = {
+            ...examData,
+            title: `${examData.title} (${track.badgeText})`
+          }
+        }
      }
   } else {
      // MOCK

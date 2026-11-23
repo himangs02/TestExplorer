@@ -14,9 +14,10 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { FormattedContent } from '@/components/ui/formatted-content'
+import { getDifficultyBadge } from '@/lib/adaptive-difficulty'
 
 type Option = { id: string; text: string }
-type Question = { id: string; text: string; options: Option[] }
+type Question = { id: string; text: string; options: Option[]; difficulty?: string | null }
 
 interface TestInterfaceProps {
   exam: any
@@ -284,6 +285,19 @@ export default function TestInterface({
               >
                 <Bookmark className={`w-5 h-5 sm:w-6 sm:h-6 ${markedForReview.includes(currentQ.id) ? 'fill-current' : ''}`} />
               </button>
+
+              {/* Adaptive Question Difficulty Badge */}
+              {currentQ.difficulty && (() => {
+                const diffBadge = getDifficultyBadge(currentQ.difficulty)
+                return (
+                  <div className="mb-3">
+                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${diffBadge.bgClass} ${diffBadge.colorClass} ${diffBadge.borderClass}`}>
+                      <span className="w-1.5 h-1.5 rounded-full bg-current" />
+                      {diffBadge.label}: {diffBadge.sublabel}
+                    </span>
+                  </div>
+                )
+              })()}
 
               <div className="mb-6 sm:mb-10 pr-12 sm:pr-16">
                 <div className="text-lg sm:text-2xl md:text-3xl font-bold text-gray-900 leading-snug">
