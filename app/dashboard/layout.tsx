@@ -64,6 +64,7 @@ export default async function DashboardLayout({
     { label: 'Blogs', href: '/dashboard/admin/blogs', iconName: 'Newspaper', roles: ['super_admin'] },
     { label: 'Leaderboard', href: '/dashboard/admin/leaderboard', iconName: 'Trophy', roles: ['super_admin'] },
     { label: 'Rank Config', href: '/dashboard/admin/rank-prediction', iconName: 'BarChart3', roles: ['super_admin'] },
+    { label: 'Predictor Leads', href: '/dashboard/admin/predictor-leads', iconName: 'Target', roles: ['super_admin'] },
     { label: 'Exam Landing Pages', href: '/dashboard/admin/exam-landing-pages', iconName: 'Globe', roles: ['super_admin'] },
     { label: 'Messages', href: '/dashboard/admin/messages', iconName: 'Mail', roles: ['super_admin'] },
   ]

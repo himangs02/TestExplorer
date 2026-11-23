@@ -12,7 +12,9 @@ import {
   Square,
   ArrowUpRight,
   Bookmark,
-  Check
+  Check,
+  Lock,
+  LockOpen
 } from 'lucide-react';
 
 interface CollegeCardProps {
@@ -20,13 +22,17 @@ interface CollegeCardProps {
   onViewDetails: (college: CollegePredictionItem) => void;
   onToggleCompare?: (college: CollegePredictionItem) => void;
   isCompared?: boolean;
+  isLocked?: boolean;
+  onUnlock?: () => void;
 }
 
 export const CollegeCard: React.FC<CollegeCardProps> = ({
   college,
   onViewDetails,
   onToggleCompare,
-  isCompared = false
+  isCompared = false,
+  isLocked = false,
+  onUnlock
 }) => {
   const buffer = college.previousClosingRank - college.candidateRank;
   const isPositiveBuffer = buffer >= 0;
@@ -86,9 +92,37 @@ export const CollegeCard: React.FC<CollegeCardProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-2xl border-2 border-gray-200 hover:border-blue-400 p-5 shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between group">
-      <div>
-        {/* Top Badges */}
+    <div className="relative bg-white rounded-2xl border-2 border-gray-200 hover:border-blue-400 p-5 shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between group overflow-hidden">
+      {isLocked && (
+        <div
+          onClick={onUnlock}
+          className="absolute inset-0 z-20 bg-slate-950/65 backdrop-blur-[3px] flex flex-col items-center justify-center p-4 text-center cursor-pointer transition-all hover:bg-slate-950/75 group"
+        >
+          <div className="w-10 h-10 rounded-2xl bg-cyan-400 text-slate-950 flex items-center justify-center shadow-lg mb-2 transform group-hover:scale-105 transition-transform">
+            <Lock className="w-5 h-5" />
+          </div>
+          <span className="text-xs font-black text-white uppercase tracking-wider mb-1">
+            Eligible College Locked
+          </span>
+          <p className="text-[11px] text-slate-300 mb-3 max-w-[210px] leading-tight">
+            Fill your student details to reveal this college, branch cutoffs & chance.
+          </p>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onUnlock?.();
+            }}
+            className="px-4 py-1.5 bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-slate-950 font-black text-xs rounded-xl shadow-md cursor-pointer inline-flex items-center gap-1.5"
+          >
+            <LockOpen className="w-3.5 h-3.5" />
+            <span>Unlock Details</span>
+          </button>
+        </div>
+      )}
+      <div className={`flex flex-col justify-between h-full ${isLocked ? 'filter blur-[2px] select-none pointer-events-none opacity-60' : ''}`}>
+        <div>
+          {/* Top Badges */}
         <div className="flex items-center justify-between gap-2 mb-2.5">
           <div className="flex items-center gap-2">
             <span className={`px-2 py-0.5 rounded-md text-[11px] font-black uppercase tracking-wider ${getTypeBadgeColor(college.instituteType)}`}>
@@ -204,5 +238,6 @@ export const CollegeCard: React.FC<CollegeCardProps> = ({
         </button>
       </div>
     </div>
-  );
+  </div>
+);
 };

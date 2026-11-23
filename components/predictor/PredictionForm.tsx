@@ -370,7 +370,7 @@ export const PredictionForm: React.FC<PredictionFormProps> = ({
 
       {/* Privacy / Integrity footnote */}
       <p className="text-[11px] text-gray-400 text-center mt-3 font-medium">
-        🔒 Predictions derived from verified historical JoSAA, MCC & Central counselling datasets.
+        🔒 Free & No Mandatory Login required. Predictions derived from verified historical JoSAA, MCC & Central counselling datasets.
       </p>
     </form>
   );

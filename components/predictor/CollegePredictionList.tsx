@@ -25,7 +25,9 @@ import {
   RotateCcw,
   LayoutGrid,
   ChevronDown,
-  Target
+  Target,
+  Lock,
+  LockOpen
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -35,6 +37,8 @@ interface CollegePredictionListProps {
   onOpenCompare: (colleges: CollegePredictionItem[]) => void;
   onOpenPreferenceList: (colleges: CollegePredictionItem[]) => void;
   onOpenShare: () => void;
+  isLocked?: boolean;
+  onOpenUnlockModal?: () => void;
 }
 
 export const CollegePredictionList: React.FC<CollegePredictionListProps> = ({
@@ -42,7 +46,9 @@ export const CollegePredictionList: React.FC<CollegePredictionListProps> = ({
   onViewDetails,
   onOpenCompare,
   onOpenPreferenceList,
-  onOpenShare
+  onOpenShare,
+  isLocked = false,
+  onOpenUnlockModal
 }) => {
   const [selectedChance, setSelectedChance] = useState<'ALL' | AdmissionChance>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
@@ -540,22 +546,102 @@ export const CollegePredictionList: React.FC<CollegePredictionListProps> = ({
 
         {/* RIGHT CONTENT: COLLEGE CARDS GRID */}
         <div className="md:col-span-3 space-y-4">
+          {/* Unlocked / Locked Top Status Notice */}
+          {isLocked && filteredColleges.length > 6 && (
+            <div className="bg-gradient-to-r from-amber-50 via-blue-50 to-indigo-50 border border-blue-200/80 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-sm font-bold">
+                  <Lock className="w-4 h-4" />
+                </div>
+                <div>
+                  <h5 className="text-xs font-black text-gray-900">
+                    Preview Mode: Showing 6 of {filteredColleges.length} eligible colleges
+                  </h5>
+                  <p className="text-[11px] text-gray-600">
+                    {filteredColleges.length - 6} more institutions are locked. Provide your details to view full results.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={onOpenUnlockModal}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer shrink-0 inline-flex items-center gap-1.5 self-start sm:self-auto"
+              >
+                <LockOpen className="w-3.5 h-3.5" />
+                <span>Unlock All Colleges</span>
+              </button>
+            </div>
+          )}
+
           {filteredColleges.length > 0 ? (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4">
-                {filteredColleges.slice(0, visibleCount).map((col) => (
+                {/* 1. First 5-6 Colleges (Always Fully Unlocked) */}
+                {(isLocked ? filteredColleges.slice(0, 6) : filteredColleges.slice(0, visibleCount)).map((col) => (
                   <CollegeCard
                     key={col.id}
                     college={col}
                     onViewDetails={onViewDetails}
                     onToggleCompare={handleToggleCompare}
                     isCompared={comparedColleges.some((c) => c.id === col.id)}
+                    isLocked={false}
                   />
                 ))}
+
+                {/* 2. Teaser Locked Cards (Shown when isLocked is true and more colleges exist) */}
+                {isLocked &&
+                  filteredColleges.slice(6, 9).map((col) => (
+                    <CollegeCard
+                      key={`locked-${col.id}`}
+                      college={col}
+                      onViewDetails={() => onOpenUnlockModal?.()}
+                      onToggleCompare={() => onOpenUnlockModal?.()}
+                      isCompared={false}
+                      isLocked={true}
+                      onUnlock={onOpenUnlockModal}
+                    />
+                  ))}
               </div>
 
-              {/* Load More Button for 400+ options */}
-              {visibleCount < filteredColleges.length && (
+              {/* 3. Locked CTA Box */}
+              {isLocked && filteredColleges.length > 6 && (
+                <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-indigo-950 to-blue-950 p-6 sm:p-8 text-white shadow-xl border border-blue-500/30 text-center my-6">
+                  {/* Decorative background glow */}
+                  <div className="absolute top-0 right-1/4 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+                  <div className="absolute bottom-0 left-1/4 w-72 h-72 bg-blue-600/15 rounded-full blur-3xl pointer-events-none" />
+
+                  <div className="relative z-10 max-w-xl mx-auto">
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-400/20 text-cyan-300 text-[11px] font-black uppercase tracking-wider border border-cyan-400/30 mb-3 shadow-xs">
+                      <Lock className="w-3.5 h-3.5" />
+                      <span>{filteredColleges.length - 6}+ More Eligible Institutions Locked</span>
+                    </div>
+
+                    <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight mb-2">
+                      Unlock Your Complete College Allocation Report
+                    </h3>
+
+                    <p className="text-xs sm:text-sm text-slate-300 leading-relaxed mb-6">
+                      You qualify for <strong className="text-cyan-300">{filteredColleges.length} total institutions & programs</strong>. Fill in your student profile (Class 10/11/12, School, Phone & Location) to instantly unlock all remaining college options, detailed closing cutoffs, and counseling seat probabilities.
+                    </p>
+
+                    <button
+                      type="button"
+                      onClick={onOpenUnlockModal}
+                      className="px-8 py-3.5 bg-gradient-to-r from-cyan-400 to-blue-600 hover:from-cyan-300 hover:to-blue-500 text-slate-950 font-black text-sm rounded-2xl shadow-xl shadow-cyan-500/25 hover:scale-[1.02] transition-all cursor-pointer inline-flex items-center gap-2"
+                    >
+                      <LockOpen className="w-4 h-4 text-slate-950" />
+                      <span>Unlock All {filteredColleges.length} Colleges Now</span>
+                    </button>
+
+                    <p className="text-[11px] text-slate-400 mt-3 font-medium">
+                      🔒 Verified JoSAA, MCC & Central University Cutoff Matrix
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Load More Button for 400+ options (Only when fully unlocked) */}
+              {!isLocked && visibleCount < filteredColleges.length && (
                 <div className="text-center pt-6">
                   <button
                     type="button"
